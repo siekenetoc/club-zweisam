@@ -1,0 +1,27 @@
+{% load static %}<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{% block title %}Club Zweisam{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dist/css/main.css' %}" />
+    <script src="{% static 'dist/js/main.js' %}" defer></script>
+  </head>
+  <body class="min-h-screen bg-stone-950 text-stone-100 antialiased">
+    <div class="mx-auto flex min-h-screen max-w-4xl flex-col px-6 py-10">
+      <header class="flex items-center justify-between border-b border-stone-800 pb-6">
+        <a href="/" class="text-lg font-semibold tracking-wide">Club Zweisam</a>
+        <span class="rounded-full border border-stone-700 px-3 py-1 text-xs uppercase tracking-widest text-stone-400">
+          Privater Raum
+        </span>
+      </header>
+      <main class="flex-1 py-10">
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="border-t border-stone-800 pt-6 text-xs text-stone-500">
+        Kein Therapieersatz. Keine Währung für Sex. Kein Druckmittel.
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+*.sqlite3
+
+# Node
+node_modules/
+frontend/dist/
+
+# Django
+staticfiles/
+media/
+!backend/media/
+backend/media/*
+!backend/media/.gitkeep
+*.log
+backend/static/dist/*
+!backend/static/dist/.gitkeep
+
+# Docker
+.docker/
+*.pid
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+playwright-report/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+
+# Secrets (Sicherheitsnetz)
+*.pem
+*.key
+FIELD_ENCRYPTION_KEY*
+GITHUB_DEPLOY_TOKEN*

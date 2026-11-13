@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Club Zweisam – Grundgerüst{% endblock %}
+
+{% block content %}
+  <section class="space-y-6">
+    <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Meilenstein M0</p>
+    <h1 class="text-3xl font-semibold sm:text-4xl">Der Raum steht.</h1>
+    <p class="max-w-2xl text-stone-300">
+      Grundgerüst, Verschlüsselungs-Setup und Audit-Chain sind eingerichtet.
+      Die Module werden in den folgenden Meilensteinen ergänzt.
+    </p>
+    <dl class="grid gap-4 sm:grid-cols-2">
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Stack</dt>
+        <dd class="mt-2 text-stone-200">Django, PostgreSQL, Redis, Caddy</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Assets</dt>
+        <dd class="mt-2 text-stone-200">Vite, Tailwind, Alpine.js, HTMX, TinyMCE lokal</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Schutz</dt>
+        <dd class="mt-2 text-stone-200">Feldverschlüsselung at-rest, Audit-Log append-only</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Status</dt>
+        <dd class="mt-2 text-stone-200">
+          <a class="underline decoration-stone-600 underline-offset-4" href="/healthz">healthz</a>
+        </dd>
+      </div>
+    </dl>
+  </section>
+{% endblock %}

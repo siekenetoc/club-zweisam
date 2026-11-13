@@ -1,0 +1,109 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: clubzweisam_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file: .env
+    depends_on:
+      - web
+    networks:
+      - clubzweisam_net
+
+  web:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: prod
+    container_name: clubzweisam_web
+    restart: unless-stopped
+    command: gunicorn clubzweisam.wsgi:application --bind 0.0.0.0:8000 --workers 3 --access-logfile -
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: clubzweisam.settings.prod
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      assets:
+        condition: service_started
+    volumes:
+      - static_data:/app/staticfiles
+      - media_data:/app/media
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - clubzweisam_net
+
+  db:
+    image: postgres:16-alpine
+    container_name: clubzweisam_db
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - clubzweisam_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: clubzweisam_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - clubzweisam_net
+
+  assets:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: clubzweisam_assets
+    command: npm run build
+    volumes:
+      - ./frontend:/frontend
+      - ./backend/static/dist:/frontend/dist
+    networks:
+      - clubzweisam_net
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: clubzweisam_mailhog
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+    networks:
+      - clubzweisam_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  caddy_data:
+  caddy_config:
+  static_data:
+  media_data:
+
+networks:
+  clubzweisam_net:
+    driver: bridge
