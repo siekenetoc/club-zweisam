@@ -120,6 +120,8 @@ text
 - Kein Therapieersatz.
 
 ## Betrieb
+- Security-Review und Restrisiken: `docs/security-review.md`.
+- Betrieb, Backups, Rotation und DSGVO: `docs/operations.md`.
 - Ein Stack, ein Netzwerk.
 - Backups: verschlüsselte DB-Dumps, Caddy-Volumes separat.
 - Logs: strukturiert (JSON), sensibel-gefiltert (Crypto-Felder maskiert).

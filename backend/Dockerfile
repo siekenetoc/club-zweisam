@@ -25,7 +25,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY backend/requirements.txt backend/requirements-dev.txt ./
-RUN pip install --no-cache-dir -r requirements-dev.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ ./
 COPY --from=frontend /dist ./static/dist
@@ -39,6 +39,8 @@ ENTRYPOINT ["entrypoint.sh"]
 
 
 FROM python-base AS dev
+
+RUN pip install --no-cache-dir -r requirements-dev.txt
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 

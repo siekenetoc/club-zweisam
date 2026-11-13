@@ -313,3 +313,31 @@ def confirm_fulfilled(*, wish: Wish, user) -> Wish:
             confirmed_by_other=True,
         )
         return wish
+
+
+def purge_rejected_wishes(days: int = 90) -> int:
+    from datetime import timedelta
+
+    cutoff = timezone.now() - timedelta(days=days)
+    stale = Wish.objects.filter(
+        status__in=[STATUS_REJECTED, STATUS_BOUNDARY],
+        updated_at__lt=cutoff,
+    )
+    wish_ids = list(stale.values_list("pk", flat=True))
+    if not wish_ids:
+        return 0
+    with transaction.atomic():
+        Wish.objects.filter(pk__in=wish_ids).update(
+            title="Gelöschter Wunsch",
+            body="",
+            updated_at=timezone.now(),
+        )
+        WishResponse.objects.filter(wish_id__in=wish_ids).update(note="")
+        _audit(
+            "wish.purge",
+            actor=None,
+            target_type="wishes.wish",
+            target_id="bulk",
+            purged=len(wish_ids),
+        )
+    return len(wish_ids)

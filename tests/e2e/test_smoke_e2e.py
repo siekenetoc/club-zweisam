@@ -178,8 +178,7 @@ def test_registration_and_clubroom_creation():
         page.goto(f"{base_url}/", wait_until="load")
         requests = []
         page.on("request", lambda request: requests.append(request.url))
-        timing = page.evaluate(
-            """() => {
+        timing = page.evaluate("""() => {
               const overlay = document.getElementById("privacy-shield");
               const start = performance.now();
               document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
@@ -189,8 +188,7 @@ def test_registration_and_clubroom_creation():
                 visible: !overlay.hidden,
                 title: document.title,
               };
-            }"""
-        )
+            }""")
         assert timing["visible"] is True
         assert timing["elapsed"] < 100
         assert timing["title"] == "Notizen"

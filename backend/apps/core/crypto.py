@@ -45,13 +45,19 @@ def encrypt_text(value: str) -> str:
 def decrypt_text(value: str) -> str:
     if not is_encrypted(value):
         return value
-    token = value[len(ENCRYPTED_PREFIX) :]
+    token = value[len(ENCRYPTED_PREFIX) :].encode("ascii")
     try:
-        return fernet().decrypt(token.encode("ascii")).decode("utf-8")
-    except InvalidToken as exc:
+        return fernet().decrypt(token).decode("utf-8")
+    except InvalidToken:
+        old_key = getattr(settings, "FIELD_ENCRYPTION_KEY_OLD", "")
+        if old_key:
+            try:
+                return _fernet_for(old_key).decrypt(token).decode("utf-8")
+            except InvalidToken:
+                pass
         raise EncryptionError(
             "Entschlüsselung fehlgeschlagen (falscher Schlüssel oder manipulierte Daten)."
-        ) from exc
+        ) from None
 
 
 class EncryptedTextField(models.TextField):

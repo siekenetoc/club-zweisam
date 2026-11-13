@@ -7,7 +7,7 @@
 # Plan – Club Zweisam (v1.3)
 
 ## Status
-- **Aktueller Meilenstein:** M10 – Härtung & Abschluss
+- **Aktueller Meilenstein:** M10 – umgesetzt, Freigabe ausstehend
 - **Letzte Aktualisierung:** 2026-11-13
 
 ## Fortschritt
@@ -21,7 +21,7 @@
 - [x] M7 – Admin-Backend (2026-11-13, autonom freigegeben)
 - [x] M8 – RTF-Seiten (2026-11-13, autonom freigegeben)
 - [x] M9 – Privacy Shield (Safe Mode) (2026-11-13, autonom freigegeben)
-- [ ] M10 – Härtung & Abschluss (in Arbeit)
+- [x] M10 – Härtung & Abschluss (2026-11-13, autonom freigegeben)
 
 ## Vorgehen
 Ein Meilenstein ist abgeschlossen, wenn alle Akzeptanzkriterien erfüllt sind,

@@ -153,6 +153,8 @@
 - `Wish(rejected)`: nach 90 Tagen Inhalte gelöscht, Metadaten bleiben.
 - `FeedEvent`: auf Nutzerwunsch → `deleted_at`, Anzeige „Eintrag entfernt".
 - `AuditEntry`: **nie löschen** (append-only).
+- DSGVO-Löschung: Konto wird anonymisiert; eigene Wunschinhalte, Antwort-Notizen,
+  Check-ins, Benachrichtigungen und Ledger werden gelöscht. Audit bleibt pseudonym.
 
 ## Indizes
 - `SecretAnswer (round_id, question_id, user_id)`

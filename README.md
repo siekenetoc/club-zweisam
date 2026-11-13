@@ -4,10 +4,10 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M9 abgeschlossen; M10 (Härtung & Abschluss) in Arbeit.
+**Status:** M0 bis M10 abgeschlossen – Freigabe durch den Nutzer ausstehend.
 
 ## Stack
-- Python 3.12, Django 5.0, Gunicorn
+- Python 3.12, Django 5.2 LTS, Gunicorn
 - PostgreSQL 16, Redis 7
 - Caddy 2 (Reverse Proxy, TLS, Security-Header)
 - Node 20, Vite, Tailwind CSS, Alpine.js, HTMX
@@ -115,6 +115,16 @@ Umgesetzt in M9:
 - Andere sehen keinen Safe-Mode-Hinweis; Admin-Ansicht zeigt das Flag nicht
 - Hinweis: Der lokale PIN ist ein Sichtschutz, keine kryptografische Sperre
 
+Umgesetzt in M10:
+- Abhängigkeiten gehärtet: Django 5.2 LTS, cryptography 50, Pillow 13; Prod-Image ohne Dev-Tools
+- `pip-audit` (Prod/Dev) und `bandit` ohne Befunde, `check --deploy` clean
+- CSP und Security-Header über Caddy; TinyMCE unter CSP geprüft
+- DSGVO-Export und -Löschung als Self-Service und Management-Commands
+- Aufbewahrungs-Commands für Séparée (30 Tage) und Wünsche (90 Tage)
+- Feldverschlüsselungs-Rotation mit altem Schlüssel und `encrypt_rotate`
+- Lasttest-Skript und Security-Review (`docs/security-review.md`)
+- Betriebsdoku (`docs/operations.md`) mit Backup, Restore, Rotation und DSGVO
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -177,10 +187,13 @@ docker compose exec web ruff check .
 docker compose exec web black --check .
 docker compose exec web python manage.py check
 docker compose exec web python manage.py audit_verify
+docker compose exec web pip-audit -r requirements.txt
+docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory).
-- Der Playwright-Test läuft im Profil `e2e` gegen Caddy (Registrierung + Clubraum).
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 132 Tests.
+- Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
+  2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und
   `docker compose exec -e DJANGO_SETTINGS_MODULE=clubzweisam.settings.prod web python manage.py check --deploy`.
 - Vor dem ersten Commit: `docker compose exec web pre-commit install`.
@@ -213,3 +226,5 @@ zwischen Paaren, kein heimliches Überwachen.
 - `docs/architecture.md` – Sicherheitsarchitektur
 - `docs/data-model.md` – Datenmodell
 - `docs/break-glass.md` – Admin-Zugriffsverfahren
+- `docs/security-review.md` – Härtung, Audits, Restrisiken
+- `docs/operations.md` – Betrieb, Backup, Rotation, DSGVO
