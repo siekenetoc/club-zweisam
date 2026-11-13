@@ -9,4 +9,5 @@ urlpatterns = [
     path("check-in/", views.check_in, name="check_in"),
     path("wochenrueckblick/", views.toggle_review, name="toggle_review"),
     path("safe-mode/", views.safe_mode, name="safe_mode"),
+    path("safe-mode/sync/", views.safe_mode_sync, name="safe_mode_sync"),
 ]

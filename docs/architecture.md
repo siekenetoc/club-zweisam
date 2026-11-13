@@ -102,6 +102,10 @@ text
 ### 7. Benachrichtigungen
 - Niemals Inhalte. Nur Event-Typ.
 - Safe-Mode-Flag: Queue auf Server, Zustellung beim Deaktivieren.
+- Privacy Shield: Decoy-Screen rein clientseitig, Aktivierung ohne Server-Roundtrip.
+  Der Server-Flag wird verzögert synchronisiert; bis dahin eintreffende
+  Benachrichtigungen können bereits zugestellt sein. Der PIN bleibt lokal im
+  Browser und ist ein Sichtschutz, keine kryptografische Sperre.
 
 ## Was das System nicht leistet (bewusste Grenze)
 - Kein kryptografischer Schutz gegen Super-Admin mit DB- und Schlüsselzugriff.

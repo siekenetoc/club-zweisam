@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
@@ -100,6 +101,20 @@ def toggle_review(request):
         else:
             messages.success(request, "Wochenrückblick deaktiviert.")
     return redirect("lounge:index")
+
+
+@login_required
+@require_POST
+def safe_mode_sync(request):
+    _membership_or_denied(request)
+    active = request.POST.get("active") == "1"
+    delivered = set_safe_mode(user=request.user, active=active)
+    return JsonResponse(
+        {
+            "active": request.user.is_safe_mode_active,
+            "delivered": delivered,
+        }
+    )
 
 
 @login_required

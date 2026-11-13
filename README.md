@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M8 abgeschlossen; M9 (Privacy Shield) in Arbeit.
+**Status:** M0 bis M9 abgeschlossen; M10 (Härtung & Abschluss) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -104,6 +104,16 @@ Umgesetzt in M8:
 - Bearbeitung nur für Super-Admins und die Gruppe „Plattform-Admin"
 - Footer-Links zu allen Pflichtseiten
 - Platzhalterhinweis für rechtliche Prüfung vor Produktivbetrieb
+
+Umgesetzt in M9:
+- Privacy Shield mit sofortigem Decoy-Screen „Notizen" (Esc zweimal oder Footer-Button)
+- Aktivierung rein clientseitig, keine Netzwerkanfrage im Aktivierungsmoment (<100 ms)
+- Lokaler PIN (SHA-256 mit Salt in localStorage) zum Entsperren; kein Server-PIN
+- Decoy-Inhalte vollständig lokal, keine externen Requests
+- Server-Sync des Safe-Mode-Flags verzögert; Benachrichtigungen werden gepuffert
+- Deaktivierung stellt gepufferte Benachrichtigungen inhaltslos zu
+- Andere sehen keinen Safe-Mode-Hinweis; Admin-Ansicht zeigt das Flag nicht
+- Hinweis: Der lokale PIN ist ein Sichtschutz, keine kryptografische Sperre
 
 ## Setup (Dev)
 ```bash

@@ -20,7 +20,7 @@ def test_home_page_over_caddy():
         browser, context, page = launch_page(playwright)
         page.goto(base_url, wait_until="load")
         assert "Club Zweisam" in page.title()
-        assert "Der Raum steht" in page.locator("h1").inner_text()
+        assert "Der Raum steht" in page.get_by_role("heading", name="Der Raum steht.").inner_text()
         health = page.request.get(f"{base_url}/healthz")
         assert health.ok
         assert health.json()["status"] == "ok"
@@ -109,6 +109,11 @@ def test_registration_and_clubroom_creation():
         content = page.content()
         assert "Check-in gespeichert" in content
         assert "Stimmung 4/5" in content
+        page.fill("#shield-settings-pin", "1234")
+        page.fill("#shield-settings-confirm", "1234")
+        page.click("#shield-settings-save")
+        page.wait_for_timeout(300)
+        assert "PIN lokal gespeichert" in page.content()
         page.get_by_role("button", name="Safe Mode aktivieren").click()
         page.wait_for_load_state("load")
         assert "Safe Mode aktiv" in page.content()
@@ -169,6 +174,32 @@ def test_registration_and_clubroom_creation():
         assert "Platzhalter" in content
         page.goto(f"{base_url}/seite/datenschutz/", wait_until="load")
         assert "Datenschutz" in page.content()
+
+        page.goto(f"{base_url}/", wait_until="load")
+        requests = []
+        page.on("request", lambda request: requests.append(request.url))
+        timing = page.evaluate(
+            """() => {
+              const overlay = document.getElementById("privacy-shield");
+              const start = performance.now();
+              document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+              document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+              return {
+                elapsed: performance.now() - start,
+                visible: !overlay.hidden,
+                title: document.title,
+              };
+            }"""
+        )
+        assert timing["visible"] is True
+        assert timing["elapsed"] < 100
+        assert timing["title"] == "Notizen"
+        page.locator("#privacy-shield").wait_for(state="visible")
+        page.wait_for_timeout(700)
+        assert requests == []
+        page.fill("#shield-pin-input", "1234")
+        page.click("#shield-unlock-button")
+        page.locator("#privacy-shield").wait_for(state="hidden")
 
         context.close()
         browser.close()

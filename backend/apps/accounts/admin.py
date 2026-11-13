@@ -11,7 +11,6 @@ class ClubUserAdmin(UserAdmin):
             "Club Zweisam",
             {
                 "fields": (
-                    "is_safe_mode_active",
                     "age_verified",
                     "tos_accepted_at",
                 )
