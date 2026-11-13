@@ -221,7 +221,7 @@ def test_moderator_sees_status_but_no_secret_answers(client):
     client.force_login(moderator)
     content = client.get(reverse("lounge:index")).content.decode()
     assert "3-Tage-Barometer" in content
-    assert "Ja" not in content
+    assert "Stimmung 4/5" not in content
 
 
 def test_safe_mode_service_is_idempotent():

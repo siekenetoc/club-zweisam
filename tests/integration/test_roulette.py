@@ -147,7 +147,7 @@ def test_full_match_creates_commonality_in_vitrine(client):
     assert response.status_code == 200
     assert round_obj.deck.questions.get(order=1).text in content
     assert "Vollständiger Match" in content
-    assert "Ja" not in content
+    assert "Deine Antwort" not in content
 
 
 def test_boundary_is_respected_and_never_revealed(client):
