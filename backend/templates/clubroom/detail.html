@@ -27,11 +27,19 @@
           <a href="{% url 'lounge:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
             Lounge
           </a>
-          {% if is_owner %}
+          {% if has_feed %}
             <a href="{% url 'feed:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
               Logbuch
             </a>
           {% endif %}
+          {% if has_deep_talk %}
+            <a href="{% url 'deep_talk:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+              Deep Talk
+            </a>
+          {% endif %}
+          <a href="{% url 'crisis:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-stone-500">
+            Krisenmodus
+          </a>
           <a href="{% url 'clubroom:invite' %}" class="rounded-full bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
             Person einladen
           </a>

@@ -123,5 +123,32 @@ def test_registration_and_clubroom_creation():
         assert "Challenge abgeschlossen" in content
         assert "Check-in" in content
 
+        page.goto(f"{base_url}/", wait_until="load")
+        page.get_by_role("link", name="Deep Talk").click()
+        page.wait_for_url(f"{base_url}/deep-talk/")
+        page.get_by_role("button", name="Gespräch starten").click()
+        page.wait_for_url(re.compile(r".*/deep-talk/\d+/"))
+        page.get_by_role("button", name="Besprochen").first.click()
+        page.wait_for_load_state("load")
+        page.get_by_role("button", name="Time-out").click()
+        page.wait_for_load_state("load")
+        assert "Time-out aktiv" in page.content()
+        page.get_by_role("button", name="Weiter im Gespräch").click()
+        page.wait_for_load_state("load")
+        page.get_by_role("button", name="Sitzung beenden").click()
+        page.wait_for_url(f"{base_url}/deep-talk/")
+
+        page.get_by_role("link", name="Krisenmodus").click()
+        page.wait_for_url(f"{base_url}/krisenmodus/")
+        content = page.content()
+        assert "Notruf" in content and "112" in content
+        assert "Telefonseelsorge" in content
+        page.get_by_role("button", name="Krisenraum öffnen").click()
+        page.wait_for_url(re.compile(r".*/krisenmodus/\d+/"))
+        assert "Notruf" in page.content()
+        page.get_by_role("button", name="Krisenraum schließen").click()
+        page.wait_for_url(f"{base_url}/krisenmodus/")
+        assert "Notruf" in page.content()
+
         context.close()
         browser.close()

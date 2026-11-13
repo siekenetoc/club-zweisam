@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Krisenraum – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div>
+      <p class="text-sm uppercase tracking-[0.3em] text-red-400">Krisenraum</p>
+      <h1 class="mt-2 text-2xl font-semibold">Du musst hier nichts leisten.</h1>
+      <p class="mt-2 text-sm text-stone-400">
+        Geöffnet von {{ session.started_by.username }} am {{ session.started_at|date:"d.m.Y H:i" }}.
+        {% if session.ended_at %}Geschlossen am {{ session.ended_at|date:"d.m.Y H:i" }}.{% endif %}
+      </p>
+    </div>
+
+    {% include "crisis/_help.html" %}
+
+    {% if not session.ended_at %}
+      <form method="post" action="{% url 'crisis:end' session.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="rounded-md border border-stone-700 px-4 py-2 text-sm text-stone-300 hover:border-stone-500">Krisenraum schließen</button>
+      </form>
+    {% else %}
+      <p class="text-sm text-stone-500">Der Krisenraum ist geschlossen. Die Hilfsangebote bleiben sichtbar.</p>
+    {% endif %}
+
+    <p class="text-sm text-stone-500">
+      <a href="{% url 'crisis:index' %}" class="underline decoration-stone-600 underline-offset-4 hover:text-stone-300">Zurück zum Krisenmodus</a> · <a href="{% url 'clubroom:home' %}" class="underline decoration-stone-600 underline-offset-4 hover:text-stone-300">Zum Clubraum</a>
+    </p>
+  </section>
+{% endblock %}

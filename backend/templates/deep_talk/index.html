@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Deep Talk – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Deep Talk</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Leitfragen statt freiem Chat. Kein Punktesystem, keine Bewertung.
+          Ein Time-out ist immer erlaubt und braucht keine Begründung.
+        </p>
+      </div>
+      <a href="{% url 'crisis:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-300 hover:border-stone-500">
+        Krisenmodus
+      </a>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Gespräch</h2>
+        {% if talk_session %}
+          <p class="mt-2 text-sm text-stone-300">Aktive Sitzung seit {{ talk_session.started_at|date:"d.m.Y H:i" }}.</p>
+          <a href="{% url 'deep_talk:session' talk_session.pk %}" class="mt-3 inline-block rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Öffnen</a>
+        {% else %}
+          <p class="mt-2 text-sm text-stone-400">Raum für ein Gespräch mit Leitfragen.</p>
+          <form method="post" action="{% url 'deep_talk:start' 'talk' %}" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Gespräch starten</button>
+          </form>
+        {% endif %}
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Reparatur</h2>
+        {% if repair_session %}
+          <p class="mt-2 text-sm text-stone-300">Aktive Sitzung seit {{ repair_session.started_at|date:"d.m.Y H:i" }}.</p>
+          <a href="{% url 'deep_talk:session' repair_session.pk %}" class="mt-3 inline-block rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Öffnen</a>
+        {% else %}
+          <p class="mt-2 text-sm text-stone-400">Versöhnungskarten für festgefahrene Situationen.</p>
+          <form method="post" action="{% url 'deep_talk:start' 'repair' %}" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Reparatur starten</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if sessions %}
+      <div class="space-y-3">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Verlauf</h2>
+        <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+          {% for session in sessions %}
+            <a href="{% url 'deep_talk:session' session.pk %}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-stone-900">
+              <span>{{ session.get_mode_display }}</span>
+              <span class="text-xs text-stone-500">{{ session.started_at|date:"d.m.Y H:i" }} · {% if session.is_active %}aktiv{% else %}beendet{% endif %}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

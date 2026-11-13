@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M4 abgeschlossen; M5 (Deep Talk & Krisenmodus) in Arbeit.
+**Status:** M0 bis M5 abgeschlossen; M6 (Punkte & Belohnungen) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -70,6 +70,14 @@ Umgesetzt in M4:
 - Safe Mode puffert Benachrichtigungen und stellt sie beim Deaktivieren ohne Inhalt zu
 - Safe-Mode-Aktivierung erzeugt weder Feed-Eintrag noch Benachrichtigung
 
+Umgesetzt in M5:
+- Deep Talk mit Leitfragen und Reparaturmodus mit Versöhnungskarten
+- Time-out ohne Begründung, jederzeit und von jeder beteiligten Rolle
+- Kein freier Chat, keine Punkte, keine Feed- oder Benachrichtigungsseitenwirkungen
+- Krisenmodus als eigenes Sub-Modul mit eigener URL, eigenen Templates und ohne Gamification
+- Harte Verweise auf Notruf 112, Telefonseelsorge, Hilfetelefon Frauen und Männer
+- Krisenraum ohne Leitfragen und ohne Punkte; Hilfsangebote bleiben nach dem Schließen sichtbar
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -89,6 +97,8 @@ docker compose up --build
 - Playbook: <https://localhost/playbook/>
 - Lounge: <https://localhost/lounge/>
 - Logbuch: <https://localhost/logbuch/>
+- Deep Talk: <https://localhost/deep-talk/>
+- Krisenmodus: <https://localhost/krisenmodus/>
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 

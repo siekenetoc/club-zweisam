@@ -52,6 +52,8 @@ def home(request):
                     (MODULE_LABELS.get(module, module), bool(allowed))
                     for module, allowed in membership.module_permissions.items()
                 ],
+                "has_deep_talk": membership.has_module_access("deep_talk"),
+                "has_feed": membership.has_module_access("feed"),
             },
         )
 

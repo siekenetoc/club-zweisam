@@ -104,8 +104,9 @@
 
 ### deep_talk
 - `TalkSession`
-  - `clubroom`, `mode` (talk/repair/crisis)
+  - `clubroom`, `mode` (talk/repair/crisis), je Modus höchstens eine aktive Sitzung
   - `started_by`, `started_at`, `ended_at`
+  - `timeout_at`, `timeout_by` (Time-out ohne Begründung)
 - `TalkPrompt`
   - `session`, `text`, `answered: bool`
 

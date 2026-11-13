@@ -39,7 +39,7 @@ text
 ### Django (web)
 - WSGI via Gunicorn.
 - Apps: `accounts`, `clubroom`, `roulette`, `vitrine`, `wishes`, `playbook`,
-  `feed`, `lounge`, `points`, `deep_talk`, `admin_panel`, `pages`, `core`.
+  `feed`, `lounge`, `points`, `deep_talk`, `crisis`, `admin_panel`, `pages`, `core`.
 - `core` enthält: Feldverschlüsselungs-Mixin, Audit-Base, Permissions, Crypto-Helper.
 
 ### PostgreSQL (db)

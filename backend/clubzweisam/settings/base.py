@@ -66,6 +66,8 @@ INSTALLED_APPS = [
     "apps.playbook",
     "apps.feed",
     "apps.lounge",
+    "apps.deep_talk",
+    "apps.crisis",
 ]
 
 MIDDLEWARE = [

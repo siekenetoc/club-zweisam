@@ -7,7 +7,7 @@
 # Plan – Club Zweisam (v1.3)
 
 ## Status
-- **Aktueller Meilenstein:** M5 – Deep Talk + Krisenmodus
+- **Aktueller Meilenstein:** M6 – Punkte & Belohnungen
 - **Letzte Aktualisierung:** 2026-11-13
 
 ## Fortschritt
@@ -16,8 +16,8 @@
 - [x] M2 – Séparée (Roulette) + Vitrine (2026-11-13, autonom freigegeben)
 - [x] M3 – Concierge (Wünsche) + Playbook (Knistern) (2026-11-13, autonom freigegeben)
 - [x] M4 – Lounge (Status) + Logbuch (Feed) (2026-11-13, autonom freigegeben)
-- [ ] M5 – Deep Talk (Gespräch/Reparatur) + Krisenmodus (in Arbeit)
-- [ ] M6 – Punkte & Belohnungen
+- [x] M5 – Deep Talk (Gespräch/Reparatur) + Krisenmodus (2026-11-13, autonom freigegeben)
+- [ ] M6 – Punkte & Belohnungen (in Arbeit)
 - [ ] M7 – Admin-Backend
 - [ ] M8 – RTF-Seiten
 - [ ] M9 – Privacy Shield (Safe Mode)
