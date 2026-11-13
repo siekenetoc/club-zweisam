@@ -20,6 +20,7 @@ EVENT_CHALLENGE_STARTED = "challenge.started"
 EVENT_CHALLENGE_COMPLETED = "challenge.completed"
 EVENT_CHALLENGE_ABORTED = "challenge.aborted"
 EVENT_CHECKIN_CREATED = "checkin.created"
+EVENT_BREAK_GLASS_ACCESS = "break_glass.access"
 
 EVENT_CHOICES = (
     (EVENT_CLUBROOM_CREATED, "Clubraum gegründet"),
@@ -38,6 +39,7 @@ EVENT_CHOICES = (
     (EVENT_CHALLENGE_COMPLETED, "Challenge abgeschlossen"),
     (EVENT_CHALLENGE_ABORTED, "Challenge abgebrochen"),
     (EVENT_CHECKIN_CREATED, "Check-in"),
+    (EVENT_BREAK_GLASS_ACCESS, "Admin-Zugriff protokolliert"),
 )
 
 SENSITIVE_METADATA_KEYS = frozenset(

@@ -17,6 +17,7 @@ urlpatterns = [
     path("deep-talk/", include("apps.deep_talk.urls")),
     path("krisenmodus/", include("apps.crisis.urls")),
     path("punkte/", include("apps.points.urls")),
+    path("management/", include("apps.admin_panel.urls")),
     path("healthz", HealthView.as_view(), name="healthz"),
     path("admin/", admin.site.urls),
     re_path(

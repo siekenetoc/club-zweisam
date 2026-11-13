@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M6 abgeschlossen; M7 (Admin-Backend) in Arbeit.
+**Status:** M0 bis M7 abgeschlossen; M8 (RTF-Seiten) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -88,6 +88,15 @@ Umgesetzt in M6:
 - Anerkennung für Gäste, ohne Vermischung mit der Dyade
 - Keine Punkte-Ereignisse im Logbuch (Schutz vor Preisgabe von Belohnungstiteln)
 
+Umgesetzt in M7:
+- Admin-Dashboard unter `/management/` mit Aggregaten und Banner „Zugriff protokolliert"
+- CRUD über Django-Admin für Decks, Fragen, Belohnungen und Challenges
+- Nutzer-, Clubraum- und Mitgliedschaftsverwaltung ohne Safeword-Anzeige
+- Audit-Log im Admin read-only, append-only mit Hash-Chain
+- Break-Glass mit Vier-Augen-Prinzip, 24-Stunden-Fenster und Pflichtbegründung
+- Break-Glass ist für Geheimantworten, Grenzen und Wünsche technisch gesperrt
+- Jeder Break-Glass-Zugriff erzeugt Audit-Eintrag und inhaltslose Nutzer-Benachrichtigung
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -96,6 +105,7 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 # POSTGRES_PASSWORD ebenfalls ersetzen.
 
 docker compose up --build
+docker compose exec web python manage.py createsuperuser  # Verwaltung
 ```
 
 - Web: <https://localhost> (TLS über Caddys interne CA)
@@ -110,6 +120,7 @@ docker compose up --build
 - Deep Talk: <https://localhost/deep-talk/>
 - Krisenmodus: <https://localhost/krisenmodus/>
 - Punkte: <https://localhost/punkte/>
+- Verwaltung: <https://localhost/management/> (Staff) und <https://localhost/admin/>
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 

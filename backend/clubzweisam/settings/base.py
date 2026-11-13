@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "apps.deep_talk",
     "apps.crisis",
     "apps.points",
+    "apps.admin_panel",
 ]
 
 MIDDLEWARE = [

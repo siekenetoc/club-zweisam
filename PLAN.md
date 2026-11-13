@@ -7,7 +7,7 @@
 # Plan – Club Zweisam (v1.3)
 
 ## Status
-- **Aktueller Meilenstein:** M7 – Admin-Backend
+- **Aktueller Meilenstein:** M8 – RTF-Seiten
 - **Letzte Aktualisierung:** 2026-11-13
 
 ## Fortschritt
@@ -18,8 +18,8 @@
 - [x] M4 – Lounge (Status) + Logbuch (Feed) (2026-11-13, autonom freigegeben)
 - [x] M5 – Deep Talk (Gespräch/Reparatur) + Krisenmodus (2026-11-13, autonom freigegeben)
 - [x] M6 – Punkte & Belohnungen (2026-11-13, autonom freigegeben)
-- [ ] M7 – Admin-Backend (in Arbeit)
-- [ ] M8 – RTF-Seiten
+- [x] M7 – Admin-Backend (2026-11-13, autonom freigegeben)
+- [ ] M8 – RTF-Seiten (in Arbeit)
 - [ ] M9 – Privacy Shield (Safe Mode)
 - [ ] M10 – Härtung & Abschluss
 

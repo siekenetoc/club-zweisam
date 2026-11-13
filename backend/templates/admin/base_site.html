@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | Club Zweisam{% endblock %}
+
+{% block branding %}
+  <div id="site-name">
+    <a href="{% url 'admin:index' %}">Club Zweisam · Verwaltung</a>
+  </div>
+  <div style="margin-top: 6px; padding: 6px 10px; border: 1px solid #b45309; background: #451a03; color: #fcd34d; font-size: 12px; border-radius: 4px;">
+    Zugriff protokolliert. Alle administrativen Aktionen werden auditiert.
+  </div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

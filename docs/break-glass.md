@@ -27,6 +27,10 @@ protokolliert und den betroffenen Nutzern gemeldet.
 6. **Kein stiller Zugriff**. Bei Ausbleiben der Bestätigung: Antrag verfällt.
 
 ## Technische Umsetzung
+- Umsetzung im Admin-Backend unter `/management/break-glass/` (nur Super-Admins).
+- Erlaubt sind nur Metadaten und beidseitig freigegebene Einträge; Geheimantworten,
+  Grenzen und Wünsche sind technisch gesperrt.
+- Benachrichtigung an betroffene Clubraum-Mitglieder erfolgt inhaltslos.
 - `BreakGlassRequest`-Modell mit Status-Machine (pending/approved/used/expired).
 - Django-Permission-Check: Lesezugriff auf geschützte Modelle nur, wenn ein
   gültiger `BreakGlassRequest` für `target_type` und `target_id` vorliegt UND

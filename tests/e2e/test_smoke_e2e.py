@@ -158,5 +158,10 @@ def test_registration_and_clubroom_creation():
         page.wait_for_url(f"{base_url}/krisenmodus/")
         assert "Notruf" in page.content()
 
+        page.goto(f"{base_url}/admin/", wait_until="load")
+        content = page.content()
+        assert "Zugriff protokolliert" in content
+        assert "Club Zweisam · Verwaltung" in content
+
         context.close()
         browser.close()

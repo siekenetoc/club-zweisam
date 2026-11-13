@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Break-Glass – Verwaltung{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="rounded-md border border-amber-800 bg-amber-950/40 px-4 py-3 text-sm text-amber-200">
+      Zugriff protokolliert. Jeder Break-Glass-Vorgang erzeugt Audit-Einträge und
+      benachrichtigt betroffene Nutzer ohne Inhalte.
+    </div>
+
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Super-Admin</p>
+        <h1 class="mt-2 text-2xl font-semibold">Break-Glass-Anträge</h1>
+        <p class="mt-2 max-w-2xl text-sm text-stone-400">
+          Nur Metadaten und beidseitig freigegebene Einträge. Geheimantworten,
+          Grenzen und private Wünsche bleiben gesperrt.
+        </p>
+      </div>
+      <a href="{% url 'admin_panel:dashboard' %}" class="text-sm text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">Zurück</a>
+    </div>
+
+    <form method="post" class="max-w-lg space-y-4 rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      {% csrf_token %}
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Antrag stellen</h2>
+      {% for error in form.non_field_errors %}
+        <p class="rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">{{ error }}</p>
+      {% endfor %}
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}
+            <p class="mt-1 text-xs text-red-300">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Antrag stellen</button>
+    </form>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Anträge</h2>
+      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        {% for item in requests %}
+          <div class="space-y-2 px-4 py-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-sm text-stone-200">{{ item.get_target_type_display|default:item.target_type }} · ID {{ item.target_id }}</p>
+              <span class="text-xs text-stone-400">{{ item.status }}</span>
+            </div>
+            <p class="text-xs text-stone-500">
+              Beantragt von {{ item.requested_by.username }}{% if item.approved_by %} · bestätigt von {{ item.approved_by.username }}{% endif %}
+              {% if item.expires_at %} · gültig bis {{ item.expires_at|date:"d.m.Y H:i" }}{% endif %}
+            </p>
+            {% if item.status == "pending" and item.requested_by != user %}
+              <form method="post" action="{% url 'admin_panel:break_glass_approve' item.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500">Bestätigen</button>
+              </form>
+            {% elif item.is_usable %}
+              <form method="post" action="{% url 'admin_panel:break_glass_use' item.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="rounded-md border border-amber-700 px-3 py-1.5 text-xs text-amber-200 hover:border-amber-500">Zugriff ausüben</button>
+              </form>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p class="px-4 py-6 text-sm text-stone-500">Keine Anträge.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Verwaltung – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="rounded-md border border-amber-800 bg-amber-950/40 px-4 py-3 text-sm text-amber-200">
+      Zugriff protokolliert. Alle administrativen Aktionen werden im Audit-Log erfasst.
+    </div>
+
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Verwaltung</p>
+        <h1 class="mt-2 text-3xl font-semibold">Dashboard</h1>
+        <p class="mt-2 text-stone-400">Nur Aggregate. Keine Geheimantworten, Grenzen oder privaten Wünsche.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a href="/admin/" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">Django-Admin</a>
+        {% if is_superuser %}
+          <a href="{% url 'admin_panel:break_glass' %}" class="rounded-full bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Break-Glass</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <dl class="grid gap-4 sm:grid-cols-3">
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Nutzer</dt>
+        <dd class="mt-2 text-2xl font-semibold">{{ user_count }}</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Clubräume</dt>
+        <dd class="mt-2 text-2xl font-semibold">{{ clubroom_count }}</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Aktive Mitgliedschaften</dt>
+        <dd class="mt-2 text-2xl font-semibold">{{ active_memberships }}</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Wünsche</dt>
+        <dd class="mt-2 text-2xl font-semibold">{{ wish_count }}</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Matches</dt>
+        <dd class="mt-2 text-2xl font-semibold">{{ match_count }}</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Challenges</dt>
+        <dd class="mt-2 text-2xl font-semibold">{{ challenge_count }}</dd>
+      </div>
+    </dl>
+
+    {% if is_superuser %}
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Break-Glass</h2>
+        <p class="mt-2 text-sm text-stone-300">{{ pending_break_glass }} offene Anträge.</p>
+        <p class="mt-1 text-xs text-stone-500">Vier-Augen-Prinzip, 24 Stunden, Nutzer-Benachrichtigung.</p>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}
