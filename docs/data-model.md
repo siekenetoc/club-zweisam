@@ -45,8 +45,11 @@
 - `Match`
   - `round`, `question`, `user_a`, `user_b`
   - `result` (full/partial/none)
+  - `boundary_a: bool`, `boundary_b: bool` (Grenze gesetzt, Inhalt nie sichtbar)
   - `released_by_a: bool`, `released_by_b: bool`
   - `released_at` – erst nach beidseitiger Freigabe sichtbar
+- `DeckOptIn`
+  - `clubroom`, `deck`, `user` (nur für `requires_opt_in`-Decks, z. B. Deck D)
 
 ### vitrine
 - `Commonality`
@@ -121,8 +124,9 @@
 - `SafeModeMixin` – Flag + Queue-Logik
 
 ## Lösch- und Aufbewahrungsregeln
-- `SecretAnswer`: gelöscht (Inhalt), sobald Match beidseitig freigegeben ODER
-  nach 30 Tagen bei Nicht-Match.
+- `SecretAnswer`: Inhalt gelöscht beim Rundenende, spätestens nach 30 Tagen.
+  `Match` bleibt mit Ergebnis und Freigabe-Flags erhalten.
+- `Match(result=none)`: nach 30 Tagen gelöscht (`roulette_purge`).
 - `Match`: bleibt (Ergebnis), Antworten weg.
 - `Wish(rejected)`: nach 90 Tagen Inhalte gelöscht, Metadaten bleiben.
 - `FeedEvent`: auf Nutzerwunsch → `deleted_at`, Anzeige „Eintrag entfernt".

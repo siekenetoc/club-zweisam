@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 
 import pytest
@@ -57,6 +58,18 @@ def test_registration_and_clubroom_creation():
         content = page.content()
         assert room_name in content
         assert "Hauptmitglied" in content
+
+        page.get_by_role("link", name="Séparée").click()
+        page.wait_for_url(f"{base_url}/separee/")
+        assert "Deck A" in page.content()
+        page.get_by_role("button", name="Runde starten").first.click()
+        page.wait_for_url(re.compile(r".*/separee/runde/\d+/"))
+        first_answer_form = page.locator("form[action*='/antwort/']").first
+        first_answer_form.locator("input[value='ja']").check()
+        first_answer_form.get_by_role("button", name="Antwort speichern").click()
+        page.wait_for_load_state("load")
+        assert "Antwort gespeichert" in page.content()
+        assert "Warte auf die Antwort" in page.content()
 
         context.close()
         browser.close()

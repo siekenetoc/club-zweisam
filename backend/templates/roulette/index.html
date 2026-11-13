@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Séparée – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Séparée</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Geheime Antworten, vorgegebene Antworten, serverseitiger Match.
+          Antworten bleiben verborgen, bis beide freigeben.
+        </p>
+      </div>
+      <a href="{% url 'vitrine:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+        Zur Vitrine
+      </a>
+    </div>
+
+    {% if active_round %}
+      <a href="{% url 'roulette:round' active_round.pk %}" class="block rounded-lg border border-amber-800 bg-amber-950/30 p-5 hover:border-amber-600">
+        <p class="text-xs uppercase tracking-widest text-amber-500">Laufende Runde</p>
+        <p class="mt-1 text-lg font-medium">{{ active_round.deck.title }}</p>
+        <p class="text-sm text-stone-400">Gestartet von {{ active_round.started_by.username }} am {{ active_round.started_at|date:"d.m.Y H:i" }}</p>
+      </a>
+    {% endif %}
+
+    <div class="space-y-4">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Decks</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {% for item in decks %}
+          <div class="flex flex-col gap-3 rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+            <div>
+              <p class="text-xs uppercase tracking-widest text-stone-500">Deck {{ item.deck.code }} · Intensität {{ item.deck.intensity }}</p>
+              <h3 class="mt-1 text-lg font-medium">{{ item.deck.title }}</h3>
+              <p class="mt-1 text-sm text-stone-400">{{ item.deck.description }}</p>
+            </div>
+
+            {% if item.deck.requires_opt_in %}
+              <div class="rounded-md border border-stone-800 bg-stone-950/60 px-3 py-2 text-xs text-stone-400">
+                Opt-in erforderlich.
+                {% if item.opted %}
+                  Beide Hauptmitglieder haben zugestimmt.
+                {% elif item.own_opted %}
+                  Dein Opt-in liegt vor; das Gegenüber fehlt noch.
+                {% else %}
+                  Noch keine Zustimmung von dir.
+                {% endif %}
+              </div>
+              {% if not item.own_opted %}
+                <form method="post" action="{% url 'roulette:opt_in' item.deck.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">
+                    Opt-in für dieses Deck
+                  </button>
+                </form>
+              {% endif %}
+            {% endif %}
+
+            {% if not active_round %}
+              <form method="post" action="{% url 'roulette:start' item.deck.pk %}">
+                {% csrf_token %}
+                <button type="submit" {% if not item.can_start %}disabled{% endif %} class="w-full rounded-md px-3 py-2 text-sm font-medium {% if item.can_start %}bg-amber-500 text-stone-950 hover:bg-amber-400{% else %}cursor-not-allowed bg-stone-800 text-stone-500{% endif %}">
+                  Runde starten
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

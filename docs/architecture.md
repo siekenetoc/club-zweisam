@@ -94,9 +94,9 @@ text
   unzugänglich (Permission-Ebene).
 
 ### 6. Datenminimierung
-- Nach Match-Auflösung: Geheimantworten werden gelöscht, nur Match-Ergebnis
-  und Sichtbarkeits-Flag bleiben.
-- Nicht-Matches: 30 Tage, dann gelöscht.
+- Matches: Antworten bleiben bis zum Rundenende sichtbar, spätestens 30 Tage;
+  danach werden nur Match-Ergebnis und Freigabe-Flags behalten.
+- Nicht-Matches: 30 Tage, dann werden Antworten und Match-Metadaten gelöscht.
 - Abgelehnte Wünsche: 90 Tage, dann Inhalte gelöscht, nur Metadaten.
 
 ### 7. Benachrichtigungen

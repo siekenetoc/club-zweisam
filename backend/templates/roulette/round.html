@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{{ round.deck.title }} – Séparée{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-2xl font-semibold">Deck {{ round.deck.code }} – {{ round.deck.title }}</h1>
+        <p class="mt-1 text-sm text-stone-400">
+          Gestartet von {{ round.started_by.username }} am {{ round.started_at|date:"d.m.Y H:i" }}.
+          {% if not round.is_active %}Runde beendet.{% endif %}
+        </p>
+      </div>
+      {% if round.is_active %}
+        <form method="post" action="{% url 'roulette:close' round.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="rounded-full border border-stone-700 px-4 py-2 text-xs text-stone-300 hover:border-red-700 hover:text-red-300">
+            Runde beenden
+          </button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="space-y-4">
+      {% for state in states %}
+        <article class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <h2 class="max-w-xl font-medium">{{ state.question.text }}</h2>
+            <span class="text-xs uppercase tracking-widest text-stone-500">Frage {{ state.question.order }}</span>
+          </div>
+
+          {% if state.match and state.is_released %}
+            <div class="mt-4 space-y-3">
+              <p class="text-sm {% if state.match.result == 'none' %}text-stone-300{% else %}text-amber-300{% endif %}">
+                {{ state.result_label }}
+              </p>
+              {% if state.boundary_respected %}
+                <p class="rounded-md border border-stone-700 bg-stone-950/60 px-3 py-2 text-sm text-stone-300">
+                  Grenze respektiert. Weitere Inhalte werden nicht geteilt.
+                </p>
+              {% endif %}
+              {% if state.match.result != 'none' %}
+                <div class="grid gap-2 text-sm sm:grid-cols-2">
+                  <div class="rounded-md border border-stone-800 bg-stone-950/50 px-3 py-2">
+                    <p class="text-xs text-stone-500">Deine Antwort</p>
+                    <p class="mt-1">{{ state.own_label|default:"–" }}</p>
+                  </div>
+                  <div class="rounded-md border border-stone-800 bg-stone-950/50 px-3 py-2">
+                    <p class="text-xs text-stone-500">Antwort von {{ state.partner_name }}</p>
+                    <p class="mt-1">{{ state.partner_label|default:"–" }}</p>
+                  </div>
+                </div>
+                {% if state.answers_deleted %}
+                  <p class="text-xs text-stone-500">Antworten wurden nach dem Rundenende gelöscht.</p>
+                {% endif %}
+              {% endif %}
+            </div>
+          {% elif state.match %}
+            <div class="mt-4 space-y-3">
+              <p class="text-sm text-stone-300">Beide haben geantwortet. Die Freigabe steht aus.</p>
+              {% if state.own %}
+                <p class="text-sm text-stone-400">Deine Antwort: {{ state.own_label|default:"Grenze gesetzt" }}</p>
+              {% endif %}
+              {% if state.can_release %}
+                <form method="post" action="{% url 'roulette:release' state.match.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
+                    Antworten freigeben
+                  </button>
+                </form>
+              {% elif state.own_released %}
+                <p class="text-xs text-stone-500">Du hast freigegeben. Warte auf {{ state.partner_name }}.</p>
+              {% elif not round.is_active %}
+                <p class="text-xs text-stone-500">Runde beendet, ohne dass beide freigegeben haben. Inhalte bleiben verborgen.</p>
+              {% endif %}
+            </div>
+          {% elif state.own %}
+            <div class="mt-4 space-y-2">
+              <p class="text-sm text-stone-300">
+                {% if state.own.is_boundary %}Grenze gesetzt – der Inhalt wird nicht geteilt.{% else %}Deine Antwort: {{ state.own_label }}{% endif %}
+              </p>
+              <p class="text-xs text-stone-500">Warte auf die Antwort deines Gegenübers.</p>
+            </div>
+          {% elif round.is_active %}
+            <form method="post" action="{% url 'roulette:answer' round.pk state.question.pk %}" class="mt-4 space-y-3">
+              {% csrf_token %}
+              <div class="flex flex-wrap gap-4">
+                {% for value, label in state.question.answer_choices %}
+                  <label class="flex items-center gap-2 text-sm text-stone-300">
+                    <input type="radio" name="answer" value="{{ value }}" class="h-4 w-4 border-stone-600 bg-stone-900 text-amber-500 focus:ring-amber-500" required />
+                    {{ label }}
+                  </label>
+                {% endfor %}
+              </div>
+              <label class="flex items-center gap-2 text-xs text-stone-400">
+                <input type="checkbox" name="is_boundary" class="h-4 w-4 rounded border-stone-600 bg-stone-900 text-amber-500 focus:ring-amber-500" />
+                Das ist meine Grenze – Inhalt nicht teilen
+              </label>
+              <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+                Antwort speichern
+              </button>
+            </form>
+          {% else %}
+            <p class="mt-4 text-sm text-stone-500">Keine Antwort gespeichert.</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

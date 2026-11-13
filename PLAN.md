@@ -7,14 +7,14 @@
 # Plan – Club Zweisam (v1.3)
 
 ## Status
-- **Aktueller Meilenstein:** M2 – Séparée (Roulette) + Vitrine
+- **Aktueller Meilenstein:** M3 – Concierge (Wünsche) + Playbook (Knistern)
 - **Letzte Aktualisierung:** 2026-11-13
 
 ## Fortschritt
 - [x] M0 – Setup & Grundgerüst (2026-11-13, freigegeben)
 - [x] M1 – Auth & Clubraum (2026-11-13, autonom freigegeben)
-- [ ] M2 – Séparée (Roulette) + Vitrine (in Arbeit)
-- [ ] M3 – Concierge (Wünsche) + Playbook (Knistern)
+- [x] M2 – Séparée (Roulette) + Vitrine (2026-11-13, autonom freigegeben)
+- [ ] M3 – Concierge (Wünsche) + Playbook (Knistern) (in Arbeit)
 - [ ] M4 – Lounge (Status) + Logbuch (Feed)
 - [ ] M5 – Deep Talk (Gespräch/Reparatur) + Krisenmodus
 - [ ] M6 – Punkte & Belohnungen

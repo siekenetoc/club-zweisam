@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 und M1 abgeschlossen; M2 (Séparée & Vitrine) in Arbeit.
+**Status:** M0 bis M2 abgeschlossen; M3 (Concierge & Playbook) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -41,6 +41,16 @@ Umgesetzt in M1:
 - Höchstens zwei Hauptmitglieder und eine aktive Mitgliedschaft pro Nutzer
 - Mitglieder-Entfernung durch Hauptmitglieder (nicht für Hauptmitglieder selbst)
 
+Umgesetzt in M2:
+- Séparée mit vier Decks (A Reden, B Kuscheln, C Rollenspiel, D Sexuelle Vorlieben) und 40 Karten
+- Vorgegebene Antworten (Ja/Vielleicht/Nein), serverseitiger Match mit Voll-/Teilmatch-Regeln
+- Beidseitiger Freigabe-Schalter: Antworten erscheinen erst nach Freigabe beider Seiten
+- Grenzschutz: Grenzen erscheinen nur als „Grenze respektiert", nie als Inhalt
+- Feldverschlüsselte `SecretAnswer`, Löschung bei Rundenende und nach 30 Tagen
+- Nicht-Matches werden nach 30 Tagen entfernt (`manage.py roulette_purge`)
+- Opt-in beider Hauptmitglieder für Deck D
+- Vitrine mit Gemeinsamkeiten ausschließlich aus beidseitig freigegebenen Matches
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -54,11 +64,15 @@ docker compose up --build
 - Web: <https://localhost> (TLS über Caddys interne CA)
 - Registrieren: <https://localhost/registrieren/>
 - Anmelden: <https://localhost/anmelden/>
+- Séparée: <https://localhost/separee/>
+- Vitrine: <https://localhost/vitrine/>
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 
 Einladungen laufen standardmäßig nach 7 Tagen ab (`INVITATION_TTL_DAYS` in `.env`).
 Die Einladungs-E-Mail enthält nur den Annahme-Link, keine Geheiminhalte.
+Geheimantworten werden nach 30 Tagen bzw. beim Rundenende gelöscht
+(`ROULETTE_ANSWER_RETENTION_DAYS`, `manage.py roulette_purge`).
 
 Caddy verwendet in Dev ein internes Zertifikat. Der Browser warnt beim ersten
 Aufruf. Root-Zertifikat zum Importieren:

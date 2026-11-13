@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Vitrine – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Vitrine</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Gemeinsamkeiten entstehen nur aus beidseitig freigegebenen Matches.
+          Grenzen und Nicht-Matches erscheinen hier nicht.
+        </p>
+      </div>
+      <a href="{% url 'roulette:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+        Zur Séparée
+      </a>
+    </div>
+
+    {% if entries %}
+      <div class="space-y-3">
+        {% for entry in entries %}
+          <article class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+            <p class="text-xs uppercase tracking-widest text-stone-500">{{ entry.category }}</p>
+            <h2 class="mt-2 font-medium">{{ entry.question }}</h2>
+            <p class="mt-1 text-sm text-amber-300">{{ entry.result }}</p>
+            <p class="mt-1 text-xs text-stone-500">{{ entry.created_at|date:"d.m.Y" }}</p>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-6 text-sm text-stone-400">
+        Noch keine Gemeinsamkeit. Startet eine Runde in der Séparée und gebt
+        einen Match gemeinsam frei.
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}
