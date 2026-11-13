@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 (Setup & Grundgerüst) umgesetzt – Freigabe für M1 offen.
+**Status:** M0 freigegeben; M1 (Auth & Clubraum) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn

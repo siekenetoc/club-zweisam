@@ -7,12 +7,12 @@
 # Plan – Club Zweisam (v1.3)
 
 ## Status
-- **Aktueller Meilenstein:** M0 – umgesetzt, Freigabe ausstehend
+- **Aktueller Meilenstein:** M1 – Auth & Clubraum
 - **Letzte Aktualisierung:** 2026-11-13
 
 ## Fortschritt
-- [x] M0 – Setup & Grundgerüst (2026-11-13)
-- [ ] M1 – Auth & Clubraum
+- [x] M0 – Setup & Grundgerüst (2026-11-13, freigegeben)
+- [ ] M1 – Auth & Clubraum (in Arbeit)
 - [ ] M2 – Séparée (Roulette) + Vitrine
 - [ ] M3 – Concierge (Wünsche) + Playbook (Knistern)
 - [ ] M4 – Lounge (Status) + Logbuch (Feed)
