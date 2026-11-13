@@ -5,6 +5,15 @@ from django.utils import timezone
 from apps.clubroom.models import Membership
 from apps.clubroom.permissions import OWNER
 from apps.core.audit import AuditEntry
+from apps.feed.models import (
+    EVENT_WISH_CONFIRMED,
+    EVENT_WISH_CREATED,
+    EVENT_WISH_DECIDED,
+    EVENT_WISH_FULFILLED,
+    EVENT_WISH_RESPONDED,
+    EVENT_WISH_SHARED,
+)
+from apps.feed.services import record_event
 from apps.vitrine.models import SOURCE_WISH
 from apps.vitrine.services import record_commonality
 from apps.wishes.models import (
@@ -99,6 +108,15 @@ def create_wish(
             type=wish_type,
             private=is_private,
         )
+        record_event(
+            clubroom=clubroom,
+            event_type=EVENT_WISH_CREATED,
+            actor=user,
+            target_type="wishes.wish",
+            target_id=wish.pk,
+            metadata={"type": wish_type},
+            notify=not is_private,
+        )
         return wish
 
 
@@ -115,6 +133,13 @@ def share_wish(*, wish: Wish, user) -> Wish:
         wish.save(update_fields=["is_private", "status", "updated_at"])
         _audit(
             "wish.share",
+            actor=user,
+            target_type="wishes.wish",
+            target_id=wish.pk,
+        )
+        record_event(
+            clubroom=wish.clubroom,
+            event_type=EVENT_WISH_SHARED,
             actor=user,
             target_type="wishes.wish",
             target_id=wish.pk,
@@ -173,6 +198,14 @@ def respond_to_wish(*, wish: Wish, user, action: str, note: str = "") -> WishRes
             target_id=wish.pk,
             action=action,
         )
+        record_event(
+            clubroom=wish.clubroom,
+            event_type=EVENT_WISH_RESPONDED,
+            actor=user,
+            target_type="wishes.wish",
+            target_id=wish.pk,
+            metadata={"action": action},
+        )
         return response
 
 
@@ -197,6 +230,14 @@ def requester_decide(*, wish: Wish, user, accept: bool) -> Wish:
             target_id=wish.pk,
             accepted=accept,
         )
+        record_event(
+            clubroom=wish.clubroom,
+            event_type=EVENT_WISH_DECIDED,
+            actor=user,
+            target_type="wishes.wish",
+            target_id=wish.pk,
+            metadata={"accepted": accept},
+        )
         return wish
 
 
@@ -213,6 +254,13 @@ def mark_fulfilled(*, wish: Wish, user) -> Wish:
         wish.save(update_fields=["status", "fulfilled_at", "updated_at"])
         _audit(
             "wish.fulfilled",
+            actor=user,
+            target_type="wishes.wish",
+            target_id=wish.pk,
+        )
+        record_event(
+            clubroom=wish.clubroom,
+            event_type=EVENT_WISH_FULFILLED,
             actor=user,
             target_type="wishes.wish",
             target_id=wish.pk,
@@ -243,6 +291,13 @@ def confirm_fulfilled(*, wish: Wish, user) -> Wish:
             )
         _audit(
             "wish.confirm",
+            actor=user,
+            target_type="wishes.wish",
+            target_id=wish.pk,
+        )
+        record_event(
+            clubroom=wish.clubroom,
+            event_type=EVENT_WISH_CONFIRMED,
             actor=user,
             target_type="wishes.wish",
             target_id=wish.pk,

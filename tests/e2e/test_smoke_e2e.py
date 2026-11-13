@@ -98,5 +98,30 @@ def test_registration_and_clubroom_creation():
         page.wait_for_load_state("load")
         assert "Challenge gemeinsam abgeschlossen" in page.content()
 
+        page.goto(f"{base_url}/", wait_until="load")
+        page.get_by_role("link", name="Lounge").click()
+        page.wait_for_url(f"{base_url}/lounge/")
+        page.locator("input[name='mood'][value='4']").check()
+        page.locator("input[name='energy'][value='3']").check()
+        page.locator("input[name='closeness'][value='5']").check()
+        page.get_by_role("button", name="Check-in speichern").click()
+        page.wait_for_load_state("load")
+        content = page.content()
+        assert "Check-in gespeichert" in content
+        assert "Stimmung 4/5" in content
+        page.get_by_role("button", name="Safe Mode aktivieren").click()
+        page.wait_for_load_state("load")
+        assert "Safe Mode aktiv" in page.content()
+        page.get_by_role("button", name="Safe Mode deaktivieren").click()
+        page.wait_for_load_state("load")
+        assert "Safe Mode deaktiviert" in page.content()
+
+        page.goto(f"{base_url}/", wait_until="load")
+        page.get_by_role("link", name="Logbuch").click()
+        page.wait_for_url(f"{base_url}/logbuch/")
+        content = page.content()
+        assert "Challenge abgeschlossen" in content
+        assert "Check-in" in content
+
         context.close()
         browser.close()

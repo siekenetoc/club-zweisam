@@ -6,6 +6,12 @@ from django.utils import timezone
 from apps.clubroom.models import Clubroom, Membership
 from apps.clubroom.permissions import OWNER
 from apps.core.audit import AuditEntry
+from apps.feed.models import (
+    EVENT_CHALLENGE_ABORTED,
+    EVENT_CHALLENGE_COMPLETED,
+    EVENT_CHALLENGE_STARTED,
+)
+from apps.feed.services import record_event
 from apps.playbook.models import Challenge, ChallengeRun, PlaybookOptIn
 
 
@@ -119,6 +125,14 @@ def start_challenge(*, clubroom: Clubroom, challenge: Challenge, user) -> Challe
             challenge_id=challenge.pk,
             stage=challenge.consent_stage,
         )
+        record_event(
+            clubroom=clubroom,
+            event_type=EVENT_CHALLENGE_STARTED,
+            actor=user,
+            target_type="playbook.challengerun",
+            target_id=run.pk,
+            metadata={"stage": challenge.consent_stage},
+        )
         return run
 
 
@@ -156,6 +170,14 @@ def confirm_run(*, run: ChallengeRun, user) -> ChallengeRun:
             target_id=run.pk,
             completed=run.is_completed,
         )
+        if run.is_completed:
+            record_event(
+                clubroom=run.clubroom,
+                event_type=EVENT_CHALLENGE_COMPLETED,
+                actor=user,
+                target_type="playbook.challengerun",
+                target_id=run.pk,
+            )
         return run
 
 
@@ -172,6 +194,13 @@ def abort_run(*, run: ChallengeRun, user) -> ChallengeRun:
         run.save(update_fields=["aborted_at", "aborted_by", "updated_at"])
         _audit(
             "playbook.run.abort",
+            actor=user,
+            target_type="playbook.challengerun",
+            target_id=run.pk,
+        )
+        record_event(
+            clubroom=run.clubroom,
+            event_type=EVENT_CHALLENGE_ABORTED,
             actor=user,
             target_type="playbook.challengerun",
             target_id=run.pk,

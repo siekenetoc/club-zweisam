@@ -86,8 +86,11 @@
 ### feed
 - `FeedEvent`
   - `clubroom`, `event_type`, `actor` (nullable), `target_type`, `target_id`
-  - `metadata: JSONField` (nur nicht-sensible Felder)
-  - `deleted_at` (auf Nutzerwunsch, dann Platzhalter „Eintrag entfernt")
+  - `metadata: JSONField` (nur nicht-sensible Felder, sensible Schlüssel werden verworfen)
+  - `deleted_at` (auf Nutzerwunsch, dann Platzhalter „Eintrag entfernt", Metadaten geleert)
+- `Notification`
+  - `user`, `clubroom`, `event_type` (kein Inhalt), `queued_during_safe_mode`
+  - `delivered_at` (null = im Safe Mode gepuffert)
 
 ### points
 - `Ledger`
@@ -122,6 +125,13 @@
   - `is_published`, `updated_at`, `updated_by`
 - `PageMedia`
   - `page`, `file`, `alt_text`, `uploaded_at`
+
+### lounge
+- `CheckIn`
+  - `clubroom`, `user`, `date`, `mood`, `energy`, `closeness` (je 1–5)
+  - eindeutig pro Nutzer, Clubraum und Tag
+- `WeeklyReviewOptIn`
+  - `clubroom`, `user` (Opt-in für persönlichen Wochenrückblick)
 
 ### core
 - `EncryptedTextField` – Feld-Mixin

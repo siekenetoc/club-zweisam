@@ -8,6 +8,12 @@ from django.utils import timezone
 from apps.clubroom.models import Clubroom, Membership
 from apps.clubroom.permissions import OWNER
 from apps.core.audit import AuditEntry
+from apps.feed.models import (
+    EVENT_MATCH_RELEASED,
+    EVENT_ROUND_ENDED,
+    EVENT_ROUND_STARTED,
+)
+from apps.feed.services import record_event
 from apps.roulette.models import (
     ANSWER_LABELS,
     RESULT_FULL,
@@ -101,6 +107,14 @@ def start_round(*, clubroom: Clubroom, deck: Deck, user) -> Round:
             target_type="roulette.round",
             target_id=round_obj.pk,
             deck=deck.code,
+        )
+        record_event(
+            clubroom=clubroom,
+            event_type=EVENT_ROUND_STARTED,
+            actor=user,
+            target_type="roulette.round",
+            target_id=round_obj.pk,
+            metadata={"deck": deck.code},
         )
         return round_obj
 
@@ -235,6 +249,15 @@ def release_match(*, match: Match, user) -> Match:
             target_id=match.pk,
             released=bool(match.released_at),
         )
+        if match.released_at is not None:
+            record_event(
+                clubroom=match.round.clubroom,
+                event_type=EVENT_MATCH_RELEASED,
+                actor=user,
+                target_type="roulette.match",
+                target_id=match.pk,
+                metadata={"result": match.result},
+            )
         return match
 
 
@@ -251,6 +274,13 @@ def end_round(*, round_obj: Round, user) -> Round:
         )
         _audit(
             "roulette.round.end",
+            actor=user,
+            target_type="roulette.round",
+            target_id=round_obj.pk,
+        )
+        record_event(
+            clubroom=round_obj.clubroom,
+            event_type=EVENT_ROUND_ENDED,
             actor=user,
             target_type="roulette.round",
             target_id=round_obj.pk,

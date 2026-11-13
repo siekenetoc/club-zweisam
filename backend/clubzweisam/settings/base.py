@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     "apps.vitrine",
     "apps.wishes",
     "apps.playbook",
+    "apps.feed",
+    "apps.lounge",
 ]
 
 MIDDLEWARE = [

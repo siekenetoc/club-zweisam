@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Logbuch – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Logbuch</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Chronik ohne Geheiminhalte. Ereignistypen und Beteiligte, keine
+          Antworten, Wunschtexte oder Grenzen.
+        </p>
+      </div>
+      <a href="{% url 'lounge:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+        Zur Lounge
+      </a>
+    </div>
+
+    <div class="flex flex-wrap gap-2 text-xs">
+      <a href="{% url 'feed:index' %}" class="rounded-full border px-3 py-1 {% if not event_filter %}border-amber-600 text-amber-300{% else %}border-stone-700 text-stone-400 hover:border-stone-500{% endif %}">Alle</a>
+      {% for value, label in event_types %}
+        <a href="?typ={{ value }}" class="rounded-full border px-3 py-1 {% if event_filter == value %}border-amber-600 text-amber-300{% else %}border-stone-700 text-stone-400 hover:border-stone-500{% endif %}">{{ label }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+      {% for event in events %}
+        <article class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+          <div>
+            {% if event.deleted_at %}
+              <p class="text-sm text-stone-500">Eintrag entfernt</p>
+            {% else %}
+              <p class="text-sm text-stone-200">{{ event.get_event_type_display }}</p>
+              <p class="text-xs text-stone-500">
+                {% if event.actor %}{{ event.actor.username }} · {% endif %}{{ event.created_at|date:"d.m.Y H:i" }}
+              </p>
+            {% endif %}
+          </div>
+          {% if not event.deleted_at and event.actor == user or not event.deleted_at and is_owner %}
+            <form method="post" action="{% url 'feed:remove' event.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="text-xs text-stone-500 underline decoration-stone-700 underline-offset-4 hover:text-red-300">Entfernen</button>
+            </form>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p class="px-4 py-6 text-sm text-stone-500">Noch keine Einträge.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

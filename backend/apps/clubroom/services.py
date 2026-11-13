@@ -7,6 +7,8 @@ from apps.accounts.models import User
 from apps.clubroom.models import Clubroom, Invitation, Membership, hash_token
 from apps.clubroom.permissions import OWNER, ROLE_CHOICES, ROLE_LABELS
 from apps.core.audit import AuditEntry
+from apps.feed.models import EVENT_CLUBROOM_CREATED, EVENT_MEMBER_JOINED, EVENT_MEMBER_REMOVED
+from apps.feed.services import record_event
 
 
 def _audit(action, *, actor, target_type, target_id, **metadata):
@@ -63,6 +65,14 @@ def create_clubroom(*, user, name: str, safe_word: str, rules: str = "") -> Club
             actor=user,
             target_type="clubroom.clubroom",
             target_id=clubroom.pk,
+        )
+        record_event(
+            clubroom=clubroom,
+            event_type=EVENT_CLUBROOM_CREATED,
+            actor=user,
+            target_type="clubroom.clubroom",
+            target_id=clubroom.pk,
+            notify=False,
         )
     return clubroom
 
@@ -193,6 +203,14 @@ def accept_invitation(*, raw_token: str, user) -> Membership:
             target_id=membership.pk,
             role=membership.role,
         )
+        record_event(
+            clubroom=clubroom,
+            event_type=EVENT_MEMBER_JOINED,
+            actor=user,
+            target_type="clubroom.membership",
+            target_id=membership.pk,
+            metadata={"role": membership.role},
+        )
         return membership
 
 
@@ -230,4 +248,12 @@ def revoke_membership(*, membership: Membership, actor) -> None:
         target_type="clubroom.membership",
         target_id=membership.pk,
         role=membership.role,
+    )
+    record_event(
+        clubroom=membership.clubroom,
+        event_type=EVENT_MEMBER_REMOVED,
+        actor=actor,
+        target_type="clubroom.membership",
+        target_id=membership.pk,
+        metadata={"role": membership.role},
     )

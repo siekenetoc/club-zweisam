@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M3 abgeschlossen; M4 (Lounge & Logbuch) in Arbeit.
+**Status:** M0 bis M4 abgeschlossen; M5 (Deep Talk & Krisenmodus) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -61,6 +61,15 @@ Umgesetzt in M3:
 - Stufe-3-Challenges nur mit Opt-in beider Hauptmitglieder
 - Bestätigte Wünsche fließen als Gemeinsamkeit in die Vitrine (nicht privat)
 
+Umgesetzt in M4:
+- Lounge mit täglichem Check-in (Stimmung, Energie, Nähe) und 3-Tage-Barometer
+- Wochenrückblick nur nach persönlichem Opt-in, ausschließlich eigene Daten
+- Logbuch mit Ereignistypen, Filter, Soft-Delete und Platzhalter „Eintrag entfernt"
+- Feed-Metadaten werden bereinigt; keine Titel, Inhalte, Antworten oder Grenzen
+- Inhaltslose Benachrichtigungen mit Server-Queue
+- Safe Mode puffert Benachrichtigungen und stellt sie beim Deaktivieren ohne Inhalt zu
+- Safe-Mode-Aktivierung erzeugt weder Feed-Eintrag noch Benachrichtigung
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -78,6 +87,8 @@ docker compose up --build
 - Vitrine: <https://localhost/vitrine/>
 - Concierge: <https://localhost/concierge/>
 - Playbook: <https://localhost/playbook/>
+- Lounge: <https://localhost/lounge/>
+- Logbuch: <https://localhost/logbuch/>
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 

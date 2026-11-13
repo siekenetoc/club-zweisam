@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Lounge – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Lounge</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Ein kurzer Check-in pro Tag. Das 3-Tage-Barometer zeigt nur Zahlen,
+          keine Geheiminhalte. Jede Person entscheidet selbst über den Wochenrückblick.
+        </p>
+      </div>
+      {% if has_feed %}
+        <a href="{% url 'feed:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+          Zum Logbuch
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Heute</h2>
+        {% if today_check_in %}
+          <p class="mt-2 text-sm text-stone-300">
+            Stimmung {{ today_check_in.mood }}/5 · Energie {{ today_check_in.energy }}/5 · Nähe {{ today_check_in.closeness }}/5
+          </p>
+        {% elif form %}
+          <form method="post" action="{% url 'lounge:check_in' %}" class="mt-3 space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+              <div>
+                <p class="mb-1 text-sm text-stone-300">{{ field.label }}</p>
+                <div class="flex flex-wrap gap-3">
+                  {% for choice in field %}
+                    <label class="flex items-center gap-1 text-sm text-stone-300">{{ choice.tag }} {{ choice.choice_label }}</label>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+            <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Check-in speichern</button>
+          </form>
+        {% else %}
+          <p class="mt-2 text-sm text-stone-400">Lesender Zugang. Kein Check-in möglich.</p>
+        {% endif %}
+      </div>
+
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">3-Tage-Barometer</h2>
+        <p class="mt-2 text-sm text-stone-400">{{ barometer.start|date:"d.m." }} – {{ barometer.end|date:"d.m." }}</p>
+        <dl class="mt-3 grid grid-cols-3 gap-3 text-center">
+          <div class="rounded-md border border-stone-800 bg-stone-950/50 p-2">
+            <dt class="text-xs text-stone-500">Stimmung</dt>
+            <dd class="mt-1 text-lg font-medium">{{ barometer.overall.mood|floatformat:1|default:"–" }}</dd>
+          </div>
+          <div class="rounded-md border border-stone-800 bg-stone-950/50 p-2">
+            <dt class="text-xs text-stone-500">Energie</dt>
+            <dd class="mt-1 text-lg font-medium">{{ barometer.overall.energy|floatformat:1|default:"–" }}</dd>
+          </div>
+          <div class="rounded-md border border-stone-800 bg-stone-950/50 p-2">
+            <dt class="text-xs text-stone-500">Nähe</dt>
+            <dd class="mt-1 text-lg font-medium">{{ barometer.overall.closeness|floatformat:1|default:"–" }}</dd>
+          </div>
+        </dl>
+        {% if barometer.per_user %}
+          <div class="mt-4 space-y-2 text-sm">
+            {% for row in barometer.per_user %}
+              <p class="flex items-center justify-between text-stone-300">
+                <span>{{ row.user__username }}</span>
+                <span class="text-stone-500">{{ row.count }} Check-in{{ row.count|pluralize:"s" }}</span>
+              </p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xs uppercase tracking-widest text-stone-500">Wochenrückblick</h2>
+          <p class="mt-2 text-sm text-stone-300">
+            {% if review_opt_in %}Aktiv – nur du siehst diese Auswertung.{% else %}Opt-in erforderlich.{% endif %}
+          </p>
+        </div>
+        {% if can_write %}
+          <form method="post" action="{% url 'lounge:toggle_review' %}">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">
+              {% if review_opt_in %}Deaktivieren{% else %}Aktivieren{% endif %}
+            </button>
+          </form>
+        {% endif %}
+      </div>
+      {% if review %}
+        <p class="mt-3 text-sm text-stone-400">{{ review.count }} Check-ins · Stimmung {{ review.averages.mood|floatformat:1|default:"–" }} · Energie {{ review.averages.energy|floatformat:1|default:"–" }} · Nähe {{ review.averages.closeness|floatformat:1|default:"–" }}</p>
+      {% endif %}
+    </div>
+
+    <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xs uppercase tracking-widest text-stone-500">Benachrichtigungen</h2>
+          <p class="mt-2 text-sm text-stone-300">
+            {% if safe_mode_active %}Safe Mode aktiv. {{ queued_count }} Benachrichtigungen gepuffert.{% else %}Keine Inhalte, nur Ereignistypen.{% endif %}
+          </p>
+        </div>
+        <form method="post" action="{% url 'lounge:safe_mode' %}">
+          {% csrf_token %}
+          <input type="hidden" name="active" value="{% if safe_mode_active %}0{% else %}1{% endif %}" />
+          <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">
+            {% if safe_mode_active %}Safe Mode deaktivieren{% else %}Safe Mode aktivieren{% endif %}
+          </button>
+        </form>
+      </div>
+      <div class="mt-4 space-y-2">
+        {% for notification in notifications %}
+          <p class="flex items-center justify-between rounded-md border border-stone-800 bg-stone-950/50 px-3 py-2 text-sm text-stone-300">
+            <span>{{ notification.get_event_type_display }}</span>
+            <span class="text-xs text-stone-500">{{ notification.created_at|date:"d.m. H:i" }}</span>
+          </p>
+        {% empty %}
+          <p class="text-sm text-stone-500">Noch keine Zustellungen.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}
