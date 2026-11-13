@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}{{ wish.title }} – Concierge{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ wish.type_label }}{% if wish.category %} · {{ wish.category }}{% endif %}</p>
+        <h1 class="mt-2 text-2xl font-semibold">{{ wish.title }}</h1>
+        <p class="mt-1 text-sm text-stone-400">
+          Von {{ wish.created_by.username }} · Intensität {{ wish.intensity }} · {{ wish.get_timeframe_display }} · {{ wish.status_label }}
+        </p>
+      </div>
+      <a href="{% url 'wishes:index' %}" class="text-sm text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">Zurück</a>
+    </div>
+
+    <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <p class="whitespace-pre-line text-stone-200">{{ wish.body }}</p>
+    </div>
+
+    {% if wish.status == "draft" and is_creator %}
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5 text-sm text-stone-400">
+        Dieser Wunsch ist privat. Erst mit „Teilen“ wird er für dein Gegenüber sichtbar.
+        <form method="post" action="{% url 'wishes:share' wish.pk %}" class="mt-3">
+          {% csrf_token %}
+          <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Teilen</button>
+        </form>
+      </div>
+    {% endif %}
+
+    {% if responses %}
+      <div class="space-y-3">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Antworten</h2>
+        {% for response in responses %}
+          <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="font-medium">{{ response.action_label }}</p>
+              <p class="text-xs text-stone-500">{{ response.responded_by.username }} · {{ response.created_at|date:"d.m.Y H:i" }}</p>
+            </div>
+            {% if response.action == "boundary" %}
+              <p class="mt-2 text-sm text-stone-300">Grenze respektiert. Eine Erklärung wird nicht geteilt.</p>
+            {% elif response.note %}
+              <p class="mt-2 whitespace-pre-line text-sm text-stone-300">{{ response.note }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if can_respond %}
+      <form method="post" action="{% url 'wishes:respond' wish.pk %}" class="space-y-3 rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        {% csrf_token %}
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Antworten</h2>
+        {% for field in response_form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Antwort senden</button>
+      </form>
+    {% endif %}
+
+    {% if can_decide %}
+      <div class="rounded-lg border border-amber-800 bg-amber-950/30 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-amber-500">Entscheidung</h2>
+        <p class="mt-2 text-sm text-stone-300">Möchtest du die Alternative annehmen?</p>
+        <div class="mt-3 flex gap-3">
+          <form method="post" action="{% url 'wishes:decide' wish.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="accept" value="1" />
+            <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Annehmen</button>
+          </form>
+          <form method="post" action="{% url 'wishes:decide' wish.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="accept" value="0" />
+            <button type="submit" class="rounded-md border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-stone-500">Ablehnen</button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if can_fulfill %}
+      <form method="post" action="{% url 'wishes:fulfill' wish.pk %}" class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        {% csrf_token %}
+        <p class="text-sm text-stone-300">Vereinbart. Melde die Erfüllung, damit dein Gegenüber bestätigen kann.</p>
+        <button type="submit" class="mt-3 rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Erfüllung melden</button>
+      </form>
+    {% endif %}
+
+    {% if can_confirm %}
+      <form method="post" action="{% url 'wishes:confirm' wish.pk %}" class="rounded-lg border border-emerald-900 bg-emerald-950/30 p-5">
+        {% csrf_token %}
+        <p class="text-sm text-stone-300">Die andere Person meldet die Erfüllung. Bestätige sie, wenn es für dich stimmt.</p>
+        <button type="submit" class="mt-3 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500">Erfüllung bestätigen</button>
+      </form>
+    {% endif %}
+
+    {% if wish.status == "pending" and is_creator %}
+      <p class="text-sm text-stone-400">Erfüllung gemeldet. Warte auf die Bestätigung deines Gegenübers.</p>
+    {% endif %}
+    {% if wish.status == "confirmed" %}
+      <p class="text-sm text-emerald-300">Beidseitig bestätigt am {{ wish.confirmed_at|date:"d.m.Y H:i" }}.</p>
+    {% endif %}
+    {% if wish.status == "boundary" %}
+      <p class="text-sm text-stone-300">Grenze respektiert. Weitere Inhalte werden nicht geteilt.</p>
+    {% endif %}
+  </section>
+{% endblock %}

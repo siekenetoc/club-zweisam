@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     "apps.clubroom",
     "apps.roulette",
     "apps.vitrine",
+    "apps.wishes",
+    "apps.playbook",
 ]
 
 MIDDLEWARE = [
@@ -133,6 +135,7 @@ LOGOUT_REDIRECT_URL = "clubroom:home"
 
 INVITATION_TTL_DAYS = int(env("INVITATION_TTL_DAYS", "7"))
 ROULETTE_ANSWER_RETENTION_DAYS = int(env("ROULETTE_ANSWER_RETENTION_DAYS", "30"))
+PLAYBOOK_DAILY_LIMIT = int(env("PLAYBOOK_DAILY_LIMIT", "3"))
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

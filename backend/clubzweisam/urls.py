@@ -10,6 +10,8 @@ urlpatterns = [
     path("", include("apps.accounts.urls")),
     path("separee/", include("apps.roulette.urls")),
     path("vitrine/", include("apps.vitrine.urls")),
+    path("concierge/", include("apps.wishes.urls")),
+    path("playbook/", include("apps.playbook.urls")),
     path("healthz", HealthView.as_view(), name="healthz"),
     path("admin/", admin.site.urls),
     re_path(

@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M2 abgeschlossen; M3 (Concierge & Playbook) in Arbeit.
+**Status:** M0 bis M3 abgeschlossen; M4 (Lounge & Logbuch) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -51,6 +51,16 @@ Umgesetzt in M2:
 - Opt-in beider Hauptmitglieder für Deck D
 - Vitrine mit Gemeinsamkeiten ausschließlich aus beidseitig freigegebenen Matches
 
+Umgesetzt in M3:
+- Concierge mit fünf Wunschtypen, sieben Antwortoptionen und beidseitiger Bestätigung
+- Private Wünsche (Entwurf), Teilen erst auf ausdrücklichen Wunsch
+- Keine Ketten-Wünsche: pro Wunsch genau eine Antwort, keine Gegenwünsche
+- Feldverschlüsselte Wunsch-Inhalte und Antwort-Notizen
+- Grenz-Antworten zeigen nur „Grenze respektiert", nie die Begründung
+- Playbook mit 16 Challenges in 8 Kategorien, Timer, Abbruch und Tages-Deckel
+- Stufe-3-Challenges nur mit Opt-in beider Hauptmitglieder
+- Bestätigte Wünsche fließen als Gemeinsamkeit in die Vitrine (nicht privat)
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -66,6 +76,8 @@ docker compose up --build
 - Anmelden: <https://localhost/anmelden/>
 - Séparée: <https://localhost/separee/>
 - Vitrine: <https://localhost/vitrine/>
+- Concierge: <https://localhost/concierge/>
+- Playbook: <https://localhost/playbook/>
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 
@@ -73,6 +85,8 @@ Einladungen laufen standardmäßig nach 7 Tagen ab (`INVITATION_TTL_DAYS` in `.e
 Die Einladungs-E-Mail enthält nur den Annahme-Link, keine Geheiminhalte.
 Geheimantworten werden nach 30 Tagen bzw. beim Rundenende gelöscht
 (`ROULETTE_ANSWER_RETENTION_DAYS`, `manage.py roulette_purge`).
+Challenges sind auf drei Läufe pro Tag und Clubraum begrenzt
+(`PLAYBOOK_DAILY_LIMIT`).
 
 Caddy verwendet in Dev ein internes Zertifikat. Der Browser warnt beim ersten
 Aufruf. Root-Zertifikat zum Importieren:

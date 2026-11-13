@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ run.challenge.title }} – Playbook{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ run.challenge.category_label }} · Stufe {{ run.challenge.consent_stage }}</p>
+        <h1 class="mt-2 text-2xl font-semibold">{{ run.challenge.title }}</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">{{ run.challenge.description }}</p>
+      </div>
+      <a href="{% url 'playbook:index' %}" class="text-sm text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">Zurück</a>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <p class="text-xs uppercase tracking-widest text-stone-500">Timer</p>
+        {% if run.is_active %}
+          <div x-data="challengeTimer('{{ run.started_at|date:"c" }}', {{ run.challenge.duration_min }})" x-init="init()" class="mt-2">
+            <p class="text-3xl font-semibold" x-text="remaining">–</p>
+            <p class="mt-1 text-xs text-stone-500" x-show="finished">Zeit ist um. Niemand muss weitermachen.</p>
+          </div>
+        {% else %}
+          <p class="mt-2 text-sm text-stone-400">Beendet.</p>
+        {% endif %}
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <p class="text-xs uppercase tracking-widest text-stone-500">Status</p>
+        {% if run.is_completed %}
+          <p class="mt-2 text-emerald-300">Gemeinsam abgeschlossen am {{ run.completed_at|date:"d.m.Y H:i" }}.</p>
+        {% elif run.is_aborted %}
+          <p class="mt-2 text-stone-300">Abgebrochen von {{ run.aborted_by.username }}. Kein Vorwurf, keine Punkteberührung.</p>
+        {% else %}
+          <p class="mt-2 text-stone-300">Läuft seit {{ run.started_at|date:"d.m.Y H:i" }}.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Bestätigungen</h2>
+      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        {% for participant in run.participants %}
+          <div class="flex items-center justify-between px-4 py-3 text-sm">
+            <span>{{ participant.username }}</span>
+            {% if run.confirmed_by_a and participant.id == run.user_a_id %}
+              <span class="text-emerald-300">bestätigt</span>
+            {% elif run.confirmed_by_b and participant.id == run.user_b_id %}
+              <span class="text-emerald-300">bestätigt</span>
+            {% else %}
+              <span class="text-stone-500">offen</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if run.is_active and is_owner %}
+      <div class="flex flex-wrap gap-3">
+        {% if can_confirm %}
+          <form method="post" action="{% url 'playbook:confirm' run.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500">Für mich erledigt</button>
+          </form>
+        {% elif confirmed %}
+          <p class="rounded-md border border-stone-700 bg-stone-900 px-4 py-2 text-sm text-stone-400">Bestätigt. Warte auf dein Gegenüber.</p>
+        {% endif %}
+        {% if can_abort %}
+          <form method="post" action="{% url 'playbook:abort' run.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md border border-stone-700 px-4 py-2 text-sm text-stone-300 hover:border-red-700 hover:text-red-300">Abbrechen</button>
+          </form>
+        {% endif %}
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

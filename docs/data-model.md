@@ -70,13 +70,18 @@
   - `wish`, `responded_by`
   - `action` (accept/partial/alternative/postpone/reject/boundary/talk)
   - `note: EncryptedTextField`
+  - eindeutig pro `wish` + `responded_by` – keine Ketten-Wünsche
 
 ### playbook
 - `Challenge`
   - `category`, `title`, `duration_min`, `intensity`, `consent_stage`, `points`
 - `ChallengeRun`
-  - `challenge`, `clubroom`, `started_at`, `completed_at`
+  - `challenge`, `clubroom`, `started_by`, `started_at`, `completed_at`
+  - `user_a`, `user_b` (Hauptmitglieder zum Start, kanonisch sortiert)
   - `confirmed_by_a: bool`, `confirmed_by_b: bool`
+  - `aborted_at`, `aborted_by` (Abbruch durch eine Person, sofort wirksam)
+- `PlaybookOptIn`
+  - `clubroom`, `user` (Opt-in für Stufe 3, beidseitig erforderlich)
 
 ### feed
 - `FeedEvent`

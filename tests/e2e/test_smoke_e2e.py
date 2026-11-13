@@ -71,5 +71,32 @@ def test_registration_and_clubroom_creation():
         assert "Antwort gespeichert" in page.content()
         assert "Warte auf die Antwort" in page.content()
 
+        page.goto(f"{base_url}/", wait_until="load")
+        page.get_by_role("link", name="Concierge").click()
+        page.wait_for_url(f"{base_url}/concierge/")
+        page.get_by_role("link", name="Wunsch stellen").click()
+        page.wait_for_url(f"{base_url}/concierge/neu/")
+        page.select_option("#id_type", "konkret")
+        page.fill("#id_category", "Alltag")
+        page.select_option("#id_intensity", "1")
+        page.select_option("#id_timeframe", "woche")
+        page.fill("#id_title", "E2E Wunsch")
+        page.fill("#id_body", "Ein Abend ohne Handy.")
+        page.get_by_role("button", name="Wunsch speichern").click()
+        page.wait_for_url(re.compile(r".*/concierge/\d+/"))
+        content = page.content()
+        assert "E2E Wunsch" in content
+        assert "Gestellt" in content
+
+        page.goto(f"{base_url}/", wait_until="load")
+        page.get_by_role("link", name="Playbook").click()
+        page.wait_for_url(f"{base_url}/playbook/")
+        page.get_by_role("button", name="Starten").first.click()
+        page.wait_for_url(re.compile(r".*/playbook/lauf/\d+/"))
+        assert "challengeTimer" in page.content()
+        page.get_by_role("button", name="Für mich erledigt").click()
+        page.wait_for_load_state("load")
+        assert "Challenge gemeinsam abgeschlossen" in page.content()
+
         context.close()
         browser.close()

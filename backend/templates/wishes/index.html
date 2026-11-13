@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Concierge – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Concierge</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Wünsche werden gestellt, beantwortet und erst nach beidseitiger
+          Bestätigung als erfüllt geführt. Ablehnung ist neutral.
+        </p>
+      </div>
+      <a href="{% url 'wishes:create' %}" class="rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
+        Wunsch stellen
+      </a>
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Zu beantworten</h2>
+      {% for wish in incoming %}
+        <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-amber-700">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <p class="font-medium">{{ wish.title }}</p>
+            <span class="text-xs uppercase tracking-widest text-amber-500">{{ wish.type_label }}</span>
+          </div>
+          <p class="mt-1 text-xs text-stone-500">Intensität {{ wish.intensity }} · {{ wish.get_timeframe_display }}{% if wish.category %} · {{ wish.category }}{% endif %}</p>
+        </a>
+      {% empty %}
+        <p class="rounded-lg border border-stone-800 bg-stone-900/60 p-5 text-sm text-stone-400">Keine offenen Wünsche an dich.</p>
+      {% endfor %}
+    </div>
+
+    {% if private %}
+      <div class="space-y-3">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Privat</h2>
+        {% for wish in private %}
+          <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-amber-700">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="font-medium">{{ wish.title }}</p>
+              <span class="text-xs text-stone-500">Nur für dich</span>
+            </div>
+            <p class="mt-1 text-xs text-stone-500">{{ wish.type_label }}</p>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Deine Wünsche</h2>
+      {% for wish in outgoing %}
+        {% if wish.status != "draft" %}
+          <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-amber-700">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="font-medium">{{ wish.title }}</p>
+              <span class="text-xs text-stone-300">{{ wish.status_label }}</span>
+            </div>
+            <p class="mt-1 text-xs text-stone-500">{{ wish.type_label }} · Intensität {{ wish.intensity }}</p>
+          </a>
+        {% endif %}
+      {% empty %}
+        <p class="rounded-lg border border-stone-800 bg-stone-900/60 p-5 text-sm text-stone-400">Noch keine Wünsche gestellt.</p>
+      {% endfor %}
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Abgeschlossen</h2>
+      {% for wish in closed %}
+        <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-stone-600">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <p class="text-stone-300">{{ wish.title }}</p>
+            <span class="text-xs text-stone-500">{{ wish.status_label }}</span>
+          </div>
+        </a>
+      {% empty %}
+        <p class="rounded-lg border border-stone-800 bg-stone-900/60 p-5 text-sm text-stone-400">Noch nichts abgeschlossen.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

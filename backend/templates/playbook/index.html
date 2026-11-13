@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Playbook – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Playbook</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Challenges für Nähe und Neugier. Jede Person kann jederzeit abbrechen.
+          Stufe 3 nur mit Opt-in beider Hauptmitglieder.
+        </p>
+      </div>
+      <span class="rounded-full border border-stone-700 px-3 py-1 text-xs text-stone-400">
+        Heute {{ daily_count }}/{{ daily_limit }} Challenges
+      </span>
+    </div>
+
+    <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Opt-in Stufe 3</h2>
+      <p class="mt-2 text-sm text-stone-300">
+        {% if both_opted_in %}
+          Beide Hauptmitglieder haben zugestimmt.
+        {% elif own_opted_in %}
+          Dein Opt-in liegt vor; das Gegenüber fehlt noch.
+        {% else %}
+          Noch keine Zustimmung von dir.
+        {% endif %}
+      </p>
+      {% if is_owner %}
+        {% if own_opted_in %}
+          <form method="post" action="{% url 'playbook:opt_out' %}" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-red-700 hover:text-red-300">Opt-in widerrufen</button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'playbook:opt_in' %}" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Opt-in für Stufe 3</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    {% if active_run %}
+      <a href="{% url 'playbook:run' active_run.pk %}" class="block rounded-lg border border-amber-800 bg-amber-950/30 p-5 hover:border-amber-600">
+        <p class="text-xs uppercase tracking-widest text-amber-500">Laufende Challenge</p>
+        <p class="mt-1 text-lg font-medium">{{ active_run.challenge.title }}</p>
+        <p class="text-sm text-stone-400">{{ active_run.challenge.duration_min }} Minuten · gestartet von {{ active_run.started_by.username }}</p>
+      </a>
+    {% endif %}
+
+    <div class="space-y-6">
+      {% for category in categories %}
+        <div class="space-y-3">
+          <h2 class="text-xs uppercase tracking-widest text-stone-500">{{ category.label }}</h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            {% for challenge in category.challenges %}
+              <div class="flex flex-col gap-3 rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-stone-500">Stufe {{ challenge.consent_stage }} · {{ challenge.duration_min }} Min. · {{ challenge.points }} Punkt{{ challenge.points|pluralize:"e" }}</p>
+                  <h3 class="mt-1 font-medium">{{ challenge.title }}</h3>
+                  <p class="mt-1 text-sm text-stone-400">{{ challenge.description }}</p>
+                </div>
+                {% if is_owner and not active_run %}
+                  <form method="post" action="{% url 'playbook:start' challenge.pk %}">
+                    {% csrf_token %}
+                    {% if challenge.requires_opt_in and not both_opted_in %}
+                      <button type="submit" disabled class="w-full cursor-not-allowed rounded-md bg-stone-800 px-3 py-2 text-sm text-stone-500">Opt-in fehlt</button>
+                    {% elif daily_count >= daily_limit %}
+                      <button type="submit" disabled class="w-full cursor-not-allowed rounded-md bg-stone-800 px-3 py-2 text-sm text-stone-500">Tages-Deckel erreicht</button>
+                    {% else %}
+                      <button type="submit" class="w-full rounded-md bg-amber-500 px-3 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Starten</button>
+                    {% endif %}
+                  </form>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
