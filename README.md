@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 freigegeben; M1 (Auth & Clubraum) in Arbeit.
+**Status:** M0 und M1 abgeschlossen; M2 (Séparée & Vitrine) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -31,6 +31,16 @@ Umgesetzt in M0:
 - Docker-Compose mit sechs Diensten: `caddy`, `web`, `db`, `redis`, `assets`, `mailhog`
 - Dev-Bind-Mounts für Backend, Templates, Tests und Medien
 
+Umgesetzt in M1:
+- Registrierung mit Volljährigkeits- und AGB-Bestätigung, Login/Logout
+- Clubraum-Gründung mit verschlüsseltem Safeword und Hausregeln
+- Rollen: Hauptmitglied, Moderator, Berater, Mediator, Sex-Partner, Gast/Beobachter
+- Rollen-Matrix für Module; Gast ist lesend, Admin-/Beraterrollen ohne Geheiminhalte
+- E-Mail-Einladungen mit gehashtem Token, Bindung an E-Mail-Adresse, Ablauf (7 Tage),
+  Widerruf mit sofortiger Wirkung und Audit-Einträgen
+- Höchstens zwei Hauptmitglieder und eine aktive Mitgliedschaft pro Nutzer
+- Mitglieder-Entfernung durch Hauptmitglieder (nicht für Hauptmitglieder selbst)
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -42,8 +52,13 @@ docker compose up --build
 ```
 
 - Web: <https://localhost> (TLS über Caddys interne CA)
-- Mailhog: <http://localhost:8025>
+- Registrieren: <https://localhost/registrieren/>
+- Anmelden: <https://localhost/anmelden/>
+- Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
+
+Einladungen laufen standardmäßig nach 7 Tagen ab (`INVITATION_TTL_DAYS` in `.env`).
+Die Einladungs-E-Mail enthält nur den Annahme-Link, keine Geheiminhalte.
 
 Caddy verwendet in Dev ein internes Zertifikat. Der Browser warnt beim ersten
 Aufruf. Root-Zertifikat zum Importieren:
@@ -74,7 +89,9 @@ docker compose exec web python manage.py audit_verify
 ```
 
 - `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory).
-- Der Playwright-Smoke-Test läuft im Profil `e2e` gegen Caddy.
+- Der Playwright-Test läuft im Profil `e2e` gegen Caddy (Registrierung + Clubraum).
+- Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und
+  `docker compose exec -e DJANGO_SETTINGS_MODULE=clubzweisam.settings.prod web python manage.py check --deploy`.
 - Vor dem ersten Commit: `docker compose exec web pre-commit install`.
 
 ## Konventionen

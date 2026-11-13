@@ -16,7 +16,6 @@ services:
       - ./backend:/app
       - ./docs:/docs
       - ./tests:/app/tests
-      - ./pyproject.toml:/app/pyproject.toml:ro
       - static_data:/app/staticfiles
       - ./backend/media:/app/media
 

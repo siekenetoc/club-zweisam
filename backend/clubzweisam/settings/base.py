@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.core",
     "apps.accounts",
+    "apps.clubroom",
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,12 @@ else:
     }
 
 AUTH_USER_MODEL = "accounts.User"
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "clubroom:home"
+LOGOUT_REDIRECT_URL = "clubroom:home"
+
+INVITATION_TTL_DAYS = int(env("INVITATION_TTL_DAYS", "7"))
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

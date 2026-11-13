@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.functions import Lower
 
 
 class User(AbstractUser):
@@ -13,6 +14,13 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "Nutzer"
         verbose_name_plural = "Nutzer"
+        constraints = [
+            models.UniqueConstraint(
+                Lower("email"),
+                condition=~models.Q(email=""),
+                name="unique_user_email_ci",
+            )
+        ]
 
     def __str__(self) -> str:
         return self.username

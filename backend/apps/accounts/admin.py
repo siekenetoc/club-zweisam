@@ -18,4 +18,10 @@ class ClubUserAdmin(UserAdmin):
             },
         ),
     )
-    list_display = ("username", "email", "is_staff", "is_safe_mode_active", "age_verified")
+    list_display = (
+        "username",
+        "email",
+        "is_staff",
+        "is_safe_mode_active",
+        "age_verified",
+    )

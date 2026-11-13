@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ clubroom.name }} – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Clubraum</p>
+        <h1 class="mt-2 text-3xl font-semibold">{{ clubroom.name }}</h1>
+        <p class="mt-1 text-sm text-stone-400">Deine Rolle: {{ role_label }}</p>
+      </div>
+      {% if is_owner %}
+        <a href="{% url 'clubroom:invite' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+          Person einladen
+        </a>
+      {% endif %}
+    </div>
+
+    {% if clubroom.rules %}
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Hausregeln</h2>
+        <p class="mt-2 whitespace-pre-line text-stone-200">{{ clubroom.rules }}</p>
+      </div>
+    {% endif %}
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Mitglieder</h2>
+      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        {% for member in members %}
+          <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <div>
+              <p class="font-medium">{{ member.user.username }}{% if member.user == user %} <span class="text-xs text-stone-500">(du)</span>{% endif %}</p>
+              <p class="text-xs text-stone-500">{{ member.get_role_display }}</p>
+            </div>
+            {% if is_owner and member.user != user and member.role != "owner" %}
+              <form method="post" action="{% url 'clubroom:membership_revoke' member.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="text-xs text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-red-300">
+                  Entfernen
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if is_owner and pending_invitations %}
+      <div class="space-y-3">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Offene Einladungen</h2>
+        <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+          {% for invitation in pending_invitations %}
+            <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+              <div>
+                <p class="text-sm">{{ invitation.email }}</p>
+                <p class="text-xs text-stone-500">{{ invitation.get_role_display }} · läuft am {{ invitation.expires_at|date:"d.m.Y H:i" }} ab</p>
+              </div>
+              <form method="post" action="{% url 'clubroom:invitation_revoke' invitation.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="text-xs text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-red-300">
+                  Widerrufen
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Deine Module</h2>
+      <div class="flex flex-wrap gap-2">
+        {% for label, allowed in modules %}
+          <span class="rounded-full border px-3 py-1 text-xs {% if allowed %}border-amber-700 bg-amber-950/40 text-amber-300{% else %}border-stone-800 text-stone-600{% endif %}">
+            {{ label }}{% if not allowed %} · gesperrt{% endif %}
+          </span>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

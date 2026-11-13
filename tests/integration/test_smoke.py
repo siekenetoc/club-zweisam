@@ -5,7 +5,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_home_page_renders(client):
-    response = client.get(reverse("home"))
+    response = client.get(reverse("clubroom:home"))
     assert response.status_code == 200
     content = response.content.decode("utf-8")
     assert "Club Zweisam" in content
@@ -20,6 +20,6 @@ def test_health_endpoint(client):
 
 
 def test_no_external_asset_sources(client):
-    content = client.get(reverse("home")).content.decode("utf-8")
+    content = client.get(reverse("clubroom:home")).content.decode("utf-8")
     assert "http://" not in content
     assert "https://" not in content

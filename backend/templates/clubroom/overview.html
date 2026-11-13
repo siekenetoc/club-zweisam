@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Dein Clubraum – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div>
+      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Willkommen</p>
+      <h1 class="mt-2 text-2xl font-semibold">Noch kein Clubraum</h1>
+      <p class="mt-2 max-w-2xl text-stone-400">
+        Du bist angemeldet, aber noch keinem Clubraum zugeordnet. Gründe einen
+        Raum für euch zwei oder nimm eine Einladung aus deiner E-Mail an.
+      </p>
+    </div>
+
+    {% if invitations %}
+      <div class="space-y-3">
+        <h2 class="text-sm uppercase tracking-widest text-stone-500">Offene Einladungen</h2>
+        {% for invitation in invitations %}
+          <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-stone-800 bg-stone-900/60 p-4">
+            <div>
+              <p class="font-medium">{{ invitation.clubroom.name }}</p>
+              <p class="text-sm text-stone-400">
+                Rolle: {{ invitation.get_role_display }} · eingeladen von {{ invitation.invited_by.username }}
+              </p>
+            </div>
+            <p class="text-xs text-stone-500">Nutze den Link aus der Einladungs-E-Mail.</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <a href="{% url 'clubroom:create' %}" class="inline-block rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
+      Clubraum gründen
+    </a>
+  </section>
+{% endblock %}

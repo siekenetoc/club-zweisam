@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Clubraum gründen – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="mx-auto max-w-lg space-y-6">
+    <div>
+      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Gründung</p>
+      <h1 class="mt-2 text-2xl font-semibold">Euren Clubraum aufsetzen</h1>
+      <p class="mt-2 text-sm text-stone-400">
+        Das Safeword wird verschlüsselt gespeichert und ist nur für die
+        Hauptmitglieder bestimmt. Es wird nie in Benachrichtigungen gesendet.
+      </p>
+    </div>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for error in form.non_field_errors %}
+        <p class="rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">{{ error }}</p>
+      {% endfor %}
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}
+            <p class="mt-1 text-xs text-red-300">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="w-full rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
+        Clubraum gründen
+      </button>
+    </form>
+  </section>
+{% endblock %}

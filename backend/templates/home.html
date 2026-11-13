@@ -3,31 +3,39 @@
 {% block title %}Club Zweisam – Grundgerüst{% endblock %}
 
 {% block content %}
-  <section class="space-y-6">
-    <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Meilenstein M0</p>
-    <h1 class="text-3xl font-semibold sm:text-4xl">Der Raum steht.</h1>
-    <p class="max-w-2xl text-stone-300">
-      Grundgerüst, Verschlüsselungs-Setup und Audit-Chain sind eingerichtet.
-      Die Module werden in den folgenden Meilensteinen ergänzt.
-    </p>
+  <section class="space-y-8">
+    <div class="space-y-4">
+      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Privater Raum für zwei</p>
+      <h1 class="text-3xl font-semibold sm:text-4xl">Der Raum steht.</h1>
+      <p class="max-w-2xl text-stone-300">
+        Club Zweisam ist ein geschützter Kommunikations- und Spielraum für Paare.
+        Consent vor Spiel, Nein ist neutral, Geheimnis schützt.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="{% url 'accounts:register' %}" class="rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
+          Clubraum gründen
+        </a>
+        <a href="{% url 'accounts:login' %}" class="rounded-full border border-stone-700 px-5 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+          Anmelden
+        </a>
+      </div>
+    </div>
     <dl class="grid gap-4 sm:grid-cols-2">
       <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Stack</dt>
-        <dd class="mt-2 text-stone-200">Django, PostgreSQL, Redis, Caddy</dd>
-      </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Assets</dt>
-        <dd class="mt-2 text-stone-200">Vite, Tailwind, Alpine.js, HTMX, TinyMCE lokal</dd>
-      </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Schutz</dt>
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Diskretion</dt>
         <dd class="mt-2 text-stone-200">Feldverschlüsselung at-rest, Audit-Log append-only</dd>
       </div>
       <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Status</dt>
-        <dd class="mt-2 text-stone-200">
-          <a class="underline decoration-stone-600 underline-offset-4" href="/healthz">healthz</a>
-        </dd>
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Freiwilligkeit</dt>
+        <dd class="mt-2 text-stone-200">Safeword, Grenzen und Opt-in statt Druck</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Rollen</dt>
+        <dd class="mt-2 text-stone-200">Hauptmitglieder, Moderator, Berater, Mediator, Gast</dd>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <dt class="text-xs uppercase tracking-widest text-stone-500">Grenze</dt>
+        <dd class="mt-2 text-stone-200">Kein Therapieersatz, keine Währung für Sex</dd>
       </div>
     </dl>
   </section>

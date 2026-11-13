@@ -31,6 +31,7 @@ backend/static/dist/*
 htmlcov/
 .ruff_cache/
 playwright-report/
+backend/tests/
 
 # IDE
 .vscode/
