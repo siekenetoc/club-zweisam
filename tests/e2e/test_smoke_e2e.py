@@ -163,5 +163,12 @@ def test_registration_and_clubroom_creation():
         assert "Zugriff protokolliert" in content
         assert "Club Zweisam · Verwaltung" in content
 
+        page.goto(f"{base_url}/seite/agb/", wait_until="load")
+        content = page.content()
+        assert "Nutzungsbedingungen" in content
+        assert "Platzhalter" in content
+        page.goto(f"{base_url}/seite/datenschutz/", wait_until="load")
+        assert "Datenschutz" in page.content()
+
         context.close()
         browser.close()

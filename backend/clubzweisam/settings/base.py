@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "apps.crisis",
     "apps.points",
     "apps.admin_panel",
+    "apps.pages",
 ]
 
 MIDDLEWARE = [

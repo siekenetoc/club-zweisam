@@ -127,10 +127,11 @@
 
 ### pages
 - `StaticPage`
-  - `slug`, `title`, `content_html`, `media` (FK zu `PageMedia` optional)
+  - `slug`, `title`, `content_html`
   - `is_published`, `updated_at`, `updated_by`
 - `PageMedia`
-  - `page`, `file`, `alt_text`, `uploaded_at`
+  - `page` (FK), `file` (Bild), `alt_text`, `created_at`
+  - Bearbeitung nur Super-Admin oder Gruppe „Plattform-Admin"
 
 ### lounge
 - `CheckIn`

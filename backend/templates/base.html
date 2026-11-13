@@ -43,8 +43,15 @@
       <main class="flex-1 py-10">
         {% block content %}{% endblock %}
       </main>
-      <footer class="border-t border-stone-800 pt-6 text-xs text-stone-500">
-        Kein Therapieersatz. Keine Währung für Sex. Kein Druckmittel.
+      <footer class="space-y-3 border-t border-stone-800 pt-6 text-xs text-stone-500">
+        <nav class="flex flex-wrap gap-4">
+          <a href="{% url 'pages:detail' 'agb' %}" class="hover:text-stone-300">AGB</a>
+          <a href="{% url 'pages:detail' 'impressum' %}" class="hover:text-stone-300">Impressum</a>
+          <a href="{% url 'pages:detail' 'datenschutz' %}" class="hover:text-stone-300">Datenschutz</a>
+          <a href="{% url 'pages:detail' 'partner' %}" class="hover:text-stone-300">Partner</a>
+          <a href="{% url 'pages:detail' 'disclaimer' %}" class="hover:text-stone-300">Disclaimer</a>
+        </nav>
+        <p>Kein Therapieersatz. Keine Währung für Sex. Kein Druckmittel.</p>
       </footer>
     </div>
   </body>

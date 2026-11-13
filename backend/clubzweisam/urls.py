@@ -18,6 +18,7 @@ urlpatterns = [
     path("krisenmodus/", include("apps.crisis.urls")),
     path("punkte/", include("apps.points.urls")),
     path("management/", include("apps.admin_panel.urls")),
+    path("seite/", include("apps.pages.urls")),
     path("healthz", HealthView.as_view(), name="healthz"),
     path("admin/", admin.site.urls),
     re_path(

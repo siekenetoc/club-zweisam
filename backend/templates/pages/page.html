@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} – Club Zweisam{% endblock %}
+
+{% block content %}
+  <article class="prose prose-invert max-w-none">
+    <h1 class="text-3xl font-semibold">{{ page.title }}</h1>
+    <div class="mt-6 space-y-4 text-stone-300">
+      {{ page.content_html|safe }}
+    </div>
+
+    {% if page.media_items %}
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {% for media in page.media_items %}
+          <figure class="rounded-lg border border-stone-800 bg-stone-900/60 p-3">
+            <img src="{{ media.file.url }}" alt="{{ media.alt_text }}" class="w-full rounded-md" />
+            {% if media.alt_text %}
+              <figcaption class="mt-2 text-xs text-stone-500">{{ media.alt_text }}</figcaption>
+            {% endif %}
+          </figure>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <p class="mt-8 text-xs text-stone-500">Stand: {{ page.updated_at|date:"d.m.Y" }}</p>
+  </article>
+{% endblock %}

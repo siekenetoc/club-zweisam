@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M7 abgeschlossen; M8 (RTF-Seiten) in Arbeit.
+**Status:** M0 bis M8 abgeschlossen; M9 (Privacy Shield) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -97,6 +97,14 @@ Umgesetzt in M7:
 - Break-Glass ist für Geheimantworten, Grenzen und Wünsche technisch gesperrt
 - Jeder Break-Glass-Zugriff erzeugt Audit-Eintrag und inhaltslose Nutzer-Benachrichtigung
 
+Umgesetzt in M8:
+- Statische Seiten (AGB, Impressum, Datenschutz, Partner, Disclaimer) unter `/seite/<slug>/`
+- TinyMCE lokal im Admin-Editor, keine CDN-Einbindung
+- Bild-Upload mit Alt-Text je Seite
+- Bearbeitung nur für Super-Admins und die Gruppe „Plattform-Admin"
+- Footer-Links zu allen Pflichtseiten
+- Platzhalterhinweis für rechtliche Prüfung vor Produktivbetrieb
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -121,6 +129,7 @@ docker compose exec web python manage.py createsuperuser  # Verwaltung
 - Krisenmodus: <https://localhost/krisenmodus/>
 - Punkte: <https://localhost/punkte/>
 - Verwaltung: <https://localhost/management/> (Staff) und <https://localhost/admin/>
+- Seiten: <https://localhost/seite/agb/>, `/impressum/`, `/datenschutz/`, `/partner/`, `/disclaimer/`
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 
