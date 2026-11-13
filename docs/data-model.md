@@ -95,12 +95,17 @@
 ### points
 - `Ledger`
   - `clubroom`, `owner` (FK User), `balance`
+  - `scope` (dyad/guest) – Gast-Ledger sind isoliert, kein Wettbewerb
 - `Entry`
   - `ledger`, `delta`, `reason`, `actor`, `confirmed_by_other: bool`
+  - positive Deltas werden auf 10/Tag bzw. 3/Tag aus Challenges gedeckelt
 - `Reward`
-  - `category`, `title`, `cost`, `consent_stage`
+  - `category` (romantisch/neckisch/erotisch/alltag/erlebnis), `title`, `cost`,
+    `consent_stage`
 - `Redemption`
-  - `reward`, `requested_by`, `status`, `accepted_by`, `completed_at`
+  - `clubroom`, `reward`, `requested_by`, `status`, `accepted_by`, `completed_at`
+  - `refund_requested_by`, `refund_requested_at`, `refund_confirmed_by`,
+    `refunded_at` (Rückbuchung nur beidseitig)
 
 ### deep_talk
 - `TalkSession`

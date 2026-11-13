@@ -14,6 +14,8 @@ from apps.feed.models import (
     EVENT_WISH_SHARED,
 )
 from apps.feed.services import record_event
+from apps.points.models import REASON_WISH
+from apps.points.services import award_points
 from apps.vitrine.models import SOURCE_WISH
 from apps.vitrine.services import record_commonality
 from apps.wishes.models import (
@@ -301,5 +303,13 @@ def confirm_fulfilled(*, wish: Wish, user) -> Wish:
             actor=user,
             target_type="wishes.wish",
             target_id=wish.pk,
+        )
+        award_points(
+            clubroom=wish.clubroom,
+            user=user,
+            amount=1,
+            reason=REASON_WISH,
+            actor=user,
+            confirmed_by_other=True,
         )
         return wish

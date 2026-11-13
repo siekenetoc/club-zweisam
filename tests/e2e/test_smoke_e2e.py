@@ -124,6 +124,14 @@ def test_registration_and_clubroom_creation():
         assert "Check-in" in content
 
         page.goto(f"{base_url}/", wait_until="load")
+        page.get_by_role("link", name="Punkte").click()
+        page.wait_for_url(f"{base_url}/punkte/")
+        assert "Belohnungen" in page.content()
+        page.get_by_role("button", name="Anfragen").first.click()
+        page.wait_for_load_state("load")
+        assert "Angefragt" in page.content()
+
+        page.goto(f"{base_url}/", wait_until="load")
         page.get_by_role("link", name="Deep Talk").click()
         page.wait_for_url(f"{base_url}/deep-talk/")
         page.get_by_role("button", name="Gespräch starten").click()

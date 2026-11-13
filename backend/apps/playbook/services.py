@@ -13,6 +13,8 @@ from apps.feed.models import (
 )
 from apps.feed.services import record_event
 from apps.playbook.models import Challenge, ChallengeRun, PlaybookOptIn
+from apps.points.models import REASON_CHALLENGE
+from apps.points.services import award_points
 
 
 def _audit(action, *, actor, target_type, target_id, **metadata):
@@ -178,6 +180,16 @@ def confirm_run(*, run: ChallengeRun, user) -> ChallengeRun:
                 target_type="playbook.challengerun",
                 target_id=run.pk,
             )
+            for participant in run.participants():
+                award_points(
+                    clubroom=run.clubroom,
+                    user=participant,
+                    amount=run.challenge.points,
+                    reason=REASON_CHALLENGE,
+                    actor=user,
+                    confirmed_by_other=True,
+                    challenge=True,
+                )
         return run
 
 

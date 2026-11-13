@@ -4,7 +4,7 @@ Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
 
-**Status:** M0 bis M5 abgeschlossen; M6 (Punkte & Belohnungen) in Arbeit.
+**Status:** M0 bis M6 abgeschlossen; M7 (Admin-Backend) in Arbeit.
 
 ## Stack
 - Python 3.12, Django 5.0, Gunicorn
@@ -78,6 +78,16 @@ Umgesetzt in M5:
 - Harte Verweise auf Notruf 112, Telefonseelsorge, Hilfetelefon Frauen und Männer
 - Krisenraum ohne Leitfragen und ohne Punkte; Hilfsangebote bleiben nach dem Schließen sichtbar
 
+Umgesetzt in M6:
+- Punkte-Ledger je Hauptmitglied, isolierte Gast-Ledger ohne Wettbewerb
+- Tages-Deckel 10 Punkte, davon höchstens 3 aus Challenges
+- Verdienen über abgeschlossene Challenges und bestätigte Wünsche; kein Abzug für Nein
+- Belohnungskatalog mit fünf Kategorien und Einlöse-Workflow
+- Annahme durch die andere Person, Abschluss, Ablehnung, Rückzug
+- Rückbuchung nur mit Anfrage und Bestätigung durch die zweite Person
+- Anerkennung für Gäste, ohne Vermischung mit der Dyade
+- Keine Punkte-Ereignisse im Logbuch (Schutz vor Preisgabe von Belohnungstiteln)
+
 ## Setup (Dev)
 ```bash
 cp .env.example .env
@@ -99,6 +109,7 @@ docker compose up --build
 - Logbuch: <https://localhost/logbuch/>
 - Deep Talk: <https://localhost/deep-talk/>
 - Krisenmodus: <https://localhost/krisenmodus/>
+- Punkte: <https://localhost/punkte/>
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 
@@ -107,7 +118,8 @@ Die Einladungs-E-Mail enthält nur den Annahme-Link, keine Geheiminhalte.
 Geheimantworten werden nach 30 Tagen bzw. beim Rundenende gelöscht
 (`ROULETTE_ANSWER_RETENTION_DAYS`, `manage.py roulette_purge`).
 Challenges sind auf drei Läufe pro Tag und Clubraum begrenzt
-(`PLAYBOOK_DAILY_LIMIT`).
+(`PLAYBOOK_DAILY_LIMIT`). Punkte sind auf 10 pro Tag gedeckelt, davon höchstens
+3 aus Challenges (`POINTS_DAILY_CAP`, `POINTS_CHALLENGE_DAILY_CAP`).
 
 Caddy verwendet in Dev ein internes Zertifikat. Der Browser warnt beim ersten
 Aufruf. Root-Zertifikat zum Importieren:

@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "apps.lounge",
     "apps.deep_talk",
     "apps.crisis",
+    "apps.points",
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,8 @@ LOGOUT_REDIRECT_URL = "clubroom:home"
 INVITATION_TTL_DAYS = int(env("INVITATION_TTL_DAYS", "7"))
 ROULETTE_ANSWER_RETENTION_DAYS = int(env("ROULETTE_ANSWER_RETENTION_DAYS", "30"))
 PLAYBOOK_DAILY_LIMIT = int(env("PLAYBOOK_DAILY_LIMIT", "3"))
+POINTS_DAILY_CAP = int(env("POINTS_DAILY_CAP", "10"))
+POINTS_CHALLENGE_DAILY_CAP = int(env("POINTS_CHALLENGE_DAILY_CAP", "3"))
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

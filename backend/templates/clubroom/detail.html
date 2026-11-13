@@ -37,6 +37,15 @@
               Deep Talk
             </a>
           {% endif %}
+          {% if is_owner %}
+            <a href="{% url 'points:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+              Punkte
+            </a>
+          {% else %}
+            <a href="{% url 'points:my' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
+              Punkte
+            </a>
+          {% endif %}
           <a href="{% url 'crisis:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-stone-500">
             Krisenmodus
           </a>

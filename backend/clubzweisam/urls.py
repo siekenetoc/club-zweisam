@@ -16,6 +16,7 @@ urlpatterns = [
     path("logbuch/", include("apps.feed.urls")),
     path("deep-talk/", include("apps.deep_talk.urls")),
     path("krisenmodus/", include("apps.crisis.urls")),
+    path("punkte/", include("apps.points.urls")),
     path("healthz", HealthView.as_view(), name="healthz"),
     path("admin/", admin.site.urls),
     re_path(

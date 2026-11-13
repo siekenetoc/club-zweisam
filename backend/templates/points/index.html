@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Punkte – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
+        <h1 class="mt-2 text-3xl font-semibold">Punkte</h1>
+        <p class="mt-2 max-w-2xl text-stone-400">
+          Anerkennung statt Wettkampf. Nein kostet nie Punkte. Tages-Deckel:
+          {{ daily_cap }} Punkte, davon höchstens 3 aus Challenges.
+        </p>
+      </div>
+      <span class="rounded-full border border-stone-700 px-3 py-1 text-xs text-stone-400">
+        Heute {{ daily_earned }}/{{ daily_cap }}
+      </span>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% for ledger in ledgers %}
+        <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+          <p class="text-xs uppercase tracking-widest text-stone-500">{{ ledger.owner.username }}</p>
+          <p class="mt-2 text-3xl font-semibold">{{ ledger.balance }}</p>
+          <p class="text-sm text-stone-500">Punkte{% if ledger.owner == user %} · dein Konto{% endif %}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="space-y-4">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Belohnungen</h2>
+      {% for category in categories %}
+        <div>
+          <h3 class="text-sm font-medium text-stone-300">{{ category.label }}</h3>
+          <div class="mt-2 grid gap-3 sm:grid-cols-2">
+            {% for reward in category.rewards %}
+              <div class="flex flex-col gap-3 rounded-lg border border-stone-800 bg-stone-900/60 p-4">
+                <div>
+                  <p class="font-medium">{{ reward.title }}</p>
+                  <p class="text-sm text-stone-400">{{ reward.description }}</p>
+                  <p class="mt-1 text-xs text-stone-500">{{ reward.cost }} Punkte · Stufe {{ reward.consent_stage }}</p>
+                </div>
+                {% if own_ledger.balance >= reward.cost %}
+                  <form method="post" action="{% url 'points:redeem' reward.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="rounded-md bg-amber-500 px-3 py-1.5 text-xs font-medium text-stone-950 hover:bg-amber-400">Anfragen</button>
+                  </form>
+                {% else %}
+                  <button type="button" disabled class="cursor-not-allowed rounded-md bg-stone-800 px-3 py-1.5 text-xs text-stone-500">Zu wenig Punkte</button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Einlösungen</h2>
+      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        {% for redemption in redemptions %}
+          <div class="space-y-2 px-4 py-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-sm text-stone-200">{{ redemption.reward.title }} · {{ redemption.reward.cost }} Punkte</p>
+              <span class="text-xs text-stone-400">{{ redemption.get_status_display }}</span>
+            </div>
+            <p class="text-xs text-stone-500">
+              Angefragt von {{ redemption.requested_by.username }}{% if redemption.accepted_by %} · angenommen von {{ redemption.accepted_by.username }}{% endif %}
+              {% if redemption.refund_pending %} · Rückbuchung angefragt{% endif %}
+            </p>
+            <div class="flex flex-wrap gap-2">
+              {% if redemption.status == "requested" %}
+                {% if redemption.requested_by == user %}
+                  <form method="post" action="{% url 'points:redemption_action' redemption.pk 'cancel' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="text-xs text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-red-300">Zurückziehen</button>
+                  </form>
+                {% else %}
+                  <form method="post" action="{% url 'points:redemption_action' redemption.pk 'accept' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500">Annehmen</button>
+                  </form>
+                  <form method="post" action="{% url 'points:redemption_action' redemption.pk 'decline' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-stone-500">Ablehnen</button>
+                  </form>
+                {% endif %}
+              {% elif redemption.status == "accepted" or redemption.status == "completed" %}
+                {% if redemption.refund_pending %}
+                  {% if redemption.refund_requested_by != user %}
+                    {% if redemption.requested_by == user or redemption.accepted_by == user %}
+                      <form method="post" action="{% url 'points:redemption_action' redemption.pk 'refund_confirm' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="rounded-md border border-amber-700 px-3 py-1.5 text-xs text-amber-200 hover:border-amber-500">Rückbuchung bestätigen</button>
+                      </form>
+                    {% endif %}
+                  {% endif %}
+                {% else %}
+                  {% if redemption.requested_by == user or redemption.accepted_by == user %}
+                    {% if redemption.status == "accepted" %}
+                      <form method="post" action="{% url 'points:redemption_action' redemption.pk 'complete' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500">Abschließen</button>
+                      </form>
+                    {% endif %}
+                    <form method="post" action="{% url 'points:redemption_action' redemption.pk 'refund_request' %}">
+                      {% csrf_token %}
+                      <button type="submit" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-amber-600 hover:text-amber-300">Rückbuchung anfragen</button>
+                    </form>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <p class="px-4 py-6 text-sm text-stone-500">Noch keine Einlösungen.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Gast-Ledger (isoliert)</h2>
+      <p class="text-sm text-stone-400">Gäste haben eigene, getrennte Konten. Kein Vergleich mit der Dyade.</p>
+      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        {% for ledger in guest_ledgers %}
+          <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <p class="text-sm text-stone-200">{{ ledger.owner.username }}</p>
+            <p class="text-sm text-stone-400">{{ ledger.balance }} Punkte</p>
+          </div>
+        {% empty %}
+          <p class="px-4 py-4 text-sm text-stone-500">Noch keine Gast-Konten.</p>
+        {% endfor %}
+      </div>
+      {% if guest_members %}
+        <form method="post" action="{% url 'points:recognize' %}" class="flex flex-wrap items-end gap-3 rounded-lg border border-stone-800 bg-stone-900/60 p-4">
+          {% csrf_token %}
+          <div>
+            <label for="membership_id" class="mb-1 block text-xs text-stone-400">Gast</label>
+            <select id="membership_id" name="membership_id" class="rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-100">
+              {% for membership in guest_members %}
+                <option value="{{ membership.pk }}">{{ membership.user.username }} ({{ membership.get_role_display }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="amount" class="mb-1 block text-xs text-stone-400">Punkte</label>
+            <select id="amount" name="amount" class="rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-100">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <button type="submit" class="rounded-md border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">Anerkennung geben</button>
+        </form>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
