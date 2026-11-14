@@ -327,6 +327,92 @@ def test_admin_can_create_channel(client):
     assert channel.is_enabled is True
 
 
+def _platform_admin():
+    user = User.objects.create_user(
+        username="platform",
+        email="platform@example.com",
+        password="sehr-geheim-1234",
+        is_staff=True,
+    )
+    group, _ = Group.objects.get_or_create(name="Plattform-Admin")
+    user.groups.add(group)
+    return user
+
+
+def test_messenger_setup_is_platform_admin_only(client):
+    clubroom, _, _ = make_room()
+    staff = User.objects.create_user(
+        username="staff",
+        email="staff@example.com",
+        password="sehr-geheim-1234",
+        is_staff=True,
+    )
+    client.force_login(staff)
+    assert client.get(reverse("admin_panel:messenger_setup")).status_code == 403
+
+    client.force_login(_platform_admin())
+    response = client.get(reverse("admin_panel:messenger_setup"))
+    assert response.status_code == 200
+    assert "Messenger einrichten" in response.content.decode()
+
+
+def test_messenger_setup_creates_telegram_channel(client):
+    clubroom, _, _ = make_room()
+    client.force_login(_platform_admin())
+    response = client.post(
+        reverse("admin_panel:messenger_setup"),
+        {
+            "clubroom": clubroom.pk,
+            "provider": "telegram",
+            "label": "Wizard Telegram",
+            "default_target": "42",
+            "is_enabled": "on",
+            "telegram_bot_token": "123:secret",
+        },
+    )
+    assert response.status_code == 302
+    channel = NotificationChannel.objects.get(label="Wizard Telegram")
+    assert channel.provider == "telegram"
+    assert channel.get_config()["bot_token"] == "123:secret"
+    assert channel.is_enabled is True
+
+
+def test_messenger_setup_requires_provider_fields(client):
+    clubroom, _, _ = make_room()
+    client.force_login(_platform_admin())
+    response = client.post(
+        reverse("admin_panel:messenger_setup"),
+        {
+            "clubroom": clubroom.pk,
+            "provider": "whatsapp",
+            "label": "Kaputt",
+            "is_enabled": "on",
+        },
+    )
+    assert response.status_code == 200
+    assert "Pflichtfeld für WhatsApp" in response.content.decode()
+    assert not NotificationChannel.objects.filter(label="Kaputt").exists()
+
+
+def test_messenger_setup_test_action(monkeypatch, client):
+    clubroom, _, _ = make_room()
+    channel = make_channel(clubroom)
+    calls = []
+    monkeypatch.setattr(
+        "apps.feed.delivery._http_json",
+        lambda *args, **kwargs: calls.append(args),
+    )
+    client.force_login(_platform_admin())
+    response = client.post(
+        reverse("admin_panel:messenger_setup"),
+        {"channel_id": channel.pk, "action": "test"},
+        follow=True,
+    )
+    assert response.status_code == 200
+    assert "Testnachricht gesendet" in response.content.decode()
+    assert len(calls) == 1
+
+
 def test_channel_requires_platform_admin(client):
     clubroom, _, _ = make_room()
     make_channel(clubroom)

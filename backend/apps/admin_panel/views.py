@@ -5,7 +5,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.accounts.models import User
-from apps.admin_panel.forms import BreakGlassRequestForm
+from apps.admin_panel.forms import (
+    BreakGlassRequestForm,
+    MessengerSetupForm,
+    initial_from_channel,
+)
 from apps.admin_panel.models import BreakGlassRequest
 from apps.admin_panel.services import (
     approve_break_glass,
@@ -13,6 +17,9 @@ from apps.admin_panel.services import (
     use_break_glass,
 )
 from apps.clubroom.models import Clubroom, Membership
+from apps.core.permissions import is_platform_admin
+from apps.feed.delivery import send_via_channel
+from apps.feed.models import NotificationChannel
 from apps.playbook.models import Challenge
 from apps.roulette.models import Match
 from apps.wishes.models import Wish
@@ -21,6 +28,11 @@ from apps.wishes.models import Wish
 def _superuser_or_denied(request):
     if not request.user.is_superuser:
         raise PermissionDenied("Nur Super-Admins.")
+
+
+def _platform_admin_or_denied(request):
+    if not is_platform_admin(request.user):
+        raise PermissionDenied("Nur Plattform-Admins.")
 
 
 @staff_member_required
@@ -38,6 +50,61 @@ def dashboard(request):
             "challenge_count": Challenge.objects.count(),
             "pending_break_glass": pending,
             "is_superuser": request.user.is_superuser,
+            "is_platform_admin": is_platform_admin(request.user),
+        },
+    )
+
+
+@staff_member_required
+def messenger_setup(request):
+    _platform_admin_or_denied(request)
+    channel_id = request.POST.get("channel_id") or request.GET.get("channel")
+    channel = None
+    if channel_id:
+        channel = get_object_or_404(NotificationChannel, pk=channel_id)
+
+    if request.POST.get("action") == "test" and channel is not None:
+        config = channel.get_config()
+        if send_via_channel(channel, config.get("default_target", "")):
+            messages.success(request, "Testnachricht gesendet.")
+        else:
+            messages.error(request, "Testnachricht fehlgeschlagen. Logs prüfen.")
+        return redirect("admin_panel:messenger_setup")
+
+    if request.method == "POST":
+        form = MessengerSetupForm(request.POST)
+        if form.is_valid():
+            if channel is None:
+                channel = NotificationChannel(created_by=request.user)
+            channel.clubroom = form.cleaned_data["clubroom"]
+            channel.provider = form.cleaned_data["provider"]
+            channel.label = form.cleaned_data["label"]
+            channel.is_enabled = form.cleaned_data["is_enabled"]
+            channel.set_config(form.cleaned_data["config"])
+            channel.save()
+            if request.POST.get("send_test") == "on":
+                if send_via_channel(channel, channel.get_config().get("default_target", "")):
+                    messages.success(request, "Kanal gespeichert. Testnachricht gesendet.")
+                else:
+                    messages.warning(
+                        request,
+                        "Kanal gespeichert, Testnachricht fehlgeschlagen. Logs prüfen.",
+                    )
+            else:
+                messages.success(request, "Kanal gespeichert.")
+            return redirect("admin_panel:messenger_setup")
+    else:
+        form = MessengerSetupForm(initial=initial_from_channel(channel) if channel else None)
+
+    return render(
+        request,
+        "admin_panel/messenger.html",
+        {
+            "form": form,
+            "channels": NotificationChannel.objects.select_related("clubroom").order_by(
+                "clubroom__name", "provider", "label"
+            ),
+            "editing": channel,
         },
     )
 

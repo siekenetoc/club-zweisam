@@ -319,58 +319,105 @@ Weitere Benutzer:
 
 ## 7. Hand-on: Push-Kanäle autorisieren und einrichten
 
+### 7.0 Assistent im Backend
+
+Portal-Admins (Gruppe „Plattform-Admin“, `is_staff=True`) öffnen:
+
+```text
+https://<domain>/management/messenger/
+```
+
+Dort gibt es pro Messenger ein Formular mit den nötigen Feldern; JSON-Kenntnisse
+sind nicht erforderlich. Nach dem Speichern kann direkt eine inhaltslose
+Testnachricht gesendet werden. Die Rohkonfiguration bleibt optional im
+Django-Admin unter „Benachrichtigungskanäle“ editierbar.
+
+**Was geht allein aus dem Backend?**
+
+| Messenger | Backend-Assistent | Extern noch nötig |
+|---|---|---|
+| Telegram | Ja: Token + Chat-ID | Bot bei @BotFather, Gruppe, Bot einladen |
+| Gotify | Ja: URL + App-Token | Gotify-Server selbst betreiben |
+| Signal | Ja: API-URL + Nummer | signal-cli-REST betreiben, Nummer registrieren/verknüpfen |
+| Element | Ja: Homeserver + Token + Raum | Matrix-Konto, Raum, Token |
+| WhatsApp | Ja: Phone-ID + Token + Vorlage | Meta-Business-App, Nummer, Token, Vorlagenfreigabe |
+
+**WhatsApp-Web-QR ist kein unterstützter Weg.** Die offizielle WhatsApp Cloud
+API ist eine Business-Schnittstelle; sie kennt kein Koppeln wie
+`web.whatsapp.com`. Inoffizielle Bibliotheken, die ein persönliches
+WhatsApp-Web-Gerät per QR simulieren, verstoßen gegen die WhatsApp-Bedingungen
+und riskieren eine Sperre. Club Zweisam implementiert das bewusst nicht.
+Für persönliche WhatsApp-Nutzung bleibt nur der offizielle Cloud-API-Weg; wer
+das nicht möchte, nutzt In-App-Benachrichtigungen, Telegram oder Gotify.
+
 ### 7.1 Gemeinsamer Ablauf
 
-1. Portal-Admin legt Kanal an (Admin → Benachrichtigungskanäle).
-2. Kanal aktivieren.
-3. Nutzer öffnet Lounge → Push-Benachrichtigungen.
-4. Ziel eintragen, falls kein Standardziel konfiguriert ist.
-5. „Aktivieren/Speichern“.
-6. Test mit `push_test` oder einem echten Ereignis (z. B. Check-in).
-7. Bei Safe Mode: keine Zustellung, bis deaktiviert.
+1. Portal-Admin öffnet `/management/messenger/`.
+2. Messenger wählen, Clubraum und Bezeichnung eintragen.
+3. Standardziel eintragen (Telefonnummer, Chat-ID oder Raum-ID) oder leer
+   lassen, wenn jeder Nutzer sein eigenes Ziel in der Lounge setzt.
+4. Zugangsdaten eintragen, „Kanal aktiv“ setzen.
+5. Optional „Nach dem Speichern Testnachricht senden“ aktivieren.
+6. Speichern; bei Fehlern Logs prüfen.
+7. Nutzer öffnet Lounge → Push-Benachrichtigungen, aktiviert den Kanal und
+   trägt ggf. sein Ziel ein.
+8. Test mit `push_test` oder einem echten Ereignis (z. B. Check-in).
+9. Bei Safe Mode: keine Zustellung, bis deaktiviert.
 
-### 7.2 WhatsApp Cloud API
+### 7.2 WhatsApp Cloud API – Schritt für Schritt
 
-1. Meta-Entwicklerkonto/Business-App anlegen, WhatsApp-Produkt hinzufügen.
-2. Telefonnummer und `phone_number_id` notieren.
-3. System-User-Token mit `whatsapp_business_messaging` erzeugen.
-4. Empfänger als Testnummer hinzufügen.
-5. Nachrichtenvorlage mit einem Textparameter anlegen, z. B. Body
-   „Neues Ereignis im Club Zweisam: {{1}}“; Sprache `de`.
-6. Im Kanal `access_token`, `phone_number_id`, `template_name`,
-   `template_language`, `api_version` und ggf. `default_target` eintragen.
-7. Ohne Vorlage sendet das System eine Textnachricht; diese ist nur innerhalb
-   des 24-Stunden-Kundenfensters zuverlässig. Die Vorlage ist der stabile Weg.
-8. Datenschutz: Meta verarbeitet Metadaten und den generischen Text; niemals
-   Inhalte in die Vorlage schreiben.
+1. Meta-Business-Konto und Entwickler-App anlegen.
+2. WhatsApp-Produkt hinzufügen; Test- oder Produktionsnummer verbinden.
+3. `phone_number_id` notieren (nicht die Telefonnummer selbst).
+4. System-User mit `whatsapp_business_messaging` anlegen und ein dauerhaftes
+   Access Token erzeugen.
+5. Empfänger als Testnummer hinzufügen (bei Testnummern nötig).
+6. Nachrichtenvorlage (Template) mit einem Textparameter anlegen, z. B. Body
+   „Neues Ereignis im Club Zweisam: {{1}}“, Sprache `de`, Kategorie Utility.
+   Vorlage freigeben lassen.
+7. In Club Zweisam: `/management/messenger/` → WhatsApp → Clubraum, Bezeichnung,
+   Phone Number ID, Access Token, Template-Name, Sprache und Graph-API-Version
+   eintragen.
+8. Standardziel als internationale Nummer (`+49...`) eintragen oder Nutzer
+   ihr Ziel selbst in der Lounge setzen lassen.
+9. „Kanal aktiv“ setzen, speichern, Testnachricht senden.
+10. Nutzer abonnieren den Kanal in der Lounge.
+11. Ohne Template sendet das System eine Textnachricht; diese ist nur innerhalb
+    des 24-Stunden-Kundenfensters zuverlässig. Das Template ist der stabile Weg.
+12. Datenschutz: Meta sieht Metadaten und den generischen Text; niemals
+    Clubraum-Inhalte in die Vorlage schreiben. Ein QR-Login wie bei
+    `web.whatsapp.com` ist offiziell nicht verfügbar und wird nicht unterstützt.
 
 ### 7.3 Telegram Bot
 
 1. Bei `@BotFather` einen Bot anlegen, Token kopieren.
 2. Bot in die gewünschte Gruppe einladen.
 3. Chat-ID der Gruppe ermitteln (z. B. über `getUpdates` oder einen Info-Bot).
-4. Kanal mit `bot_token` und `default_target` (Chat-ID) anlegen.
-5. Nutzer abonnieren; Testnachricht senden.
+4. `/management/messenger/` → Telegram → Token und Chat-ID eintragen.
+5. Speichern und Testnachricht senden; Nutzer abonnieren.
 6. Telegram-Bots sind nicht Ende-zu-Ende-verschlüsselt; nur inhaltslose Pings.
 
 ### 7.4 Signal
 
 1. `signal-cli-rest-api` selbst betreiben und eine Nummer registrieren oder
-   ein bestehendes Gerät verknüpfen.
+   ein bestehendes Gerät verknüpfen (das Koppeln passiert in signal-cli, nicht
+   im Club-Zweisam-Backend).
 2. API-URL und Absendernummer notieren.
 3. Empfängernummer als Ziel eintragen.
-4. Kanal mit `api_url`, `sender_number`, ggf. `authorization` und
-   `default_target` anlegen.
-5. Signal hat keine offizielle Bot-API; der Betrieb ist selbst zu verantworten.
-6. Nur generische Pings senden; keine Clubraum-Inhalte.
+4. `/management/messenger/` → Signal → API-URL, Absendernummer und optional
+   Authorization-Header eintragen.
+5. Speichern und Testnachricht senden.
+6. Signal hat keine offizielle Bot-API; der Betrieb ist selbst zu verantworten.
+7. Nur generische Pings senden; keine Clubraum-Inhalte.
 
 ### 7.5 Element/Matrix
 
 1. Dedizierten, **unverschlüsselten** Hinweisraum anlegen.
 2. Matrix-Bot/Service-User mit Zugriffstoken erzeugen.
 3. Raum-ID (beginnt mit `!`) kopieren.
-4. Kanal mit `homeserver_url`, `access_token`, `default_target` anlegen.
-5. Nutzer in den Raum einladen; sie abonnieren den Kanal.
+4. `/management/messenger/` → Element → Homeserver-URL, Access Token und
+   Raum-ID eintragen.
+5. Speichern, Testnachricht senden; Nutzer in den Raum einladen und abonnieren.
 6. Verschlüsselte Räume werden vom einfachen HTTP-Adapter nicht unterstützt;
    dafür wäre ein Matrix-Client mit E2EE nötig. Der Raum darf keine Geheiminhalte
    enthalten, nur den Portal-Link.
@@ -379,8 +426,8 @@ Weitere Benutzer:
 
 1. Gotify selbst hosten (Docker).
 2. Anwendung anlegen und App-Token kopieren.
-3. Kanal mit `server_url` und `app_token` anlegen.
-4. Nutzer abonnieren; kein Ziel nötig.
+3. `/management/messenger/` → Gotify → Server-URL und App-Token eintragen.
+4. Speichern, Testnachricht senden; Nutzer abonnieren; kein Ziel nötig.
 5. Selbst gehostet, aber Push läuft über den Gotify-Server; nur generische Pings.
 
 ### 7.7 Ziel pro Nutzer

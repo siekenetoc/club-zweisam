@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Messenger einrichten – Verwaltung{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div class="rounded-md border border-amber-800 bg-amber-950/40 px-4 py-3 text-sm text-amber-200">
+      Zugriff protokolliert. Zugangsdaten werden verschlüsselt gespeichert.
+    </div>
+
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Portal-Admin</p>
+        <h1 class="mt-2 text-3xl font-semibold">Messenger einrichten</h1>
+        <p class="mt-2 max-w-2xl text-sm text-stone-400">
+          Externe Pushes sind inhaltslos: nur „Neues Ereignis im Portal“ und ein
+          Link auf die Lounge. Keine Titel, Wünsche oder Antworten.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'admin_panel:dashboard' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">Dashboard</a>
+        <a href="/admin/feed/notificationchannel/" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">Django-Admin</a>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Bestehende Kanäle</h2>
+      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        {% for channel in channels %}
+          <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <div>
+              <p class="text-sm text-stone-200">{{ channel.label }}</p>
+              <p class="text-xs text-stone-500">{{ channel.get_provider_display }} · {{ channel.clubroom.name }} · {% if channel.is_enabled %}aktiv{% else %}inaktiv{% endif %}</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <a href="?channel={{ channel.pk }}" class="text-xs text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">Bearbeiten</a>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="channel_id" value="{{ channel.pk }}" />
+                <input type="hidden" name="action" value="test" />
+                <button type="submit" class="text-xs text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">Test</button>
+              </form>
+            </div>
+          </div>
+        {% empty %}
+          <p class="px-4 py-5 text-sm text-stone-500">Noch kein Kanal eingerichtet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <form method="post" class="space-y-5 rounded-lg border border-stone-800 bg-stone-900/60 p-5" x-data="{ provider: '{{ form.provider.value|default:'telegram' }}' }">
+      {% csrf_token %}
+      {{ form.channel_id }}
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">{% if editing %}Kanal bearbeiten{% else %}Neuen Kanal anlegen{% endif %}</h2>
+      {% for error in form.non_field_errors %}
+        <p class="rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">{{ error }}</p>
+      {% endfor %}
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="{{ form.clubroom.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ form.clubroom.label }}</label>
+          {{ form.clubroom }}
+          {% for error in form.clubroom.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.label.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ form.label.label }}</label>
+          {{ form.label }}
+          {% for error in form.label.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <label for="id_provider" class="mb-1 block text-sm text-stone-300">Messenger</label>
+        <select name="provider" id="id_provider" x-model="provider" class="w-full rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-stone-100">
+          {% for value, label in form.fields.provider.choices %}
+            <option value="{{ value }}" {% if form.provider.value == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="{{ form.default_target.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ form.default_target.label }}</label>
+        {{ form.default_target }}
+        <p class="mt-1 text-xs text-stone-500">Ziel kann auch pro Nutzer in der Lounge gesetzt werden.</p>
+      </div>
+
+      <div x-show="provider === 'whatsapp'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+        <p class="text-sm text-stone-300">WhatsApp Cloud API (Meta). Vorlage für stabile Zustellung erforderlich.</p>
+        <div><label for="{{ form.whatsapp_phone_number_id.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_phone_number_id.label }}</label>{{ form.whatsapp_phone_number_id }}{% for error in form.whatsapp_phone_number_id.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+        <div><label for="{{ form.whatsapp_access_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_access_token.label }}</label>{{ form.whatsapp_access_token }}{% for error in form.whatsapp_access_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+        <div class="grid gap-3 sm:grid-cols-3">
+          <div><label for="{{ form.whatsapp_template_name.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_template_name.label }}</label>{{ form.whatsapp_template_name }}</div>
+          <div><label for="{{ form.whatsapp_template_language.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_template_language.label }}</label>{{ form.whatsapp_template_language }}</div>
+          <div><label for="{{ form.whatsapp_api_version.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_api_version.label }}</label>{{ form.whatsapp_api_version }}</div>
+        </div>
+      </div>
+
+      <div x-show="provider === 'telegram'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+        <p class="text-sm text-stone-300">Telegram-Bot über @BotFather; Bot in die Gruppe einladen und Chat-ID als Standardziel eintragen.</p>
+        <div><label for="{{ form.telegram_bot_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.telegram_bot_token.label }}</label>{{ form.telegram_bot_token }}{% for error in form.telegram_bot_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+      </div>
+
+      <div x-show="provider === 'signal'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+        <p class="text-sm text-stone-300">signal-cli REST API selbst betreiben; Nummer registrieren oder Gerät verknüpfen.</p>
+        <div><label for="{{ form.signal_api_url.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.signal_api_url.label }}</label>{{ form.signal_api_url }}{% for error in form.signal_api_url.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+        <div><label for="{{ form.signal_sender_number.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.signal_sender_number.label }}</label>{{ form.signal_sender_number }}{% for error in form.signal_sender_number.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+        <div><label for="{{ form.signal_authorization.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.signal_authorization.label }}</label>{{ form.signal_authorization }}</div>
+      </div>
+
+      <div x-show="provider === 'element'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+        <p class="text-sm text-stone-300">Dedizierten unverschlüsselten Hinweisraum verwenden. E2EE-Räume benötigen einen anderen Client.</p>
+        <div><label for="{{ form.element_homeserver_url.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.element_homeserver_url.label }}</label>{{ form.element_homeserver_url }}{% for error in form.element_homeserver_url.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+        <div><label for="{{ form.element_access_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.element_access_token.label }}</label>{{ form.element_access_token }}{% for error in form.element_access_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+      </div>
+
+      <div x-show="provider === 'gotify'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+        <p class="text-sm text-stone-300">Selbst gehostetes Gotify; App-Token aus Gotify eintragen.</p>
+        <div><label for="{{ form.gotify_server_url.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.gotify_server_url.label }}</label>{{ form.gotify_server_url }}{% for error in form.gotify_server_url.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+        <div><label for="{{ form.gotify_app_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.gotify_app_token.label }}</label>{{ form.gotify_app_token }}{% for error in form.gotify_app_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-5 text-sm text-stone-300">
+        <label class="flex items-center gap-2">{{ form.is_enabled }} {{ form.is_enabled.label }}</label>
+        <label class="flex items-center gap-2">{{ form.insecure_tls }} {{ form.insecure_tls.label }}</label>
+      </div>
+      <label class="flex items-center gap-2 text-sm text-stone-300">
+        <input type="checkbox" name="send_test" class="h-4 w-4 rounded border-stone-600 bg-stone-900" />
+        Nach dem Speichern Testnachricht senden
+      </label>
+
+      <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Speichern</button>
+    </form>
+
+    <p class="text-xs text-stone-500">
+      Ausführliche Schritt-für-Schritt-Anleitung:
+      <a href="https://github.com/siekenetoc/club-zweisam/blob/main/docs/manual.md" class="underline decoration-stone-600 underline-offset-4 hover:text-amber-400">docs/manual.md</a>
+    </p>
+  </section>
+{% endblock %}

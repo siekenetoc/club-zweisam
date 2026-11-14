@@ -7,7 +7,7 @@ Stand: 2026-11-13. Grundlage: `docs/architecture.md`, `docs/data-model.md`,
 
 | Prüfung | Ergebnis |
 |---|---|
-| `pytest` | 150 Tests grün |
+| `pytest` | 154 Tests grün |
 | Playwright E2E | 2 Tests grün (Registrierung, Clubraum, Séparée, Concierge, Playbook, Lounge, Logbuch, Deep Talk, Krisenmodus, Punkte, Privacy Shield, Admin-Banner, Seiten) |
 | `ruff check .` | clean |
 | `black --check .` | clean |
@@ -99,8 +99,10 @@ Safe Mode puffert die Zustellung. Kanal-Secrets und Ziele sind feldverschlüssel
 Grenzen: Externe Anbieter sehen Metadaten und den generischen Text. Telegram-Bots
 sind nicht E2EE; Element benötigt einen unverschlüsselten Hinweisraum oder einen
 E2EE-fähigen Client; Signal nutzt die inoffizielle signal-cli-REST-API; WhatsApp
-benötigt Meta-Templates. Ein Inhalts-Spiegel oder automatische externe Gruppen
-werden bewusst nicht angeboten.
+benötigt die offizielle Meta-Cloud-API und Templates. Ein WhatsApp-Web-QR-Login
+wird nicht unterstützt, weil er nur über inoffizielle, ToS-widrige Bibliotheken
+möglich wäre. Ein Inhalts-Spiegel oder automatische externe Gruppen werden
+bewusst nicht angeboten.
 
 ## Restrisiken und bewusste Grenzen
 

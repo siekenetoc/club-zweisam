@@ -6,6 +6,7 @@ app_name = "admin_panel"
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
+    path("messenger/", views.messenger_setup, name="messenger_setup"),
     path("break-glass/", views.break_glass, name="break_glass"),
     path(
         "break-glass/<int:pk>/approve/",

@@ -129,9 +129,11 @@ python scripts/loadtest.py --url https://localhost/healthz --requests 300 --conc
 
 ## Push-Kanäle
 
-Kanäle werden im Django-Admin unter „Benachrichtigungskanäle“ angelegt
-(Superuser oder Gruppe „Plattform-Admin“). JSON-Beispiele und
-Provider-Autorisierung: `docs/manual.md`, Abschnitt 7.
+Kanäle werden über `/management/messenger/` (Gruppe „Plattform-Admin“,
+`is_staff=True`) eingerichtet; JSON-Rohkonfiguration bleibt im Django-Admin
+möglich. Schritt-für-Schritt-Autorisierung: `docs/manual.md`, Abschnitt 7.
+WhatsApp benötigt die offizielle Cloud API; ein WhatsApp-Web-QR-Login wird
+bewusst nicht unterstützt.
 
 - `PORTAL_BASE_URL` in `.env` auf die echte Portal-Domain setzen.
 - Nutzer abonnieren in der Lounge unter „Push-Benachrichtigungen“.

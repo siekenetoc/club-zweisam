@@ -15,6 +15,8 @@
   und Passwort-Reset über `django-allauth` umgesetzt und getestet.
 - Inhaltslose Push-Kanäle für WhatsApp, Telegram, Signal, Element und Gotify
   mit Opt-in, verschlüsselten Zielen/Secrets, Safe-Mode-Pufferung und Testkommando.
+- Einrichtungsassistent unter `/management/messenger/` für Plattform-Admins;
+  WhatsApp bleibt offiziell Cloud-API-basiert (kein WhatsApp-Web-QR).
 - Ausführliche Bedienungsanleitung: `docs/manual.md`.
 
 ## Fortschritt
