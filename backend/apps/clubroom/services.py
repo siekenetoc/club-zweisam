@@ -1,10 +1,18 @@
+import secrets
+
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from apps.accounts.models import User
-from apps.clubroom.models import Clubroom, Invitation, Membership, hash_token
+from apps.clubroom.models import (
+    Clubroom,
+    Invitation,
+    Membership,
+    default_invitation_expiry,
+    hash_token,
+)
 from apps.clubroom.permissions import OWNER, ROLE_CHOICES, ROLE_LABELS
 from apps.core.audit import AuditEntry
 from apps.feed.models import EVENT_CLUBROOM_CREATED, EVENT_MEMBER_JOINED, EVENT_MEMBER_REMOVED
@@ -227,6 +235,32 @@ def accept_invitation(*, raw_token: str, user) -> Membership:
             metadata={"role": membership.role},
         )
         return membership
+
+
+def resend_invitation(*, invitation: Invitation, actor) -> tuple[Invitation, str]:
+    membership = Membership.objects.filter(
+        clubroom=invitation.clubroom, user=actor, revoked_at__isnull=True
+    ).first()
+    if membership is None or membership.role != OWNER:
+        raise ValidationError("Nur Hauptmitglieder dürfen Einladungen erneut senden.")
+    if invitation.accepted_at is not None:
+        raise ValidationError(
+            "Bereits angenommene Einladungen können nicht erneut gesendet werden."
+        )
+    if invitation.revoked_at is not None:
+        raise ValidationError("Widerrufene Einladungen können nicht erneut gesendet werden.")
+    raw_token = secrets.token_urlsafe(32)
+    invitation.token_hash = hash_token(raw_token)
+    invitation.expires_at = default_invitation_expiry()
+    invitation.save(update_fields=["token_hash", "expires_at", "updated_at"])
+    _audit(
+        "invitation.resend",
+        actor=actor,
+        target_type="clubroom.invitation",
+        target_id=invitation.pk,
+        role=invitation.role,
+    )
+    return invitation, raw_token
 
 
 def revoke_invitation(*, invitation: Invitation, actor) -> None:

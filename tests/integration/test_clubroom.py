@@ -92,6 +92,48 @@ def test_invite_and_accept_flow(client):
     assert invitation.accepted_at is not None
 
 
+def test_resend_invitation_rotates_token(client):
+    owner = make_user("anna", "anna@example.com")
+    partner = make_user("bea", "bea@example.com")
+    make_clubroom(owner)
+    client.force_login(owner)
+    client.post(reverse("clubroom:invite"), {"email": "bea@example.com", "role": GUEST})
+    invitation = Invitation.objects.get()
+    old_token = extract_token(mail.outbox[0].body)
+
+    response = client.post(reverse("clubroom:invitation_resend", kwargs={"pk": invitation.pk}))
+    assert response.status_code == 302
+    assert len(mail.outbox) == 2
+    new_token = extract_token(mail.outbox[1].body)
+    assert new_token != old_token
+    invitation.refresh_from_db()
+    assert invitation.token_hash != __import__(
+        "apps.clubroom.models", fromlist=["hash_token"]
+    ).hash_token(old_token)
+    assert "So nimmst du teil" in mail.outbox[1].body
+
+    client.force_login(partner)
+    client.post(reverse("clubroom:invitation_accept", kwargs={"token": old_token}))
+    assert not Membership.objects.filter(user=partner).exists()
+    client.post(reverse("clubroom:invitation_accept", kwargs={"token": new_token}))
+    assert Membership.objects.filter(user=partner, role=GUEST).exists()
+
+
+def test_invitation_link_shows_login_or_register_for_anonymous(client):
+    owner = make_user("anna", "anna@example.com")
+    make_clubroom(owner)
+    client.force_login(owner)
+    client.post(reverse("clubroom:invite"), {"email": "bea@example.com", "role": GUEST})
+    token = extract_token(mail.outbox[0].body)
+    client.logout()
+    response = client.get(reverse("clubroom:invitation_accept", kwargs={"token": token}))
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Anmelden" in content
+    assert "Konto anlegen" in content
+    assert "bea@example.com" in content
+
+
 def test_invitation_email_is_bound(client):
     owner = make_user("anna", "anna@example.com")
     make_user("bea", "bea@example.com")

@@ -1,5 +1,6 @@
 import logging
 import smtplib
+from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib import messages
@@ -20,6 +21,7 @@ from apps.clubroom.services import (
     create_clubroom,
     invite_member,
     pending_invitations_for_email,
+    resend_invitation,
     revoke_invitation,
     revoke_membership,
     send_invitation_email,
@@ -166,7 +168,6 @@ def invitation_create(request):
     )
 
 
-@login_required
 def invitation_accept(request, token):
     token_hash = hash_token(token)
     invitation = (
@@ -178,6 +179,8 @@ def invitation_accept(request, token):
         raise Http404
 
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return redirect(f"{reverse('accounts:login')}?next={quote(request.path)}")
         try:
             membership = accept_invitation(raw_token=token, user=request.user)
         except ValidationError as exc:
@@ -197,9 +200,37 @@ def invitation_accept(request, token):
         {
             "invitation": invitation,
             "role_label": ROLE_LABELS.get(invitation.role, invitation.role),
-            "email_matches": (invitation.email.lower() == (request.user.email or "").lower()),
+            "email_matches": (
+                request.user.is_authenticated
+                and invitation.email.lower() == (request.user.email or "").lower()
+            ),
         },
     )
+
+
+@login_required
+@require_POST
+def invitation_resend(request, pk):
+    invitation = get_object_or_404(Invitation, pk=pk)
+    if active_membership_for(request.user) is None:
+        raise Http404
+    try:
+        invitation, raw_token = resend_invitation(invitation=invitation, actor=request.user)
+        accept_url = (
+            f"{settings.PORTAL_BASE_URL.rstrip('/')}"
+            f"{reverse('clubroom:invitation_accept', kwargs={'token': raw_token})}"
+        )
+        send_invitation_email(invitation=invitation, accept_url=accept_url)
+    except (ValidationError, OSError, smtplib.SMTPException) as exc:
+        if isinstance(exc, ValidationError):
+            for message in exc.messages:
+                messages.error(request, message)
+        else:
+            logger.exception("Einladungs-E-Mail konnte nicht erneut versendet werden.")
+            messages.error(request, "Einladung konnte nicht versendet werden.")
+    else:
+        messages.success(request, "Einladung wurde erneut gesendet.")
+    return redirect("clubroom:home")
 
 
 @login_required

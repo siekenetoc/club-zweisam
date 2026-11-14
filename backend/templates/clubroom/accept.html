@@ -17,6 +17,20 @@
       <div class="rounded-md border border-red-800 bg-red-950/60 px-4 py-3 text-sm text-red-200">
         Diese Einladung ist nicht mehr gültig.
       </div>
+    {% elif not user.is_authenticated %}
+      <div class="space-y-3 rounded-lg border border-stone-800 bg-stone-900/60 p-4">
+        <p class="text-sm text-stone-300">
+          Melde dich mit der eingeladenen E-Mail-Adresse an oder lege ein Konto an.
+          Nach der Aktivierung kannst du diese Einladung annehmen.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Anmelden</a>
+          <a href="{% url 'accounts:register' %}?next={{ request.path|urlencode }}" class="rounded-md border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">Konto anlegen</a>
+        </div>
+        <p class="text-xs text-stone-500">
+          Die Einladung ist an {{ invitation.email }} gebunden.
+        </p>
+      </div>
     {% elif not email_matches %}
       <div class="rounded-md border border-red-800 bg-red-950/60 px-4 py-3 text-sm text-red-200">
         Diese Einladung ist an eine andere E-Mail-Adresse gebunden. Melde dich

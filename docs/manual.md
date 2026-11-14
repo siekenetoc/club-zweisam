@@ -262,7 +262,24 @@ eingeladen werden, bilden aber keine zweite Dyade.
 4. Einladung annehmen; beide sind Hauptmitglieder.
 5. Rollen für weitere Personen nur bewusst und einzeln vergeben.
 
-### 4.3 Was ihr gemeinsam tun könnt
+### 4.3 Einladung annehmen und erneut senden
+
+Die Einladung ist an die E-Mail-Adresse gebunden. Wer die Einladung annimmt,
+muss mit genau dieser Adresse registriert und per Mail bestätigt sein.
+
+1. Einladungslink öffnen.
+2. Noch nicht angemeldet? „Anmelden“ oder „Konto anlegen“ wählen.
+3. Mit der eingeladenen Adresse registrieren und Aktivierungslink bestätigen.
+4. Einladungslink erneut öffnen und „Einladung annehmen“ klicken.
+
+Der Link funktioniert nicht mit einem Admin-/Staff-Konto; dafür ist ein
+separates Nicht-Staff-Konto nötig. Ist eine Einladung offen, kann das
+Hauptmitglied sie in der Clubraum-Ansicht über **„Erneut senden“** neu
+verschicken. Dabei werden ein neuer Token und eine neue Frist erzeugt; der alte
+Link wird ungültig. Ein bereits registrierter, aber unbekannter Account kann
+kein Passwort zurücksetzen – zuerst registrieren, nicht Passwort-Reset nutzen.
+
+### 4.4 Was ihr gemeinsam tun könnt
 
 - **Lounge:** täglicher Check-in (Stimmung, Energie, Nähe), 3-Tage-Barometer.
 - **Séparée:** Karten beantworten; Antworten bleiben verborgen, bis beide
@@ -278,7 +295,7 @@ eingeladen werden, bilden aber keine zweite Dyade.
 - **Vitrine:** gemeinsame Themen aus freigegebenen Matches und bestätigten
   Wünschen.
 
-### 4.4 Regeln, die das System trägt
+### 4.5 Regeln, die das System trägt
 
 - Safeword gilt; niemand muss eine Begründung für einen Abbruch geben.
 - Grenzen und Geheimantworten werden nicht offengelegt.

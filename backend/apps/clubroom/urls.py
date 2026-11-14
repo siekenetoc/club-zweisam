@@ -20,6 +20,11 @@ urlpatterns = [
         name="invitation_revoke",
     ),
     path(
+        "clubraum/einladung/<int:pk>/erneut-senden/",
+        views.invitation_resend,
+        name="invitation_resend",
+    ),
+    path(
         "clubraum/mitglied/<int:pk>/entfernen/",
         views.membership_revoke,
         name="membership_revoke",
