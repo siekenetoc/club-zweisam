@@ -96,7 +96,7 @@
       </div>
 
       <div x-show="provider === 'telegram'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
-        <p class="text-sm text-stone-300">Telegram-Bot über @BotFather; Bot in die Gruppe einladen und die numerische Chat-ID als Standardziel eintragen.</p>
+        <p class="text-sm text-stone-300">Telegram-Bot über @BotFather; Bot in die Gruppe einladen und die numerische Chat-ID als Standardziel eintragen. Die Gruppe muss von dir angelegt werden – Bots können keine Gruppen erstellen. Für einen schnellen Test reicht der Privatchat mit dem Bot (dort „Start“ drücken).</p>
         <div><label for="{{ form.telegram_bot_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.telegram_bot_token.label }}</label>{{ form.telegram_bot_token }}{% for error in form.telegram_bot_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
         <button type="submit" name="action" value="telegram_discover" formnovalidate class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Chat-ID ermitteln</button>
         {% if telegram_chats %}

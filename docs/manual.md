@@ -392,9 +392,12 @@ das nicht möchte, nutzt In-App-Benachrichtigungen, Telegram oder Gotify.
 
 1. Bei `@BotFather` einen Bot anlegen, Token kopieren.
 2. Bot in die gewünschte Gruppe einladen.
-3. Bot in die Gruppe einladen und dort eine Nachricht senden oder den Bot
-   erwähnen. Bei aktivierter Privacy-Mode in BotFather `/setprivacy` →
+3. Gruppe manuell in Telegram anlegen (Bots können keine Gruppen erstellen),
+   Bot `@<BotName>` als Mitglied hinzufügen und dort eine Nachricht senden oder
+   den Bot erwähnen. Bei aktivierter Privacy-Mode in BotFather `/setprivacy` →
    `Disable` setzen und den Bot neu hinzufügen.
+   Für einen schnellen Test reicht der Privatchat: Bot öffnen, „Start“ drücken,
+   Nachricht senden; die Chat-ID ist dann positiv.
 4. `/management/messenger/` → Telegram → Token eintragen → **Chat-ID
    ermitteln** → gefundene Gruppe übernehmen (ID ist negativ, z. B.
    `-1001234567890`). Alternativ die numerische ID manuell eintragen.
