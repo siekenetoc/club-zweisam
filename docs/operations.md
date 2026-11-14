@@ -17,10 +17,30 @@ docker compose up --build
 docker compose exec web python manage.py createsuperuser
 ```
 
-- Web: https://localhost (Caddy internal CA)
+- Web: https://club-zweisam.localhost (Caddy internal CA; https://localhost bleibt gültig)
 - Mailhog: http://localhost:8025
 - Tests: `docker compose exec web pytest`
 - E2E: `docker compose --profile e2e run --rm playwright`
+
+## Dev-TLS ohne Zertifikatswarnung
+
+`club-zweisam.localhost` und `localhost` zeigen auf die Dev-Instanz. Caddy nutzt
+eine interne CA. Einmalig exportieren und vertrauen:
+
+```bash
+scripts/setup-dev-tls.sh            # exportiert caddy-root.crt, zeigt Befehle
+scripts/setup-dev-tls.sh --system   # installiert zusätzlich systemweit (sudo)
+```
+
+- System/curl/wget: `sudo update-ca-certificates` nach Kopie in
+  `/usr/local/share/ca-certificates/`.
+- Firefox: eigene Zertifikatsverwaltung; Import per UI oder `certutil` im
+  jeweiligen Profil (`~/.mozilla/firefox/*` bzw. Snap-Profil).
+- Chrome/Chromium: `certutil -d sql:$HOME/.pki/nssdb` oder Einstellungen →
+  Zertifikate verwalten; Chrome danach neu starten.
+- Hostname: `*.localhost` wird hier auf Loopback aufgelöst. Falls nicht:
+  `127.0.0.1 club-zweisam.localhost` in `/etc/hosts` ergänzen.
+- Ohne Systeminstallation: `curl --cacert caddy-root.crt ...`.
 
 ## Prod
 

@@ -45,4 +45,5 @@ backend/tests/
 *.pem
 *.key
 FIELD_ENCRYPTION_KEY*
+caddy-root.crt
 GITHUB_DEPLOY_TOKEN*

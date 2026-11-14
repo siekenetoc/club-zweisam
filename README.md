@@ -136,20 +136,20 @@ docker compose up --build
 docker compose exec web python manage.py createsuperuser  # Verwaltung
 ```
 
-- Web: <https://localhost> (TLS über Caddys interne CA)
-- Registrieren: <https://localhost/registrieren/>
-- Anmelden: <https://localhost/anmelden/>
-- Séparée: <https://localhost/separee/>
-- Vitrine: <https://localhost/vitrine/>
-- Concierge: <https://localhost/concierge/>
-- Playbook: <https://localhost/playbook/>
-- Lounge: <https://localhost/lounge/>
-- Logbuch: <https://localhost/logbuch/>
-- Deep Talk: <https://localhost/deep-talk/>
-- Krisenmodus: <https://localhost/krisenmodus/>
-- Punkte: <https://localhost/punkte/>
-- Verwaltung: <https://localhost/management/> (Staff) und <https://localhost/admin/>
-- Seiten: <https://localhost/seite/agb/>, `/impressum/`, `/datenschutz/`, `/partner/`, `/disclaimer/`
+- Web: <https://club-zweisam.localhost> (TLS über Caddys interne CA)
+- Registrieren: <https://club-zweisam.localhost/registrieren/>
+- Anmelden: <https://club-zweisam.localhost/anmelden/>
+- Séparée: <https://club-zweisam.localhost/separee/>
+- Vitrine: <https://club-zweisam.localhost/vitrine/>
+- Concierge: <https://club-zweisam.localhost/concierge/>
+- Playbook: <https://club-zweisam.localhost/playbook/>
+- Lounge: <https://club-zweisam.localhost/lounge/>
+- Logbuch: <https://club-zweisam.localhost/logbuch/>
+- Deep Talk: <https://club-zweisam.localhost/deep-talk/>
+- Krisenmodus: <https://club-zweisam.localhost/krisenmodus/>
+- Punkte: <https://club-zweisam.localhost/punkte/>
+- Verwaltung: <https://club-zweisam.localhost/management/> (Staff) und <https://club-zweisam.localhost/admin/>
+- Seiten: <https://club-zweisam.localhost/seite/agb/>, `/impressum/`, `/datenschutz/`, `/partner/`, `/disclaimer/`
 - Mailhog (Einladungs-E-Mails): <http://localhost:8025>
 - Admin: <https://localhost/admin/>
 
@@ -161,11 +161,35 @@ Challenges sind auf drei Läufe pro Tag und Clubraum begrenzt
 (`PLAYBOOK_DAILY_LIMIT`). Punkte sind auf 10 pro Tag gedeckelt, davon höchstens
 3 aus Challenges (`POINTS_DAILY_CAP`, `POINTS_CHALLENGE_DAILY_CAP`).
 
-Caddy verwendet in Dev ein internes Zertifikat. Der Browser warnt beim ersten
-Aufruf. Root-Zertifikat zum Importieren:
+Caddy verwendet in Dev eine interne CA. `https://club-zweisam.localhost` und
+`https://localhost` funktionieren beide. Damit Firefox, Chrome/Chromium, curl und
+wget ohne Warnung zugreifen, muss die Caddy-Root-CA einmalig importiert werden:
+
 ```bash
 docker compose exec caddy cat /data/caddy/pki/authorities/local/root.crt > caddy-root.crt
 ```
+
+- Systemweit (curl/wget): `sudo install -m 0644 caddy-root.crt /usr/local/share/ca-certificates/club-zweisam-caddy.crt && sudo update-ca-certificates`
+- Firefox: Einstellungen → Datenschutz & Sicherheit → Zertifikate → Zertifikate
+  anzeigen → Zertifizierungsstellen → Importieren → `caddy-root.crt` →
+  „Diese CA zur Identifizierung von Websites vertrauen".
+- Chrome/Chromium: Einstellungen → Datenschutz und Sicherheit → Sicherheit →
+  Zertifikate verwalten → Zertifizierungsstellen → Importieren.
+
+Der Hostname `club-zweisam.localhost` wird von Browsern und gängigen
+Resolver-Konfigurationen auf Loopback aufgelöst. Falls curl/wget ihn nicht
+auflösen, einmalig `127.0.0.1 club-zweisam.localhost` in `/etc/hosts` eintragen.
+Ohne Systeminstallation funktionieren curl/wget auch mit
+`--cacert caddy-root.crt` bzw. `--ca-certificate=caddy-root.crt`.
+Ein Helfer exportiert die CA und importiert sie bei vorhandenem `certutil` in
+Chrome/Chromium und alle Firefox-Profile:
+
+```bash
+scripts/setup-dev-tls.sh --system
+```
+
+`--system` installiert die CA systemweit (sudo-Passwort wird abgefragt).
+Details und CLI-Alternativen: `docs/operations.md`.
 
 ## Setup (Prod)
 ```bash

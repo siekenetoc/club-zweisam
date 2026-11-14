@@ -2,9 +2,19 @@ from .base import *  # noqa: F403
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "web", "caddy"]
+ALLOWED_HOSTS = [
+    "club-zweisam.localhost",
+    "localhost",
+    "127.0.0.1",
+    "web",
+    "caddy",
+]
 
-CSRF_TRUSTED_ORIGINS = ["https://localhost", "https://127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://club-zweisam.localhost",
+    "https://localhost",
+    "https://127.0.0.1",
+]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 

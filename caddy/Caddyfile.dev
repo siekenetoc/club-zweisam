@@ -2,7 +2,7 @@
     local_certs
 }
 
-{$DOMAIN}, https://caddy {
+{$DOMAIN}, https://localhost, https://caddy {
     encode zstd gzip
 
     header {
