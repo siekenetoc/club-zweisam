@@ -1,10 +1,17 @@
-{% autoescape off %}Hallo {{ user.username }},
+{% autoescape off %}Hallo {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %},
 
-bitte bestätige deine E-Mail-Adresse für Club Zweisam:
+bitte bestätige deine E-Mail-Adresse für Club Zweisam.
 
+Diese E-Mail ist für:
+{{ user.email }} (Benutzername: {{ user.username }})
+
+So bestätigst du die Adresse:
+1. Öffne diesen Link:
 {{ activate_url }}
+2. Folge den Hinweisen im Portal.
 
-Wenn du diese Änderung nicht angefordert hast, ignoriere diese E-Mail.
+Der Link ist zeitlich begrenzt gültig. Wenn du diese Änderung nicht angefordert
+hast, ignoriere diese E-Mail.
 
 Club Zweisam
 {% endautoescape %}

@@ -220,7 +220,7 @@ def test_moderator_sees_status_but_no_secret_answers(client):
     create_check_in(clubroom=clubroom, user=anna, mood=4, energy=4, closeness=4)
     client.force_login(moderator)
     content = client.get(reverse("lounge:index")).content.decode()
-    assert "3-Tage-Barometer" in content
+    assert "Stimmungs-Monitor" in content
     assert "Stimmung 4/5" not in content
 
 

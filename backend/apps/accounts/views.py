@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from apps.accounts.gdpr import delete_user_data, export_user_data
 from apps.accounts.notification_forms import (
     PersonalChannelForm,
+    ProfileEditForm,
     initial_from_personal_channel,
 )
 from apps.clubroom.models import Membership
@@ -23,6 +24,7 @@ def profile(request):
         .first()
     )
     channels = PersonalNotificationChannel.objects.filter(user=request.user)
+    profile_form = ProfileEditForm(instance=request.user)
     channel = None
     channel_id = request.POST.get("channel_id") or request.GET.get("channel")
     if channel_id:
@@ -30,6 +32,23 @@ def profile(request):
 
     if request.method == "POST":
         action = request.POST.get("action")
+        if action == "profile_save":
+            profile_form = ProfileEditForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Profildaten gespeichert.")
+                return redirect("accounts:profile")
+            return render(
+                request,
+                "accounts/profile.html",
+                {
+                    "membership": membership,
+                    "channels": channels,
+                    "form": PersonalChannelForm(user=request.user),
+                    "profile_form": profile_form,
+                    "editing": None,
+                },
+            )
         if action == "delete" and channel is not None:
             channel.delete()
             messages.success(request, "Persönlicher Push-Kanal gelöscht.")
@@ -69,6 +88,7 @@ def profile(request):
             "membership": membership,
             "channels": channels,
             "form": form,
+            "profile_form": profile_form,
             "editing": channel,
         },
     )

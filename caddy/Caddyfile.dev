@@ -2,6 +2,10 @@
     local_certs
 }
 
+{$MAILHOG_DOMAIN:mail.club-zweisam.localhost} {
+    reverse_proxy mailhog:8025
+}
+
 {$DOMAIN}, https://localhost, https://caddy {
     encode zstd gzip
 

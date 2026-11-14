@@ -47,6 +47,23 @@ def index(request):
     can_write = membership.can_write_module("lounge")
     review_opt_in = has_weekly_review(clubroom, request.user)
     review = weekly_review(clubroom, request.user) if review_opt_in else None
+    mood_data = barometer(clubroom)
+    course = mood_data["overall"].get("mood")
+    if course is None:
+        course_label = "Noch keine Daten"
+        course_class = "text-stone-400"
+    elif course < 2:
+        course_label = "belastet"
+        course_class = "text-rose-300"
+    elif course < 3:
+        course_label = "gemischt"
+        course_class = "text-amber-300"
+    elif course < 4:
+        course_label = "stabil"
+        course_class = "text-emerald-300"
+    else:
+        course_label = "gut"
+        course_class = "text-emerald-300"
     channels = list(NotificationChannel.objects.filter(clubroom=clubroom, is_enabled=True))
     subscriptions = {
         subscription.channel_id: subscription
@@ -73,7 +90,9 @@ def index(request):
             "form": CheckInForm() if can_write and today_check_in is None else None,
             "today_check_in": today_check_in,
             "can_write": can_write,
-            "barometer": barometer(clubroom),
+            "barometer": mood_data,
+            "course_label": course_label,
+            "course_class": course_class,
             "review_opt_in": review_opt_in,
             "review": review,
             "notifications": recent_notifications(request.user),

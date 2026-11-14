@@ -151,7 +151,7 @@ Kartenansicht, Menüs als aufklappbares mobiles Menü umgesetzt.
 ### 3.4 Systemkonfiguration
 
 - Domain: Django Sites (`SITE_ID=1`) auf die echte Domain setzen.
-- E-Mail: SMTP in `.env`; in Dev Mailhog `http://localhost:8025`.
+- E-Mail: SMTP in `.env`; in Dev Mailhog `https://mail.club-zweisam.localhost` (oder `http://localhost:8025`).
 - `PORTAL_BASE_URL` setzen, damit Push-Links auf die richtige Domain zeigen.
 - TLS: in Produktion ACME/Domain; in Dev Caddy-intern (siehe README).
 
@@ -475,7 +475,10 @@ wird verschlüsselt gespeichert und ist im DSGVO-Export enthalten.
 
 ## 8. Troubleshooting
 
-- **Keine Aktivierungs-Mail:** Mailhog/SMTP prüfen; Spam; Adresse korrekt.
+- **Keine Aktivierungs-Mail:** Mailhog unter `https://mail.club-zweisam.localhost`
+  prüfen; Empfänger im Feld „To“; Spam; Adresse korrekt. Bei mehreren Nutzern
+  zeigt Mailhog jede Mail mit der konkreten Empfängeradresse; Aktivierungslinks
+  sind pro `EmailAddress` eindeutig.
 - **Login verweigert:** E-Mail noch nicht bestätigt; Link erneut anfordern.
 - **Kein Push:** Kanal aktiv? Abonnement aktiv? Ziel vorhanden? `push_test`
   ausführen; Logs auf „Push-Zustellung fehlgeschlagen“ prüfen.
@@ -567,7 +570,7 @@ docker compose exec web python manage.py email_test --to deine@adresse.tld
 ```
 
 Die Testmail nutzt denselben SMTP-Weg wie Aktivierung und Passwort-Reset.
-In Dev erscheint sie in Mailhog: <http://localhost:8025>.
+In Dev erscheint sie in Mailhog: <https://mail.club-zweisam.localhost> (oder <http://localhost:8025>).
 
 ### 10.4 Wenn der Versand fehlschlägt
 

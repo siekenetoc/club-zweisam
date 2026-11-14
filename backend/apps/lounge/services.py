@@ -63,11 +63,18 @@ def barometer(clubroom, days: int = 3):
         )
         .order_by("user__username")
     )
+    total = check_ins.count()
+
+    def score(value):
+        return max(0, min(100, round((value or 0) / 5 * 100)))
+
     return {
         "start": start,
         "end": today(),
         "overall": overall,
+        "overall_pct": {key: score(overall[key]) for key in ("mood", "energy", "closeness")},
         "per_user": list(per_user),
+        "total": total,
     }
 
 

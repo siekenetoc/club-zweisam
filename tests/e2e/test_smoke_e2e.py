@@ -2,6 +2,7 @@ import os
 import re
 import time
 import uuid
+from urllib.parse import urlparse
 
 import pytest
 from playwright.sync_api import sync_playwright
@@ -76,7 +77,8 @@ def test_registration_and_clubroom_creation():
         page.click("button[type=submit]")
         page.wait_for_url(f"{base_url}/accounts/confirm-email/")
         activation_url = confirmation_url_for(page, email)
-        page.goto(activation_url, wait_until="load")
+        activation_path = urlparse(activation_url).path
+        page.goto(f"{base_url}{activation_path}", wait_until="load")
         page.wait_for_url(f"{base_url}/")
         assert "Noch kein Clubraum" in page.content()
 

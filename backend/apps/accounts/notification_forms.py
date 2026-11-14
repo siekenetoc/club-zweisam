@@ -102,3 +102,20 @@ def initial_from_personal_channel(channel):
             }
         )
     return initial
+
+
+class ProfileEditForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        from apps.accounts.models import User
+
+        model = User
+        fields = ("username", "first_name", "last_name")
+        labels = {
+            "username": "Benutzername",
+            "first_name": "Vorname",
+            "last_name": "Nachname",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._style_fields()

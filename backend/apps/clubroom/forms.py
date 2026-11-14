@@ -103,3 +103,37 @@ class InvitationForm(StyledFormMixin, forms.Form):
 
     def clean_email(self):
         return self.cleaned_data["email"].strip().lower()
+
+
+class ClubroomSettingsForm(StyledFormMixin, forms.ModelForm):
+    safe_word = forms.CharField(
+        label="Neues Safeword (leer lassen = unverändert)",
+        required=False,
+        widget=forms.PasswordInput(render_value=False),
+        help_text="Mindestens drei Zeichen, falls du es änderst.",
+    )
+
+    class Meta:
+        model = Clubroom
+        fields = ("name", "rules")
+        labels = {"name": "Name des Clubraums", "rules": "Hausregeln"}
+        widgets = {"rules": forms.Textarea(attrs={"rows": 5})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._style_fields()
+
+    def clean_safe_word(self):
+        value = (self.cleaned_data.get("safe_word") or "").strip()
+        if value and len(value) < 3:
+            raise forms.ValidationError("Das Safeword braucht mindestens drei Zeichen.")
+        return value
+
+    def save(self, commit=True):
+        clubroom = super().save(commit=False)
+        safe_word = self.cleaned_data.get("safe_word")
+        if safe_word:
+            clubroom.safe_word = safe_word
+        if commit:
+            clubroom.save()
+        return clubroom

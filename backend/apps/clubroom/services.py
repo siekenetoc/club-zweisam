@@ -144,14 +144,29 @@ def invite_member(
 
 
 def send_invitation_email(*, invitation: Invitation, accept_url: str) -> None:
-    subject = f"Einladung in den Clubraum „{invitation.clubroom.name}“"
+    recipient = User.objects.filter(email__iexact=invitation.email).first()
+    recipient_name = (
+        recipient.first_name.strip()
+        if recipient and recipient.first_name.strip()
+        else invitation.email
+    )
+    inviter_name = invitation.invited_by.get_full_name().strip()
+    if not inviter_name:
+        inviter_name = invitation.invited_by.username
+    subject = f"Einladung von {inviter_name} in den Clubraum „{invitation.clubroom.name}“"
     body = (
-        f"du wurdest in den Clubraum „{invitation.clubroom.name}“ eingeladen.\n\n"
-        f"Rolle: {ROLE_LABELS.get(invitation.role, invitation.role)}\n"
-        f"Einladender: {invitation.invited_by.username}\n"
-        f"Link: {accept_url}\n\n"
-        f"Der Link läuft am {invitation.expires_at:%d.%m.%Y %H:%M} ab.\n"
-        "Wenn du nicht möchtest, ignoriere diese E-Mail einfach.\n"
+        f"Hallo {recipient_name},\n\n"
+        f"{inviter_name} (@{invitation.invited_by.username}) hat dich in den "
+        f"Clubraum „{invitation.clubroom.name}“ eingeladen.\n\n"
+        f"Deine Rolle: {ROLE_LABELS.get(invitation.role, invitation.role)}\n"
+        f"Einladung für: {invitation.email}\n\n"
+        "So nimmst du teil:\n"
+        f"1. Öffne diesen Link: {accept_url}\n"
+        f"2. Melde dich mit {invitation.email} an oder registriere dich damit.\n"
+        "3. Klicke auf „Einladung annehmen“.\n\n"
+        f"Der Link ist bis {invitation.expires_at:%d.%m.%Y %H:%M} gültig.\n"
+        "Wenn du nicht möchtest, ignoriere diese E-Mail einfach.\n\n"
+        "Club Zweisam\n"
     )
     send_mail(subject, body, None, [invitation.email])
 

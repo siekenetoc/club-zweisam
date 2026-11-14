@@ -163,7 +163,7 @@ Details und Anbieter-Checkliste: `docs/manual.md`, Abschnitt 10.
 - Passwort-Reset unter `/accounts/password/reset/`, Passwort ändern unter
   `/accounts/password/change/`
 - Aktivierungs- und Reset-Links laufen über HTTPS und sind zeitlich begrenzt
-- Dev: Mailhog unter http://localhost:8025; Prod: SMTP aus `.env`
+- Dev: Mailhog unter https://mail.club-zweisam.localhost (oder http://localhost:8025); Prod: SMTP aus `.env`
 - Die Site-Domain für E-Mails steht in Django Sites (`SITE_ID=1`) und muss in
   Produktion auf die echte Domain gesetzt werden
 
@@ -202,8 +202,14 @@ docker compose exec web python manage.py createsuperuser  # Verwaltung
 - Punkte: <https://club-zweisam.localhost/punkte/>
 - Verwaltung: <https://club-zweisam.localhost/management/> (Staff) und <https://club-zweisam.localhost/admin/>
 - Seiten: <https://club-zweisam.localhost/seite/agb/>, `/impressum/`, `/datenschutz/`, `/partner/`, `/disclaimer/`
-- Mailhog (Einladungs-E-Mails): <http://localhost:8025>
+- Mailhog (E-Mails): <https://mail.club-zweisam.localhost> (zusätzlich <http://localhost:8025>)
 - Admin: <https://localhost/admin/>
+
+Die Mailhog-Oberfläche ist über `https://mail.club-zweisam.localhost` (Caddy,
+gleiche CA) und `http://localhost:8025` erreichbar. E-Mails sind an die jeweilige
+Empfängeradresse adressiert; Mailhog zeigt sie im Feld „To“. Aktivierungs-,
+Reset- und Einladungsmails enthalten Empfänger, Absender/Einladenden, Zweck,
+Handlungsschritte und Gültigkeit.
 
 Einladungen laufen standardmäßig nach 7 Tagen ab (`INVITATION_TTL_DAYS` in `.env`).
 Die Einladungs-E-Mail enthält nur den Annahme-Link, keine Geheiminhalte.
@@ -270,7 +276,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 163 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 165 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

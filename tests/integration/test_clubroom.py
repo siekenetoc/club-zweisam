@@ -70,6 +70,9 @@ def test_invite_and_accept_flow(client):
     assert response.status_code == 302
     assert len(mail.outbox) == 1
     assert "Anker" not in mail.outbox[0].body
+    assert "So nimmst du teil" in mail.outbox[0].body
+    assert "Einladung von" in mail.outbox[0].subject
+    assert "https://club-zweisam.localhost/einladung/" in mail.outbox[0].body
 
     invitation = Invitation.objects.get()
     assert invitation.email == "bea@example.com"
@@ -183,6 +186,32 @@ def test_only_two_owners(client):
     )
     assert response.status_code == 200
     assert Invitation.objects.filter(email="dora@example.com").count() == 0
+
+
+def test_owner_can_edit_clubroom_settings(client):
+    owner = make_user("anna", "anna@example.com")
+    partner = make_user("bea", "bea@example.com")
+    clubroom = make_clubroom(owner)
+    Membership.objects.create(clubroom=clubroom, user=partner, role=GUEST)
+    client.force_login(owner)
+    response = client.get(reverse("clubroom:settings"))
+    assert response.status_code == 200
+    response = client.post(
+        reverse("clubroom:settings"),
+        {
+            "name": "Neuer Name",
+            "rules": "Neue Regel.",
+            "safe_word": "NeuesWort",
+        },
+    )
+    assert response.status_code == 302
+    clubroom.refresh_from_db()
+    assert clubroom.name == "Neuer Name"
+    assert clubroom.rules == "Neue Regel."
+    assert clubroom.safe_word == "NeuesWort"
+
+    client.force_login(partner)
+    assert client.get(reverse("clubroom:settings")).status_code == 403
 
 
 def test_non_owner_cannot_invite(client):

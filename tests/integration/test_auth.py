@@ -48,6 +48,7 @@ def test_signup_sends_activation_and_requires_verified_email(client):
     assert email_address.verified is False
     assert len(mail.outbox) == 1
     assert "confirm-email" in mail.outbox[0].body
+    assert "https://club-zweisam.localhost/accounts/confirm-email/" in mail.outbox[0].body
 
     login = client.post(
         reverse("accounts:login"),
@@ -132,6 +133,25 @@ def test_password_reset_by_email(client):
         {"login": "anna", "password": "noch-geheimer-5678"},
     )
     assert login.status_code == 302
+
+
+def test_profile_fields_are_editable(client):
+    user = make_verified_user()
+    client.force_login(user)
+    response = client.post(
+        reverse("accounts:profile"),
+        {
+            "action": "profile_save",
+            "username": "anna-neu",
+            "first_name": "Anna",
+            "last_name": "Beispiel",
+        },
+    )
+    assert response.status_code == 302
+    user.refresh_from_db()
+    assert user.username == "anna-neu"
+    assert user.first_name == "Anna"
+    assert user.last_name == "Beispiel"
 
 
 def test_password_change_page_is_available(client):

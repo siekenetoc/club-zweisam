@@ -1,6 +1,7 @@
 import logging
 import smtplib
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -10,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from apps.clubroom.forms import ClubroomForm, InvitationForm
+from apps.clubroom.forms import ClubroomForm, ClubroomSettingsForm, InvitationForm
 from apps.clubroom.models import Invitation, Membership, hash_token
 from apps.clubroom.permissions import MODULE_LABELS, OWNER, ROLE_LABELS
 from apps.clubroom.services import (
@@ -92,6 +93,29 @@ def clubroom_create(request):
 
 
 @login_required
+def clubroom_settings(request):
+    membership = active_membership_for(request.user)
+    if membership is None:
+        raise Http404
+    if membership.role != OWNER:
+        raise PermissionDenied("Nur Hauptmitglieder dürfen den Clubraum bearbeiten.")
+    clubroom = membership.clubroom
+    if request.method == "POST":
+        form = ClubroomSettingsForm(request.POST, instance=clubroom)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Clubraum-Einstellungen gespeichert.")
+            return redirect("clubroom:home")
+    else:
+        form = ClubroomSettingsForm(instance=clubroom)
+    return render(
+        request,
+        "clubroom/settings.html",
+        {"form": form, "clubroom": clubroom},
+    )
+
+
+@login_required
 def invitation_create(request):
     membership = active_membership_for(request.user)
     if membership is None:
@@ -112,8 +136,9 @@ def invitation_create(request):
             except ValidationError as exc:
                 form.add_error(None, exc)
             else:
-                accept_url = request.build_absolute_uri(
-                    reverse("clubroom:invitation_accept", kwargs={"token": raw_token})
+                accept_url = (
+                    f"{settings.PORTAL_BASE_URL.rstrip('/')}"
+                    f"{reverse('clubroom:invitation_accept', kwargs={'token': raw_token})}"
                 )
                 try:
                     send_invitation_email(invitation=invitation, accept_url=accept_url)

@@ -18,7 +18,7 @@ docker compose exec web python manage.py createsuperuser
 ```
 
 - Web: https://club-zweisam.localhost (Caddy internal CA; https://localhost bleibt gültig)
-- Mailhog: http://localhost:8025
+- Mailhog: https://mail.club-zweisam.localhost (oder http://localhost:8025)
 - Tests: `docker compose exec web pytest`
 - E2E: `docker compose --profile e2e run --rm playwright`
 
@@ -57,7 +57,7 @@ Das Prod-Image enthält keine Dev-Werkzeuge.
 ## E-Mail und Aktivierung
 
 - Neue Konten sind erst nach Klick auf den Aktivierungslink nutzbar.
-- Dev: Mailhog `http://localhost:8025`; Produktion: SMTP in `.env` konfigurieren.
+- Dev: Mailhog `https://mail.club-zweisam.localhost` (oder `http://localhost:8025`); Produktion: SMTP in `.env` konfigurieren.
 - SMTP-Variablen: `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`,
   `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_TIMEOUT`,
   `DEFAULT_FROM_EMAIL`. Entweder STARTTLS (587) **oder** SSL (465), nie beides.

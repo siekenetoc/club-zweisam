@@ -7,6 +7,7 @@ app_name = "clubroom"
 urlpatterns = [
     path("", views.home, name="home"),
     path("clubraum/neu/", views.clubroom_create, name="create"),
+    path("clubraum/einstellungen/", views.clubroom_settings, name="settings"),
     path("clubraum/einladen/", views.invitation_create, name="invite"),
     path(
         "einladung/<str:token>/",

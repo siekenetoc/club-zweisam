@@ -158,6 +158,7 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Club Zweisam] "
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 ACCOUNT_FORMS = {"signup": "apps.accounts.allauth_forms.ClubSignupForm"}
 ACCOUNT_SIGNUP_REDIRECT_URL = "clubroom:home"
+ACCOUNT_ADAPTER = "apps.accounts.adapters.ClubAccountAdapter"
 
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "clubroom:home"
