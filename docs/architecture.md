@@ -99,6 +99,18 @@ text
 - Nicht-Matches: 30 Tage, dann werden Antworten und Match-Metadaten gelöscht.
 - Abgelehnte Wünsche: 90 Tage, dann Inhalte gelöscht, nur Metadaten.
 
+### 6a. Authentifizierung
+- `django-allauth` für Registrierung, Pflicht-Aktivierung per E-Mail, Login per
+  Benutzername oder E-Mail und Passwort-Reset.
+- Bestehende Konten werden als verifizierte `EmailAddress` übernommen.
+
+### 6b. Externe Kommunikationskanäle
+- Kein Bridging von Clubraum-Inhalten in WhatsApp-, Telegram-, Signal- oder
+  Element-Gruppen. Das würde E2E-Schutz, Rollen, Audit und Löschkonzept aushebeln.
+- Optional sind nur inhaltslose Push-Benachrichtigungen (z. B. selbst gehostetes
+  Gotify) mit Deep-Link in die App und ausdrücklichem Opt-in denkbar.
+- Clubraum-Gruppen werden nicht automatisch bei externen Anbietern angelegt.
+
 ### 7. Benachrichtigungen
 - Niemals Inhalte. Nur Event-Typ.
 - Safe-Mode-Flag: Queue auf Server, Zustellung beim Deaktivieren.

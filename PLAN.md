@@ -10,6 +10,12 @@
 - **Aktueller Meilenstein:** M10 – umgesetzt, Freigabe ausstehend
 - **Letzte Aktualisierung:** 2026-11-13
 
+## Nachtrag (2026-11-14)
+- Registrierung, verpflichtende E-Mail-Aktivierung, Login per Benutzername/E-Mail
+  und Passwort-Reset über `django-allauth` umgesetzt und getestet (133 Tests, E2E).
+- Externe Messenger werden bewusst nicht als Inhaltsspiegel integriert; siehe
+  `docs/architecture.md` und `docs/security-review.md`.
+
 ## Fortschritt
 - [x] M0 – Setup & Grundgerüst (2026-11-13, freigegeben)
 - [x] M1 – Auth & Clubraum (2026-11-13, autonom freigegeben)

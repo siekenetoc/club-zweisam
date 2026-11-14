@@ -54,6 +54,15 @@ docker compose exec web python manage.py createsuperuser
 Der Entrypoint führt `migrate` und `collectstatic` aus; Gunicorn startet danach.
 Das Prod-Image enthält keine Dev-Werkzeuge.
 
+## E-Mail und Aktivierung
+
+- Neue Konten sind erst nach Klick auf den Aktivierungslink nutzbar.
+- Dev: Mailhog `http://localhost:8025`; Produktion: SMTP in `.env` konfigurieren.
+- Django Sites (`SITE_ID=1`) auf die echte Domain setzen:
+  `docker compose exec web python manage.py shell` →
+  `Site.objects.filter(pk=1).update(domain="example.org", name="Club Zweisam")`.
+- Passwort-Reset: `/accounts/password/reset/`.
+
 ## Admin-Zugang
 
 - Django-Admin: `/admin/` (Staff/Superuser)

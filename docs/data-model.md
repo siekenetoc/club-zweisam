@@ -15,6 +15,9 @@
   - `notification_queue_id: UUID` (Redis-Queue-Referenz)
   - `age_verified: bool`
   - `tos_accepted_at: datetime`
+- `allauth.account.EmailAddress`
+  - E-Mail-Adressen mit `verified`/`primary` für Aktivierung und Passwort-Reset
+  - bestehende Nutzer werden per Migration als verifiziert übernommen
 
 ### clubroom
 - `Clubroom`

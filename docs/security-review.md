@@ -7,7 +7,7 @@ Stand: 2026-11-13. Grundlage: `docs/architecture.md`, `docs/data-model.md`,
 
 | Prüfung | Ergebnis |
 |---|---|
-| `pytest` | 132 Tests grün |
+| `pytest` | 134 Tests grün |
 | Playwright E2E | 2 Tests grün (Registrierung, Clubraum, Séparée, Concierge, Playbook, Lounge, Logbuch, Deep Talk, Krisenmodus, Punkte, Privacy Shield, Admin-Banner, Seiten) |
 | `ruff check .` | clean |
 | `black --check .` | clean |
@@ -87,6 +87,15 @@ Gunicorn/Prod):
 
 Die Werte sind eine Funktions-/Stabilitätsbaseline, kein Produktions-Benchmark.
 
+## Externe Messenger
+
+WhatsApp, Telegram, Signal und Element werden nicht als Gruppen-Spiegel des
+Clubraums integriert. Begründung: Metadaten und Inhalte verlassen den
+kontrollierten Bereich, Brücken brechen E2EE, Gruppenmitgliedschaften lassen
+sich nicht an Rollen/Consent binden, und Löschung/Audit wären nicht durchsetzbar.
+Optional zulässig sind ausschließlich inhaltslose Pings per self-hosted
+Gotify/ntfy mit Deep-Link und Opt-in.
+
 ## Restrisiken und bewusste Grenzen
 
 - Super-Admin mit DB- und Schlüsselzugriff kann alles lesen.
@@ -96,7 +105,9 @@ Die Werte sind eine Funktions-/Stabilitätsbaseline, kein Produktions-Benchmark.
   kurzen Fenster davor können bereits zugestellt sein.
 - Einladungs-Token steht in der URL und kann in Access-Logs erscheinen; der
   Token ist gehasht gespeichert und läuft ab.
-- Kein E-Mail-Verify, kein Passwort-Reset, keine 2FA, kein Rate-Limit in v1.
+- Registrierung mit E-Mail-Aktivierung, Login per Benutzername/E-Mail und
+  Passwort-Reset über django-allauth sind umgesetzt; 2FA und Rate-Limit bleiben offen.
+- Die Signup-Form kann bei doppelter E-Mail die Existenz offenlegen (Enumeration).
 - Kein automatischer Scheduler im Stack; Retention-Befehle müssen per Cron/
   systemd ausgeführt werden.
 - Audit-Einträge werden nicht automatisch gelöscht.

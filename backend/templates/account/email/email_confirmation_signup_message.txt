@@ -1,0 +1,11 @@
+{% autoescape off %}Hallo {{ user.username }},
+
+bitte bestätige deine E-Mail-Adresse für Club Zweisam:
+
+{{ activate_url }}
+
+Der Link ist zeitlich begrenzt gültig. Wenn du dich nicht registriert hast,
+ignoriere diese E-Mail einfach.
+
+Club Zweisam
+{% endautoescape %}

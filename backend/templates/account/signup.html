@@ -1,0 +1,43 @@
+{% extends "account/base_entrance.html" %}
+{% block head_title %}Registrieren{% endblock %}
+{% block content %}
+  <section class="mx-auto max-w-md space-y-6">
+    <div>
+      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Zugang</p>
+      <h1 class="mt-2 text-2xl font-semibold">Konto anlegen</h1>
+      <p class="mt-2 text-sm text-stone-400">
+        Nach dem Absenden senden wir einen Aktivierungslink per E-Mail.
+        Erst danach ist die Anmeldung möglich.
+      </p>
+    </div>
+
+    <form method="post" action="" class="space-y-4">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="space-y-1 rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">
+          {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="mt-1 text-xs text-stone-500">{{ field.help_text|safe }}</div>{% endif %}
+          {% for error in field.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+      <p class="text-xs text-stone-500">
+        Mit der Registrierung bestätigst du Volljährigkeit sowie
+        <a href="{% url 'pages:detail' 'agb' %}" class="underline decoration-stone-600 underline-offset-4">AGB</a>
+        und
+        <a href="{% url 'pages:detail' 'datenschutz' %}" class="underline decoration-stone-600 underline-offset-4">Datenschutz</a>.
+      </p>
+      <button type="submit" class="w-full rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Konto anlegen</button>
+    </form>
+
+    <p class="text-sm text-stone-400">
+      Schon registriert?
+      <a href="{% url 'accounts:login' %}" class="text-amber-400 underline underline-offset-4">Anmelden</a>
+    </p>
+  </section>
+{% endblock %}

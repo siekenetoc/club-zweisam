@@ -1,11 +1,35 @@
 import os
 import re
+import time
 import uuid
 
 import pytest
 from playwright.sync_api import sync_playwright
 
 pytestmark = pytest.mark.e2e
+
+
+def confirmation_url_for(page, email):
+    deadline = time.time() + 5
+    while time.time() < deadline:
+        response = page.request.get("http://mailhog:8025/api/v2/messages")
+        if response.ok:
+            for item in response.json().get("items", []):
+                recipients = [
+                    f"{recipient.get('Mailbox')}@{recipient.get('Domain')}"
+                    for recipient in item.get("To", [])
+                ]
+                if email not in recipients:
+                    continue
+                body = item.get("Content", {}).get("Body", "")
+                match = re.search(
+                    r"https?://[^\s\"'<>]+/accounts/confirm-email/[^\s\"'<>]+",
+                    body,
+                )
+                if match:
+                    return match.group(0)
+        time.sleep(0.2)
+    raise AssertionError(f"Keine Bestätigungs-E-Mail für {email} gefunden")
 
 
 def launch_page(playwright):
@@ -46,6 +70,9 @@ def test_registration_and_clubroom_creation():
         page.check("#id_age_confirmed")
         page.check("#id_tos_accepted")
         page.click("button[type=submit]")
+        page.wait_for_url(f"{base_url}/accounts/confirm-email/")
+        activation_url = confirmation_url_for(page, email)
+        page.goto(activation_url, wait_until="load")
         page.wait_for_url(f"{base_url}/")
         assert "Noch kein Clubraum" in page.content()
 

@@ -1,0 +1,11 @@
+{% extends "account/base_manage.html" %}
+{% block head_title %}Abmelden{% endblock %}
+{% block content %}
+  <section class="mx-auto max-w-md space-y-4">
+    <h1 class="text-2xl font-semibold">Abmelden?</h1>
+    <form method="post" action="{% url 'account_logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Ja, abmelden</button>
+    </form>
+  </section>
+{% endblock %}

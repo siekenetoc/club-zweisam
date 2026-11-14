@@ -8,6 +8,7 @@ from apps.core.views import HealthView
 urlpatterns = [
     path("", include("apps.clubroom.urls")),
     path("", include("apps.accounts.urls")),
+    path("accounts/", include("allauth.urls")),
     path("separee/", include("apps.roulette.urls")),
     path("vitrine/", include("apps.vitrine.urls")),
     path("concierge/", include("apps.wishes.urls")),

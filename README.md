@@ -115,6 +115,17 @@ Umgesetzt in M9:
 - Andere sehen keinen Safe-Mode-Hinweis; Admin-Ansicht zeigt das Flag nicht
 - Hinweis: Der lokale PIN ist ein Sichtschutz, keine kryptografische Sperre
 
+## Authentifizierung (django-allauth)
+
+- Registrierung unter `/registrieren/` mit **Pflicht-Aktivierung per E-Mail**
+- Login unter `/anmelden/` mit Benutzername **oder** E-Mail-Adresse
+- Passwort-Reset unter `/accounts/password/reset/`, Passwort ändern unter
+  `/accounts/password/change/`
+- Aktivierungs- und Reset-Links laufen über HTTPS und sind zeitlich begrenzt
+- Dev: Mailhog unter http://localhost:8025; Prod: SMTP aus `.env`
+- Die Site-Domain für E-Mails steht in Django Sites (`SITE_ID=1`) und muss in
+  Produktion auf die echte Domain gesetzt werden
+
 Umgesetzt in M10:
 - Abhängigkeiten gehärtet: Django 5.2 LTS, cryptography 50, Pillow 13; Prod-Image ohne Dev-Tools
 - `pip-audit` (Prod/Dev) und `bandit` ohne Befunde, `check --deploy` clean
@@ -218,7 +229,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 132 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 134 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

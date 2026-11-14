@@ -1,0 +1,10 @@
+{% autoescape off %}Hallo {{ user.username }},
+
+bitte bestätige deine E-Mail-Adresse für Club Zweisam:
+
+{{ activate_url }}
+
+Wenn du diese Änderung nicht angefordert hast, ignoriere diese E-Mail.
+
+Club Zweisam
+{% endautoescape %}
