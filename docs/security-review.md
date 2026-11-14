@@ -7,7 +7,7 @@ Stand: 2026-11-13. Grundlage: `docs/architecture.md`, `docs/data-model.md`,
 
 | Prüfung | Ergebnis |
 |---|---|
-| `pytest` | 134 Tests grün |
+| `pytest` | 150 Tests grün |
 | Playwright E2E | 2 Tests grün (Registrierung, Clubraum, Séparée, Concierge, Playbook, Lounge, Logbuch, Deep Talk, Krisenmodus, Punkte, Privacy Shield, Admin-Banner, Seiten) |
 | `ruff check .` | clean |
 | `black --check .` | clean |
@@ -89,12 +89,18 @@ Die Werte sind eine Funktions-/Stabilitätsbaseline, kein Produktions-Benchmark.
 
 ## Externe Messenger
 
-WhatsApp, Telegram, Signal und Element werden nicht als Gruppen-Spiegel des
-Clubraums integriert. Begründung: Metadaten und Inhalte verlassen den
-kontrollierten Bereich, Brücken brechen E2EE, Gruppenmitgliedschaften lassen
-sich nicht an Rollen/Consent binden, und Löschung/Audit wären nicht durchsetzbar.
-Optional zulässig sind ausschließlich inhaltslose Pings per self-hosted
-Gotify/ntfy mit Deep-Link und Opt-in.
+WhatsApp, Telegram, Signal, Element und Gotify sind ausschließlich als
+**inhaltslose Push-Kanäle** angebunden: Der Text ist immer
+„Club Zweisam: Neues Ereignis im Portal. <PORTAL_BASE_URL>/lounge/“.
+Es werden keine Titel, Wünsche, Antworten, Matches, Ereignistypen oder Namen
+übertragen. Jeder Nutzer muss den Kanal in der Lounge ausdrücklich abonnieren;
+Safe Mode puffert die Zustellung. Kanal-Secrets und Ziele sind feldverschlüsselt.
+
+Grenzen: Externe Anbieter sehen Metadaten und den generischen Text. Telegram-Bots
+sind nicht E2EE; Element benötigt einen unverschlüsselten Hinweisraum oder einen
+E2EE-fähigen Client; Signal nutzt die inoffizielle signal-cli-REST-API; WhatsApp
+benötigt Meta-Templates. Ein Inhalts-Spiegel oder automatische externe Gruppen
+werden bewusst nicht angeboten.
 
 ## Restrisiken und bewusste Grenzen
 
@@ -107,6 +113,8 @@ Gotify/ntfy mit Deep-Link und Opt-in.
   Token ist gehasht gespeichert und läuft ab.
 - Registrierung mit E-Mail-Aktivierung, Login per Benutzername/E-Mail und
   Passwort-Reset über django-allauth sind umgesetzt; 2FA und Rate-Limit bleiben offen.
+- Externe Push-Kanäle sind inhaltslos und opt-in; Fehlzustellungen werden nur
+  geloggt und nicht automatisch wiederholt.
 - Die Signup-Form kann bei doppelter E-Mail die Existenz offenlegen (Enumeration).
 - Kein automatischer Scheduler im Stack; Retention-Befehle müssen per Cron/
   systemd ausgeführt werden.

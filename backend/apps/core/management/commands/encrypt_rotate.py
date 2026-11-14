@@ -4,6 +4,7 @@ from django.db import transaction
 
 from apps.clubroom.models import Clubroom
 from apps.core.audit import AuditEntry
+from apps.feed.models import NotificationChannel, NotificationSubscription
 from apps.roulette.models import SecretAnswer
 from apps.wishes.models import Wish, WishResponse
 
@@ -12,6 +13,8 @@ TARGETS = (
     (SecretAnswer, "answer"),
     (Wish, "body"),
     (WishResponse, "note"),
+    (NotificationChannel, "config"),
+    (NotificationSubscription, "destination"),
 )
 
 

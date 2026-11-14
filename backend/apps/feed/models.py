@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from apps.clubroom.models import Clubroom
+from apps.core.crypto import EncryptedTextField
 from apps.core.models import SoftDeleteModel, TimestampedModel
 
 EVENT_CLUBROOM_CREATED = "clubroom.created"
@@ -95,6 +96,90 @@ class FeedEvent(TimestampedModel, SoftDeleteModel):
         self.metadata = {}
         self.deleted_at = timezone.now()
         self.save(update_fields=["metadata", "deleted_at", "updated_at"])
+
+
+PROVIDER_WHATSAPP = "whatsapp"
+PROVIDER_TELEGRAM = "telegram"
+PROVIDER_SIGNAL = "signal"
+PROVIDER_ELEMENT = "element"
+PROVIDER_GOTIFY = "gotify"
+
+PROVIDER_CHOICES = (
+    (PROVIDER_WHATSAPP, "WhatsApp Cloud API"),
+    (PROVIDER_TELEGRAM, "Telegram Bot"),
+    (PROVIDER_SIGNAL, "Signal (signal-cli REST)"),
+    (PROVIDER_ELEMENT, "Element/Matrix"),
+    (PROVIDER_GOTIFY, "Gotify"),
+)
+
+
+class NotificationChannel(TimestampedModel):
+    clubroom = models.ForeignKey(
+        Clubroom, on_delete=models.CASCADE, related_name="notification_channels"
+    )
+    provider = models.CharField(max_length=16, choices=PROVIDER_CHOICES)
+    label = models.CharField(max_length=80)
+    config = EncryptedTextField(blank=True)
+    is_enabled = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="created_notification_channels",
+    )
+
+    class Meta:
+        verbose_name = "Benachrichtigungskanal"
+        verbose_name_plural = "Benachrichtigungskanäle"
+        ordering = ["clubroom", "provider", "label"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["clubroom", "label"], name="unique_channel_label_per_clubroom"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.get_provider_display()} – {self.label}"
+
+    def get_config(self) -> dict:
+        import json
+
+        try:
+            value = json.loads(self.config or "{}")
+        except (TypeError, ValueError):
+            return {}
+        return value if isinstance(value, dict) else {}
+
+    def set_config(self, value: dict) -> None:
+        import json
+
+        self.config = json.dumps(value, ensure_ascii=False)
+
+
+class NotificationSubscription(TimestampedModel):
+    channel = models.ForeignKey(
+        NotificationChannel, on_delete=models.CASCADE, related_name="subscriptions"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notification_subscriptions",
+    )
+    destination = EncryptedTextField(blank=True)
+    is_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Push-Abonnement"
+        verbose_name_plural = "Push-Abonnements"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["channel", "user"], name="unique_subscription_per_channel"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user} – {self.channel}"
 
 
 class Notification(TimestampedModel):

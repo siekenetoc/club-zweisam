@@ -107,9 +107,10 @@ text
 ### 6b. Externe Kommunikationskanäle
 - Kein Bridging von Clubraum-Inhalten in WhatsApp-, Telegram-, Signal- oder
   Element-Gruppen. Das würde E2E-Schutz, Rollen, Audit und Löschkonzept aushebeln.
-- Optional sind nur inhaltslose Push-Benachrichtigungen (z. B. selbst gehostetes
-  Gotify) mit Deep-Link in die App und ausdrücklichem Opt-in denkbar.
-- Clubraum-Gruppen werden nicht automatisch bei externen Anbietern angelegt.
+- Umgesetzt sind ausschließlich inhaltslose Push-Benachrichtigungen über
+  WhatsApp Cloud API, Telegram, Signal (signal-cli REST), Element/Matrix und
+  Gotify. Text: generischer Hinweis + Link auf `/lounge/`; pro Nutzer Opt-in.
+- Clubraum-Inhalte und automatische externe Gruppen werden nicht gespiegelt.
 
 ### 7. Benachrichtigungen
 - Niemals Inhalte. Nur Event-Typ.

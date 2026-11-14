@@ -1,5 +1,7 @@
+from django.db import transaction
 from django.utils import timezone
 
+from apps.feed.delivery import dispatch_notification
 from apps.feed.models import FeedEvent, Notification, sanitize_metadata
 
 
@@ -43,14 +45,26 @@ def notify_members(*, clubroom, event_type: str, exclude_user=None) -> int:
                 delivered_at=None if queued else now,
             )
         )
-    Notification.objects.bulk_create(notifications)
-    return len(notifications)
+    created = Notification.objects.bulk_create(notifications)
+    if created:
+        transaction.on_commit(
+            lambda: [dispatch_notification(notification) for notification in created]
+        )
+    return len(created)
 
 
 def deliver_queued_notifications(user) -> int:
-    return Notification.objects.filter(user=user, delivered_at__isnull=True).update(
-        delivered_at=timezone.now(), updated_at=timezone.now()
-    )
+    delivered = 0
+    with transaction.atomic():
+        queued = list(
+            Notification.objects.select_for_update().filter(user=user, delivered_at__isnull=True)
+        )
+        for notification in queued:
+            notification.delivered_at = timezone.now()
+            notification.save(update_fields=["delivered_at", "updated_at"])
+            dispatch_notification(notification)
+            delivered += 1
+    return delivered
 
 
 def delivered_notifications(user, limit: int = 10):

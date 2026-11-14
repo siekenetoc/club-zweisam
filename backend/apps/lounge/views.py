@@ -6,6 +6,11 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.clubroom.models import Membership
+from apps.feed.models import (
+    PROVIDER_GOTIFY,
+    NotificationChannel,
+    NotificationSubscription,
+)
 from apps.lounge.forms import CheckInForm
 from apps.lounge.services import (
     barometer,
@@ -42,6 +47,23 @@ def index(request):
     can_write = membership.can_write_module("lounge")
     review_opt_in = has_weekly_review(clubroom, request.user)
     review = weekly_review(clubroom, request.user) if review_opt_in else None
+    channels = list(NotificationChannel.objects.filter(clubroom=clubroom, is_enabled=True))
+    subscriptions = {
+        subscription.channel_id: subscription
+        for subscription in NotificationSubscription.objects.filter(
+            user=request.user, channel__in=channels
+        )
+    }
+    channel_entries = [
+        {
+            "channel": channel,
+            "subscription": subscriptions.get(channel.pk),
+            "destination": (
+                subscriptions[channel.pk].destination if channel.pk in subscriptions else ""
+            ),
+        }
+        for channel in channels
+    ]
     return render(
         request,
         "lounge/index.html",
@@ -58,6 +80,7 @@ def index(request):
             "queued_count": queued_count(request.user),
             "safe_mode_active": request.user.is_safe_mode_active,
             "has_feed": membership.has_module_access("feed"),
+            "notification_channels": channel_entries,
         },
     )
 
@@ -100,6 +123,50 @@ def toggle_review(request):
             messages.success(request, "Wochenrückblick aktiviert.")
         else:
             messages.success(request, "Wochenrückblick deaktiviert.")
+    return redirect("lounge:index")
+
+
+@login_required
+@require_POST
+def notification_subscription(request):
+    membership = _membership_or_denied(request)
+    channel = NotificationChannel.objects.filter(
+        pk=request.POST.get("channel_id"),
+        clubroom=membership.clubroom,
+        is_enabled=True,
+    ).first()
+    if channel is None:
+        messages.error(request, "Dieser Kanal ist nicht verfügbar.")
+        return redirect("lounge:index")
+
+    action = request.POST.get("action")
+    destination = request.POST.get("destination", "").strip()
+    if len(destination) > 255:
+        messages.error(request, "Ziel ist zu lang.")
+        return redirect("lounge:index")
+
+    subscription, _ = NotificationSubscription.objects.get_or_create(
+        channel=channel, user=request.user
+    )
+    if action == "disable":
+        subscription.is_enabled = False
+        subscription.save(update_fields=["is_enabled", "updated_at"])
+        messages.success(request, "Push-Benachrichtigung deaktiviert.")
+        return redirect("lounge:index")
+
+    config = channel.get_config()
+    if not destination and not config.get("default_target") and channel.provider != PROVIDER_GOTIFY:
+        messages.error(
+            request,
+            "Für diesen Kanal wird ein Ziel benötigt (Telefonnummer, Chat-ID oder Raum-ID).",
+        )
+        return redirect("lounge:index")
+
+    if destination:
+        subscription.destination = destination
+    subscription.is_enabled = True
+    subscription.save(update_fields=["destination", "is_enabled", "updated_at"])
+    messages.success(request, "Push-Benachrichtigung aktiviert. Nur ein Link, kein Inhalt.")
     return redirect("lounge:index")
 
 

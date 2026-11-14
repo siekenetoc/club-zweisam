@@ -115,6 +115,20 @@ Umgesetzt in M9:
 - Andere sehen keinen Safe-Mode-Hinweis; Admin-Ansicht zeigt das Flag nicht
 - Hinweis: Der lokale PIN ist ein Sichtschutz, keine kryptografische Sperre
 
+## Push-Benachrichtigungen
+
+- Inhaltslose Pings per WhatsApp Cloud API, Telegram, Signal (signal-cli REST),
+  Element/Matrix und Gotify
+- Nachricht enthält nur „Neues Ereignis im Portal“ und einen Link auf `/lounge/`
+- Keine Titel, Wünsche, Antworten, Matches oder Ereignistypen in externen Kanälen
+- Pro Nutzer Opt-in in der Lounge; Ziel kann pro Nutzer oder als Standardziel
+  im Kanal hinterlegt werden
+- Kanäle werden von Portal-Admins im Django-Admin angelegt; Secrets und Ziele
+  sind verschlüsselt
+- Safe Mode puffert Pushes; Test mit
+  `docker compose exec web python manage.py push_test --channel <ID>`
+- Einrichtung: `docs/manual.md`, Abschnitt 7
+
 ## Authentifizierung (django-allauth)
 
 - Registrierung unter `/registrieren/` mit **Pflicht-Aktivierung per E-Mail**
@@ -229,7 +243,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 134 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 150 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und
@@ -266,3 +280,5 @@ zwischen Paaren, kein heimliches Überwachen.
 - `docs/break-glass.md` – Admin-Zugriffsverfahren
 - `docs/security-review.md` – Härtung, Audits, Restrisiken
 - `docs/operations.md` – Betrieb, Backup, Rotation, DSGVO
+- `docs/manual.md` – ausführliche Bedienungsanleitung für Superadmins,
+  Portal-Admins, Dyade, Haupt-User und Push-Einrichtung

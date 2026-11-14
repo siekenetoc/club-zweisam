@@ -10,4 +10,9 @@ urlpatterns = [
     path("wochenrueckblick/", views.toggle_review, name="toggle_review"),
     path("safe-mode/", views.safe_mode, name="safe_mode"),
     path("safe-mode/sync/", views.safe_mode_sync, name="safe_mode_sync"),
+    path(
+        "benachrichtigungen/abonnieren/",
+        views.notification_subscription,
+        name="notification_subscription",
+    ),
 ]

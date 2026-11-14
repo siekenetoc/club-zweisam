@@ -14,6 +14,7 @@ from apps.clubroom.models import Clubroom, Membership
 from apps.clubroom.permissions import OWNER
 from apps.clubroom.services import create_clubroom
 from apps.core.crypto import decrypt_text, encrypt_text
+from apps.feed.models import NotificationChannel, NotificationSubscription
 from apps.lounge.models import CheckIn
 from apps.points.models import Ledger
 from apps.points.services import award_points, get_or_create_ledger
@@ -64,6 +65,12 @@ def test_export_contains_own_data_but_no_partner_secrets(client):
         note="Meine Alternative",
     )
     CheckIn.objects.create(clubroom=clubroom, user=anna, mood=4, energy=3, closeness=5)
+    channel = NotificationChannel.objects.create(
+        clubroom=clubroom, provider="telegram", label="Testkanal", is_enabled=True
+    )
+    channel.set_config({"bot_token": "secret", "default_target": "42"})
+    channel.save()
+    NotificationSubscription.objects.create(channel=channel, user=anna, destination="MEIN-ZIEL")
 
     client.force_login(anna)
     response = client.get(reverse("accounts:export"))
@@ -74,6 +81,8 @@ def test_export_contains_own_data_but_no_partner_secrets(client):
     assert payload["account"]["email"] == "anna@example.com"
     assert "Mein GEHEIMER Inhalt" in serialized
     assert "Meine Alternative" in serialized
+    assert "MEIN-ZIEL" in serialized
+    assert "Testkanal" in serialized
     assert "Partner GEHEIMER Inhalt" not in serialized
     assert "Anker" not in serialized
     assert str(own_wish.pk) in serialized or own_wish.title in serialized
@@ -131,6 +140,7 @@ def test_delete_requires_password_and_anonymizes(client):
     assert not Membership.objects.filter(user=anna, revoked_at__isnull=True).exists()
     assert CheckIn.objects.filter(user=anna).count() == 0
     assert Ledger.objects.filter(owner=anna).count() == 0
+    assert NotificationSubscription.objects.filter(user=anna).count() == 0
 
     own_wish.refresh_from_db()
     assert own_wish.body == ""
@@ -202,6 +212,14 @@ def test_key_rotation_reencrypts_all_sensitive_fields():
             action=ACTION_ALTERNATIVE,
             note="Rotationsnotiz",
         )
+        channel = NotificationChannel.objects.create(
+            clubroom=clubroom, provider="gotify", label="Rotation", is_enabled=True
+        )
+        channel.set_config({"server_url": "https://gotify.example", "app_token": "GEHEIM"})
+        channel.save()
+        subscription = NotificationSubscription.objects.create(
+            channel=channel, user=anna, destination="GEHEIM-ZIEL"
+        )
         round_obj = start_round(clubroom=clubroom, deck=Deck.objects.get(code="A"), user=anna)
         secret = submit_answer(
             round_obj=round_obj,
@@ -230,4 +248,8 @@ def test_key_rotation_reencrypts_all_sensitive_fields():
         assert Wish.objects.get(pk=wish.pk).body == "Geheimer Rotationsinhalt"
         assert WishResponse.objects.get(wish=wish).note == "Rotationsnotiz"
         assert SecretAnswer.objects.get(pk=secret.pk).answer == "ja"
+        channel.refresh_from_db()
+        subscription.refresh_from_db()
+        assert channel.get_config()["app_token"] == "GEHEIM"
+        assert subscription.destination == "GEHEIM-ZIEL"
         assert encrypt_text("Test").startswith("enc:v1:")

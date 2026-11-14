@@ -2,15 +2,8 @@ from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
+from apps.core.permissions import is_platform_admin
 from apps.pages.models import PageMedia, StaticPage
-
-PLATFORM_ADMIN_GROUP = "Plattform-Admin"
-
-
-def is_platform_admin(user) -> bool:
-    if not user.is_authenticated:
-        return False
-    return bool(user.is_superuser or user.groups.filter(name=PLATFORM_ADMIN_GROUP).exists())
 
 
 class TinyMCETextarea(forms.Textarea):

@@ -5,7 +5,7 @@ from django.utils import timezone
 from apps.admin_panel.models import BreakGlassRequest
 from apps.clubroom.models import Membership
 from apps.core.audit import AuditEntry
-from apps.feed.models import Notification
+from apps.feed.models import Notification, NotificationSubscription
 from apps.lounge.models import CheckIn, WeeklyReviewOptIn
 from apps.playbook.models import PlaybookOptIn
 from apps.points.models import Ledger, Redemption
@@ -24,6 +24,7 @@ def export_user_data(user) -> dict:
     notifications = Notification.objects.filter(user=user)
     audit = AuditEntry.objects.filter(actor=user)
     break_glass = BreakGlassRequest.objects.filter(requested_by=user)
+    subscriptions = NotificationSubscription.objects.filter(user=user).select_related("channel")
 
     return {
         "account": {
@@ -133,6 +134,15 @@ def export_user_data(user) -> dict:
             }
             for entry in audit
         ],
+        "push_subscriptions": [
+            {
+                "channel": subscription.channel.label,
+                "provider": subscription.channel.provider,
+                "destination": subscription.destination,
+                "enabled": subscription.is_enabled,
+            }
+            for subscription in subscriptions
+        ],
         "break_glass_requests": [
             {
                 "target_type": request.target_type,
@@ -157,6 +167,7 @@ def delete_user_data(user) -> dict:
     WishResponse.objects.filter(responded_by=user).update(note="")
     Wish.objects.filter(created_by=user).update(title="Gelöschter Wunsch", body="", updated_at=now)
     Notification.objects.filter(user=user).delete()
+    NotificationSubscription.objects.filter(user=user).delete()
     Ledger.objects.filter(owner=user).delete()
     Redemption.objects.filter(requested_by=user).delete()
     DeckOptIn.objects.filter(user=user).delete()

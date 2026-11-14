@@ -127,6 +127,19 @@ ausführen. Security-Review: `docs/security-review.md`.
 python scripts/loadtest.py --url https://localhost/healthz --requests 300 --concurrency 20
 ```
 
+## Push-Kanäle
+
+Kanäle werden im Django-Admin unter „Benachrichtigungskanäle“ angelegt
+(Superuser oder Gruppe „Plattform-Admin“). JSON-Beispiele und
+Provider-Autorisierung: `docs/manual.md`, Abschnitt 7.
+
+- `PORTAL_BASE_URL` in `.env` auf die echte Portal-Domain setzen.
+- Nutzer abonnieren in der Lounge unter „Push-Benachrichtigungen“.
+- Test: `docker compose exec web python manage.py push_test --channel <ID>`
+- Externe Nachrichten sind inhaltslos; Safe Mode puffert.
+- Fehlzustellungen stehen im Web-Log (ohne Secrets) und werden nicht
+  automatisch wiederholt.
+
 ## Logs
 
 - Strukturierte JSON-Logs mit Sensitive-Filter (Crypto-/Secret-Felder maskiert).

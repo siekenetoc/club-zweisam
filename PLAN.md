@@ -12,9 +12,10 @@
 
 ## Nachtrag (2026-11-14)
 - Registrierung, verpflichtende E-Mail-Aktivierung, Login per Benutzername/E-Mail
-  und Passwort-Reset über `django-allauth` umgesetzt und getestet (133 Tests, E2E).
-- Externe Messenger werden bewusst nicht als Inhaltsspiegel integriert; siehe
-  `docs/architecture.md` und `docs/security-review.md`.
+  und Passwort-Reset über `django-allauth` umgesetzt und getestet.
+- Inhaltslose Push-Kanäle für WhatsApp, Telegram, Signal, Element und Gotify
+  mit Opt-in, verschlüsselten Zielen/Secrets, Safe-Mode-Pufferung und Testkommando.
+- Ausführliche Bedienungsanleitung: `docs/manual.md`.
 
 ## Fortschritt
 - [x] M0 – Setup & Grundgerüst (2026-11-13, freigegeben)

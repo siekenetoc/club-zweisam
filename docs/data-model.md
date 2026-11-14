@@ -94,6 +94,12 @@
 - `Notification`
   - `user`, `clubroom`, `event_type` (kein Inhalt), `queued_during_safe_mode`
   - `delivered_at` (null = im Safe Mode gepuffert)
+- `NotificationChannel`
+  - `clubroom`, `provider` (whatsapp/telegram/signal/element/gotify), `label`
+  - `config: EncryptedTextField` (JSON mit Secrets/Zielen), `is_enabled`
+- `NotificationSubscription`
+  - `channel`, `user`, `destination: EncryptedTextField`, `is_enabled`
+  - eindeutig pro Kanal und Nutzer
 
 ### points
 - `Ledger`

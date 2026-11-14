@@ -14,3 +14,12 @@ def is_sensitive_model(model) -> bool:
 
 def is_sensitive_label(label: str) -> bool:
     return label.lower() in SENSITIVE_MODEL_LABELS
+
+
+PLATFORM_ADMIN_GROUP = "Plattform-Admin"
+
+
+def is_platform_admin(user) -> bool:
+    if not getattr(user, "is_authenticated", False):
+        return False
+    return bool(user.is_superuser or user.groups.filter(name=PLATFORM_ADMIN_GROUP).exists())
