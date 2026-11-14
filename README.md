@@ -185,10 +185,13 @@ Ein Helfer exportiert die CA und importiert sie bei vorhandenem `certutil` in
 Chrome/Chromium und alle Firefox-Profile:
 
 ```bash
-scripts/setup-dev-tls.sh --system
+scripts/setup-dev-tls.sh --all
 ```
 
-`--system` installiert die CA systemweit (sudo-Passwort wird abgefragt).
+`--all` installiert `libnss3-tools` (enthält `certutil`), die CA systemweit
+und importiert sie in Chrome/Chromium sowie alle Firefox-Profile. Vorher
+Firefox/Chrome schließen; danach neu starten. `--system` installiert nur die
+CA systemweit, `--install-deps` nur `libnss3-tools`.
 Details und CLI-Alternativen: `docs/operations.md`.
 
 ## Setup (Prod)

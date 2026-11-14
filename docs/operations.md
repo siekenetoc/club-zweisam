@@ -29,7 +29,7 @@ eine interne CA. Einmalig exportieren und vertrauen:
 
 ```bash
 scripts/setup-dev-tls.sh            # exportiert caddy-root.crt, zeigt Befehle
-scripts/setup-dev-tls.sh --system   # installiert zusätzlich systemweit (sudo)
+scripts/setup-dev-tls.sh --all      # libnss3-tools + systemweit + Browser-NSS (sudo)
 ```
 
 - System/curl/wget: `sudo update-ca-certificates` nach Kopie in
