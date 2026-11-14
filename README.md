@@ -115,6 +115,13 @@ Umgesetzt in M9:
 - Andere sehen keinen Safe-Mode-Hinweis; Admin-Ansicht zeigt das Flag nicht
 - Hinweis: Der lokale PIN ist ein Sichtschutz, keine kryptografische Sperre
 
+## Admin-Konten
+
+Staff-, Super- und Portal-Admin-Konten sind von den Dyaden-App-Funktionen
+ausgeschlossen und werden auf Verwaltung/Django-Admin umgeleitet. Ein Hinweis
+erscheint in der App, im Management-Dashboard und im Django-Admin. Tests der
+App erfolgen mit einem separaten Nicht-Staff-Account.
+
 ## Landing, Menü und Seiten
 
 - Portal-Admins bearbeiten Landing-Hero, CTA-Buttons, Landing-Bereiche,
@@ -276,7 +283,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 165 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 169 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

@@ -32,6 +32,13 @@ def profile(request):
 
     if request.method == "POST":
         action = request.POST.get("action")
+        if request.user.is_staff and action in {"delete", "test", "save"}:
+            messages.error(
+                request,
+                "Admin-Konten können keine persönlichen Push-Kanäle anlegen. "
+                "Bitte einen separaten Nicht-Staff-Account verwenden.",
+            )
+            return redirect("accounts:profile")
         if action == "profile_save":
             profile_form = ProfileEditForm(request.POST, instance=request.user)
             if profile_form.is_valid():

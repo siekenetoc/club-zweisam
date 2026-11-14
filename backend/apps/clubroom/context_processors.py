@@ -5,6 +5,12 @@ from apps.core.permissions import is_platform_admin
 def navigation(request):
     if not request.user.is_authenticated:
         return {"nav_membership": None, "nav_modules": {}}
+    if request.user.is_staff:
+        return {
+            "nav_membership": None,
+            "nav_modules": {},
+            "nav_admin_account": True,
+        }
     membership = active_membership_for(request.user)
     return {
         "nav_membership": membership,

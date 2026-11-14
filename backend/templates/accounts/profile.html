@@ -54,6 +54,7 @@
       <p class="text-xs text-stone-500">E-Mail-Adressen werden aus Sicherheitsgründen über „E-Mail-Adressen verwalten“ geändert und bestätigt.</p>
     </form>
 
+    {% if not user.is_staff %}
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Meine eigenen Push-Kanäle</h2>
       <p class="text-sm text-stone-400">
@@ -139,5 +140,11 @@
       <label class="flex items-center gap-2 text-sm text-stone-300">{{ form.is_enabled }} {{ form.is_enabled.label }}</label>
       <button type="submit" name="action" value="save" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Speichern</button>
     </form>
+    {% else %}
+      <div class="rounded-lg border border-amber-800 bg-amber-950/40 p-5 text-sm text-amber-100">
+        Admin-Konto: Persönliche Push-Kanäle sind für Staff-Konten deaktiviert.
+        Für Tests bitte einen separaten Nicht-Staff-Account verwenden.
+      </div>
+    {% endif %}
   </section>
 {% endblock %}

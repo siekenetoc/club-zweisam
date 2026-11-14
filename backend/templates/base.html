@@ -11,6 +11,14 @@
   </head>
   <body data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}" class="min-h-screen bg-stone-950 text-stone-100 antialiased">
     <div class="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+      {% if user.is_staff %}
+        <div class="mb-4 rounded-md border border-amber-800 bg-amber-950/50 px-4 py-3 text-sm text-amber-100">
+          <strong>Admin-Konto:</strong> Die App-Funktionen für Dyaden sind deaktiviert.
+          Für Tests bitte einen separaten Nicht-Staff-Account verwenden.
+          <a href="/management/" class="underline underline-offset-4">Verwaltung</a> ·
+          <a href="/admin/" class="underline underline-offset-4">Django-Admin</a>
+        </div>
+      {% endif %}
       <header x-data="{ open: false }" class="sticky top-0 z-40 -mx-4 border-b border-stone-800 bg-stone-950/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
         <div class="mx-auto flex max-w-5xl items-center justify-between gap-3">
           <a href="{% url 'clubroom:home' %}" class="shrink-0 text-base font-semibold tracking-wide sm:text-lg">Club Zweisam</a>

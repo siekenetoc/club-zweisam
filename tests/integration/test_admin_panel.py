@@ -305,3 +305,54 @@ def test_break_glass_audit_chain_and_banner(client):
     content = response.content.decode()
     assert "Zugriff protokolliert" in content
     assert "Geheimantworten" in content
+
+
+def test_staff_accounts_cannot_use_app(client):
+    superuser = make_superuser("root-app", "root-app@example.com")
+    client.force_login(superuser)
+    assert client.get(reverse("clubroom:home")).status_code == 302
+    assert client.get(reverse("clubroom:home")).url == "/management/"
+    assert client.get(reverse("roulette:index")).status_code == 302
+    assert client.get(reverse("clubroom:create")).status_code == 302
+
+    staff = User.objects.create_user(
+        username="staff-app",
+        email="staff-app@example.com",
+        password="sehr-geheim-1234",
+        is_staff=True,
+    )
+    client.force_login(staff)
+    response = client.get(reverse("lounge:index"))
+    assert response.status_code == 302
+    assert response.url == "/admin/"
+
+
+def test_staff_receives_admin_notice(client):
+    superuser = make_superuser("root-note", "root-note@example.com")
+    client.force_login(superuser)
+    management = client.get(reverse("admin_panel:dashboard")).content.decode()
+    assert "App-Funktionen sind für Admin-Konten deaktiviert" in management
+    admin = client.get("/admin/").content.decode()
+    assert "separaten Nicht-Staff-Account" in admin
+
+
+def test_staff_cannot_create_personal_push_channel(client):
+    from apps.feed.models import PersonalNotificationChannel
+
+    superuser = make_superuser("root-channel", "root-channel@example.com")
+    client.force_login(superuser)
+    response = client.post(
+        reverse("accounts:profile"),
+        {
+            "action": "save",
+            "provider": "telegram",
+            "label": "Nicht erlaubt",
+            "default_target": "42",
+            "telegram_bot_token": "123:secret",
+            "is_enabled": "on",
+        },
+    )
+    assert response.status_code == 302
+    assert not PersonalNotificationChannel.objects.filter(user=superuser).exists()
+    content = client.get(reverse("accounts:profile")).content.decode()
+    assert "Persönliche Push-Kanäle sind für Staff-Konten deaktiviert" in content

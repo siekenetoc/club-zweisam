@@ -1,5 +1,7 @@
 import pytest
+from django.db.models import ProtectedError
 
+from apps.accounts.models import User
 from apps.core.audit import (
     GENESIS_HASH,
     AuditAppendOnlyError,
@@ -41,3 +43,12 @@ def test_metadata_is_part_of_hash():
     entry = AuditEntry.objects.create(action="login", metadata={"role": "moderator"})
     entry.metadata["role"] = "admin"
     assert entry.hash != entry.compute_hash(entry.prev_hash)
+
+
+def test_actor_with_audit_entries_cannot_be_deleted():
+    user = User.objects.create_user(
+        username="audit-actor", email="audit-actor@example.com", password="sehr-geheim-1234"
+    )
+    AuditEntry.objects.create(actor=user, action="login")
+    with pytest.raises(ProtectedError):
+        user.delete()

@@ -61,7 +61,19 @@ Superuser anlegen:
 docker compose exec web python manage.py createsuperuser
 ```
 
-### 2.2 Aufgaben
+### 2.2 Admin-Konto und App-Nutzung
+
+Admin-Konten (`is_staff=True`, Superuser und Portal-Admins) verwalten das
+Portal, nutzen aber **nicht** die Dyaden-App. Aufrufe von `/`, Clubraum,
+Séparée, Lounge, Concierge, Playbook, Logbuch, Deep Talk, Krisenmodus oder
+Punkten werden mit einem Hinweis auf Verwaltung/Django-Admin umgeleitet.
+Persönliche Push-Kanäle sind für Staff-Konten deaktiviert.
+
+Zum Testen der App immer einen **separaten Nicht-Staff-Account** verwenden:
+ausloggen, normal registrieren oder im Django-Admin einen Benutzer ohne
+`is_staff` anlegen. Admin- und Testkonto nicht mischen.
+
+### 2.3 Aufgaben
 
 - Audit-Log im Admin ansehen; es ist append-only und nicht editierbar.
 - Break-Glass nur für Metadaten und freigegebene Matches beantragen.
@@ -72,7 +84,7 @@ docker compose exec web python manage.py createsuperuser
 - Schlüsselrotation und Backups verantworten.
 - Sicherheitsupdates einspielen.
 
-### 2.3 Break-Glass
+### 2.4 Break-Glass
 
 Erlaubt sind derzeit:
 
@@ -85,7 +97,7 @@ Technisch gesperrt sind Geheimantworten, Grenzen und Wünsche. Das ist gewollt;
 ein Superadmin mit Datenbank- und Schlüsselzugriff kann technisch trotzdem
 alles lesen. Der Schutz ist organisatorisch und durch Audit.
 
-### 2.4 DSGVO und Aufbewahrung
+### 2.5 DSGVO und Aufbewahrung
 
 ```bash
 docker compose exec web python manage.py gdpr_export --user <name|id> --output export.json
@@ -97,7 +109,7 @@ docker compose exec web python manage.py wishes_purge
 Self-Service für Nutzer: `/konto/export/` und `/konto/loeschen/`.
 Löschung anonymisiert das Konto; Audit-Einträge bleiben pseudonym erhalten.
 
-### 2.5 Schlüsselrotation
+### 2.6 Schlüsselrotation
 
 1. Neuen Fernet-Schlüssel erzeugen.
 2. `FIELD_ENCRYPTION_KEY=<neu>` und `FIELD_ENCRYPTION_KEY_OLD=<alt>` setzen.
@@ -105,7 +117,7 @@ Löschung anonymisiert das Konto; Audit-Einträge bleiben pseudonym erhalten.
 4. `docker compose exec web python manage.py encrypt_rotate`
 5. Alten Schlüssel entfernen, neu starten, `audit_verify` prüfen.
 
-### 2.6 Sicherheitscheck
+### 2.7 Sicherheitscheck
 
 ```bash
 docker compose exec web bandit -r apps -q
@@ -121,6 +133,10 @@ Portal-Admins sind Mitglieder der Gruppe **Plattform-Admin** und haben
 `is_staff=True`. Sie dürfen Seiten, Inhalte und Push-Kanäle verwalten.
 
 ### 3.1 Nutzer zur Gruppe hinzufügen
+
+Auch Portal-Admins sind Staff-Konten: Sie verwalten Inhalte, nutzen aber nicht
+die Dyaden-App. Für Tests einen separaten Nicht-Staff-Account verwenden.
+
 
 Django-Admin → Benutzer → gewünschten Nutzer → Gruppen → „Plattform-Admin“ →
 speichern. Zusätzlich `is_staff` aktivieren.
