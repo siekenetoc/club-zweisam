@@ -1,42 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}Club Zweisam – Grundgerüst{% endblock %}
+{% block title %}{{ landing.hero_title }} – Club Zweisam{% endblock %}
 
 {% block content %}
   <section class="space-y-8">
     <div class="space-y-4">
-      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Privater Raum für zwei</p>
-      <h1 class="text-3xl font-semibold sm:text-4xl">Der Raum steht.</h1>
-      <p class="max-w-2xl text-stone-300">
-        Club Zweisam ist ein geschützter Kommunikations- und Spielraum für Paare.
-        Consent vor Spiel, Nein ist neutral, Geheimnis schützt.
-      </p>
+      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ landing.hero_kicker }}</p>
+      <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">{{ landing.hero_title }}</h1>
+      <p class="max-w-2xl text-stone-300">{{ landing.hero_text }}</p>
       <div class="flex flex-wrap gap-3">
-        <a href="{% url 'accounts:register' %}" class="rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
-          Clubraum gründen
-        </a>
-        <a href="{% url 'accounts:login' %}" class="rounded-full border border-stone-700 px-5 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-          Anmelden
-        </a>
+        {% if landing.primary_cta_label %}
+          <a href="{{ landing.primary_cta_url }}" class="rounded-full bg-amber-500 px-5 py-2.5 text-sm font-medium text-stone-950 hover:bg-amber-400">{{ landing.primary_cta_label }}</a>
+        {% endif %}
+        {% if landing.secondary_cta_label %}
+          <a href="{{ landing.secondary_cta_url }}" class="rounded-full border border-stone-700 px-5 py-2.5 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">{{ landing.secondary_cta_label }}</a>
+        {% endif %}
       </div>
     </div>
-    <dl class="grid gap-4 sm:grid-cols-2">
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Diskretion</dt>
-        <dd class="mt-2 text-stone-200">Feldverschlüsselung at-rest, Audit-Log append-only</dd>
-      </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Freiwilligkeit</dt>
-        <dd class="mt-2 text-stone-200">Safeword, Grenzen und Opt-in statt Druck</dd>
-      </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Rollen</dt>
-        <dd class="mt-2 text-stone-200">Hauptmitglieder, Moderator, Berater, Mediator, Gast</dd>
-      </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-        <dt class="text-xs uppercase tracking-widest text-stone-500">Grenze</dt>
-        <dd class="mt-2 text-stone-200">Kein Therapieersatz, keine Währung für Sex</dd>
-      </div>
-    </dl>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% for section in landing_sections %}
+        <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+          <h2 class="text-xs uppercase tracking-widest text-stone-500">{{ section.title }}</h2>
+          {% if section.body_html %}
+            <div class="rich-text mt-2 text-stone-200">{{ section.body_html|safe }}</div>
+          {% endif %}
+          {% if section.link_label and section.link_url %}
+            <a href="{{ section.link_url }}" class="mt-3 inline-block text-sm text-amber-400 underline decoration-amber-800 underline-offset-4 hover:text-amber-300">{{ section.link_label }}</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
   </section>
 {% endblock %}

@@ -115,6 +115,30 @@ Umgesetzt in M9:
 - Andere sehen keinen Safe-Mode-Hinweis; Admin-Ansicht zeigt das Flag nicht
 - Hinweis: Der lokale PIN ist ein Sichtschutz, keine kryptografische Sperre
 
+## Landing, Menü und Seiten
+
+- Portal-Admins bearbeiten Landing-Hero, CTA-Buttons, Landing-Bereiche,
+  Kopf-/Fußzeilen-Menü und statische Seiten im Django-Admin (`/admin/pages/`).
+- TinyMCE lädt lokal; Bilder mit Alt-Text; Bereiche sind sortier- und
+  deaktivierbar.
+- Responsive Navigation: mobiles Klappmenü, Desktop-Menü mit rollenabhängigen
+  Modulen und zusätzlichen CMS-Links.
+- Globale Formular- und Rich-Text-Styles sorgen für einheitliche, abgerundete
+  Eingabefelder auf allen nicht-Admin-Seiten.
+
+## SMTP / E-Mail
+
+SMTP wird über `.env` konfiguriert (`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`,
+`EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` oder `EMAIL_USE_SSL`,
+`DEFAULT_FROM_EMAIL`). Nach Änderungen:
+
+```bash
+docker compose up -d --force-recreate web
+docker compose exec web python manage.py email_test --to deine@adresse.tld
+```
+
+Details und Anbieter-Checkliste: `docs/manual.md`, Abschnitt 10.
+
 ## Push-Benachrichtigungen
 
 - Inhaltslose Pings per WhatsApp Cloud API, Telegram, Signal (signal-cli REST),
@@ -246,7 +270,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 159 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 163 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

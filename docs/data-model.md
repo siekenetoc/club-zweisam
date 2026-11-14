@@ -138,6 +138,14 @@
   - `created_at`, `prev_hash`, `hash`
 
 ### pages
+- `LandingSettings` (Singleton)
+  - `hero_kicker`, `hero_title`, `hero_text`, `primary_cta_*`, `secondary_cta_*`
+- `LandingSection`
+  - `title`, `body_html` (TinyMCE), `link_label`, `link_url`, `order`,
+    `is_active`
+- `NavigationItem`
+  - `label`, `url`, `location` (header/footer), `order`, `is_active`,
+    `requires_authentication`
 - `StaticPage`
   - `slug`, `title`, `content_html`
   - `is_published`, `updated_at`, `updated_by`

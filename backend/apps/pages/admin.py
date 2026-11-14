@@ -3,7 +3,13 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from apps.core.permissions import is_platform_admin
-from apps.pages.models import PageMedia, StaticPage
+from apps.pages.models import (
+    LandingSection,
+    LandingSettings,
+    NavigationItem,
+    PageMedia,
+    StaticPage,
+)
 
 
 class TinyMCETextarea(forms.Textarea):
@@ -27,6 +33,23 @@ class StaticPageAdminForm(forms.ModelForm):
         widgets = {"content_html": TinyMCETextarea()}
 
 
+class PlatformAdminMixin:
+    def has_module_permission(self, request):
+        return is_platform_admin(request.user)
+
+    def has_view_permission(self, request, obj=None):
+        return is_platform_admin(request.user)
+
+    def has_add_permission(self, request):
+        return is_platform_admin(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        return is_platform_admin(request.user)
+
+    def has_delete_permission(self, request, obj=None):
+        return is_platform_admin(request.user)
+
+
 class PageMediaInline(admin.TabularInline):
     model = PageMedia
     extra = 1
@@ -43,7 +66,7 @@ class PageMediaInline(admin.TabularInline):
 
 
 @admin.register(StaticPage)
-class StaticPageAdmin(admin.ModelAdmin):
+class StaticPageAdmin(PlatformAdminMixin, admin.ModelAdmin):
     form = StaticPageAdminForm
     inlines = [PageMediaInline]
     list_display = ("title", "slug", "is_published", "updated_at", "updated_by")
@@ -59,21 +82,54 @@ class StaticPageAdmin(admin.ModelAdmin):
 
     preview_link.short_description = "Vorschau"
 
-    def has_module_permission(self, request):
-        return is_platform_admin(request.user)
-
-    def has_view_permission(self, request, obj=None):
-        return is_platform_admin(request.user)
-
-    def has_add_permission(self, request):
-        return is_platform_admin(request.user)
-
-    def has_change_permission(self, request, obj=None):
-        return is_platform_admin(request.user)
-
-    def has_delete_permission(self, request, obj=None):
-        return is_platform_admin(request.user)
-
     def save_model(self, request, obj, form, change):
         obj.updated_by = request.user
         super().save_model(request, obj, form, change)
+
+
+class LandingSectionAdminForm(forms.ModelForm):
+    class Meta:
+        model = LandingSection
+        fields = ("title", "body_html", "link_label", "link_url", "order", "is_active")
+        widgets = {"body_html": TinyMCETextarea(attrs={"rows": 12})}
+
+
+@admin.register(LandingSettings)
+class LandingSettingsAdmin(PlatformAdminMixin, admin.ModelAdmin):
+    list_display = ("hero_title", "primary_cta_label", "secondary_cta_label")
+    fieldsets = (
+        ("Hero", {"fields": ("hero_kicker", "hero_title", "hero_text")}),
+        (
+            "Buttons",
+            {
+                "fields": (
+                    "primary_cta_label",
+                    "primary_cta_url",
+                    "secondary_cta_label",
+                    "secondary_cta_url",
+                )
+            },
+        ),
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(LandingSection)
+class LandingSectionAdmin(PlatformAdminMixin, admin.ModelAdmin):
+    form = LandingSectionAdminForm
+    list_display = ("title", "order", "is_active", "updated_at")
+    list_editable = ("order", "is_active")
+    search_fields = ("title", "body_html")
+
+
+@admin.register(NavigationItem)
+class NavigationItemAdmin(PlatformAdminMixin, admin.ModelAdmin):
+    list_display = ("label", "location", "url", "order", "is_active")
+    list_editable = ("order", "is_active")
+    list_filter = ("location", "is_active")
+    search_fields = ("label", "url")

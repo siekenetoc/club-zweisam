@@ -3,6 +3,7 @@ import re
 import pytest
 from allauth.account.models import EmailAddress
 from django.core import mail
+from django.core.management import call_command
 from django.urls import reverse
 
 from apps.accounts.models import User
@@ -155,3 +156,9 @@ def test_safe_word_is_encrypted_at_rest(client):
         stored = cursor.fetchone()[0]
     assert stored.startswith("enc:v1:")
     assert "Anker" not in stored
+
+
+def test_email_test_command_uses_configured_backend():
+    call_command("email_test", to="smtp-check@example.com")
+    assert len(mail.outbox) == 1
+    assert "SMTP-Test" in mail.outbox[0].subject

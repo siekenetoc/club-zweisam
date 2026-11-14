@@ -32,6 +32,10 @@ def confirmation_url_for(page, email):
     raise AssertionError(f"Keine Bestätigungs-E-Mail für {email} gefunden")
 
 
+def click_visible_link(page, href):
+    page.locator(f'a[href="{href}"]:visible').first.click()
+
+
 def launch_page(playwright):
     browser = playwright.chromium.launch()
     context = browser.new_context(ignore_https_errors=True)
@@ -86,7 +90,7 @@ def test_registration_and_clubroom_creation():
         assert room_name in content
         assert "Hauptmitglied" in content
 
-        page.get_by_role("link", name="Séparée").click()
+        click_visible_link(page, "/separee/")
         page.wait_for_url(f"{base_url}/separee/")
         assert "Deck A" in page.content()
         page.get_by_role("button", name="Runde starten").first.click()
@@ -99,7 +103,7 @@ def test_registration_and_clubroom_creation():
         assert "Warte auf die Antwort" in page.content()
 
         page.goto(f"{base_url}/", wait_until="load")
-        page.get_by_role("link", name="Concierge").click()
+        click_visible_link(page, "/concierge/")
         page.wait_for_url(f"{base_url}/concierge/")
         page.get_by_role("link", name="Wunsch stellen").click()
         page.wait_for_url(f"{base_url}/concierge/neu/")
@@ -116,7 +120,7 @@ def test_registration_and_clubroom_creation():
         assert "Gestellt" in content
 
         page.goto(f"{base_url}/", wait_until="load")
-        page.get_by_role("link", name="Playbook").click()
+        click_visible_link(page, "/playbook/")
         page.wait_for_url(f"{base_url}/playbook/")
         page.get_by_role("button", name="Starten").first.click()
         page.wait_for_url(re.compile(r".*/playbook/lauf/\d+/"))
@@ -126,7 +130,7 @@ def test_registration_and_clubroom_creation():
         assert "Challenge gemeinsam abgeschlossen" in page.content()
 
         page.goto(f"{base_url}/", wait_until="load")
-        page.get_by_role("link", name="Lounge").click()
+        click_visible_link(page, "/lounge/")
         page.wait_for_url(f"{base_url}/lounge/")
         page.locator("input[name='mood'][value='4']").check()
         page.locator("input[name='energy'][value='3']").check()
@@ -149,14 +153,14 @@ def test_registration_and_clubroom_creation():
         assert "Safe Mode deaktiviert" in page.content()
 
         page.goto(f"{base_url}/", wait_until="load")
-        page.get_by_role("link", name="Logbuch").click()
+        click_visible_link(page, "/logbuch/")
         page.wait_for_url(f"{base_url}/logbuch/")
         content = page.content()
         assert "Challenge abgeschlossen" in content
         assert "Check-in" in content
 
         page.goto(f"{base_url}/", wait_until="load")
-        page.get_by_role("link", name="Punkte").click()
+        click_visible_link(page, "/punkte/")
         page.wait_for_url(f"{base_url}/punkte/")
         assert "Belohnungen" in page.content()
         page.get_by_role("button", name="Anfragen").first.click()
@@ -164,7 +168,7 @@ def test_registration_and_clubroom_creation():
         assert "Angefragt" in page.content()
 
         page.goto(f"{base_url}/", wait_until="load")
-        page.get_by_role("link", name="Deep Talk").click()
+        click_visible_link(page, "/deep-talk/")
         page.wait_for_url(f"{base_url}/deep-talk/")
         page.get_by_role("button", name="Gespräch starten").click()
         page.wait_for_url(re.compile(r".*/deep-talk/\d+/"))
@@ -178,7 +182,7 @@ def test_registration_and_clubroom_creation():
         page.get_by_role("button", name="Sitzung beenden").click()
         page.wait_for_url(f"{base_url}/deep-talk/")
 
-        page.get_by_role("link", name="Krisenmodus").click()
+        click_visible_link(page, "/krisenmodus/")
         page.wait_for_url(f"{base_url}/krisenmodus/")
         content = page.content()
         assert "Notruf" in content and "112" in content

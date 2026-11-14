@@ -6,4 +6,46 @@
   [x-cloak] {
     display: none !important;
   }
+
+  input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  select,
+  textarea {
+    @apply w-full rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-500 focus:outline-none;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply h-4 w-4 rounded border-stone-600 bg-stone-900 text-amber-500 focus:ring-amber-500;
+  }
+
+  textarea {
+    @apply min-h-24;
+  }
+}
+
+@layer components {
+  .rich-text h1 {
+    @apply mt-6 text-2xl font-semibold text-stone-100;
+  }
+  .rich-text h2 {
+    @apply mt-5 text-xl font-semibold text-stone-100;
+  }
+  .rich-text h3 {
+    @apply mt-4 text-lg font-semibold text-stone-100;
+  }
+  .rich-text p {
+    @apply mt-2 leading-relaxed;
+  }
+  .rich-text ul {
+    @apply mt-2 list-disc space-y-1 pl-5;
+  }
+  .rich-text ol {
+    @apply mt-2 list-decimal space-y-1 pl-5;
+  }
+  .rich-text a {
+    @apply text-amber-400 underline decoration-amber-800 underline-offset-4 hover:text-amber-300;
+  }
+  .rich-text blockquote {
+    @apply mt-3 border-l-2 border-amber-700 pl-3 text-stone-300;
+  }
 }

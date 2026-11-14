@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -159,9 +161,10 @@ def test_crisis_is_a_separate_module_with_hard_references(client):
     assert "112" in content
     assert "Telefonseelsorge" in content
     assert "116 016" in content
-    assert "keine Bewertung" in content
-    assert "Challenge" not in content
-    assert "Punkte" not in content
+    main = re.search(r"<main[^>]*>(.*?)</main>", content, re.S).group(1)
+    assert "keine Bewertung" in main
+    assert "Challenge" not in main
+    assert "Punkte" not in main
 
 
 def test_crisis_session_has_no_prompts_and_no_side_effects():

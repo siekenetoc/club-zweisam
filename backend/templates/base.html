@@ -10,25 +10,75 @@
     <script src="{% static 'dist/js/main.js' %}" defer></script>
   </head>
   <body data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}" class="min-h-screen bg-stone-950 text-stone-100 antialiased">
-    <div class="mx-auto flex min-h-screen max-w-4xl flex-col px-6 py-10">
-      <header class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-800 pb-6">
-        <a href="{% url 'clubroom:home' %}" class="text-lg font-semibold tracking-wide">Club Zweisam</a>
-        <nav class="flex items-center gap-4 text-sm">
-          {% if user.is_authenticated %}
-            <a href="{% url 'accounts:profile' %}" class="text-stone-400 hover:text-amber-400">{{ user.username }}</a>
-            <form method="post" action="{% url 'accounts:logout' %}">
-              {% csrf_token %}
-              <button type="submit" class="text-stone-300 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">
-                Abmelden
-              </button>
-            </form>
-          {% else %}
-            <a href="{% url 'accounts:login' %}" class="text-stone-300 hover:text-amber-400">Anmelden</a>
-            <a href="{% url 'accounts:register' %}" class="rounded-full border border-stone-700 px-4 py-1.5 text-stone-200 hover:border-amber-500 hover:text-amber-400">
-              Registrieren
-            </a>
-          {% endif %}
-        </nav>
+    <div class="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+      <header x-data="{ open: false }" class="sticky top-0 z-40 -mx-4 border-b border-stone-800 bg-stone-950/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+        <div class="mx-auto flex max-w-5xl items-center justify-between gap-3">
+          <a href="{% url 'clubroom:home' %}" class="shrink-0 text-base font-semibold tracking-wide sm:text-lg">Club Zweisam</a>
+
+          <nav class="hidden items-center gap-1 lg:flex" aria-label="Hauptnavigation">
+            {% if user.is_authenticated %}
+              {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Lounge</a>{% endif %}
+              {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Séparée</a>{% endif %}
+              {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Concierge</a>{% endif %}
+              {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Playbook</a>{% endif %}
+              {% if nav_modules.vitrine %}<a href="{% url 'vitrine:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Vitrine</a>{% endif %}
+              {% if nav_modules.feed %}<a href="{% url 'feed:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Logbuch</a>{% endif %}
+              {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Deep Talk</a>{% endif %}
+              {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Krise</a>{% endif %}
+              {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Punkte</a>{% endif %}
+              {% for item in nav_header_items %}<a href="{{ item.url }}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">{{ item.label }}</a>{% endfor %}
+            {% else %}
+              {% for item in nav_header_items %}<a href="{{ item.url }}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">{{ item.label }}</a>{% endfor %}
+              <a href="{% url 'accounts:login' %}" class="rounded-full px-3 py-2 text-sm text-stone-300 hover:bg-stone-900 hover:text-amber-300">Anmelden</a>
+              <a href="{% url 'accounts:register' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">Registrieren</a>
+            {% endif %}
+          </nav>
+
+          <div class="hidden items-center gap-3 lg:flex">
+            {% if user.is_authenticated %}
+              <a href="{% url 'accounts:profile' %}" class="max-w-40 truncate text-sm text-stone-400 hover:text-amber-400">{{ user.username }}</a>
+              <form method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="rounded-md border border-stone-800 px-3 py-1.5 text-xs text-stone-300 hover:border-amber-700 hover:text-amber-400">Abmelden</button>
+              </form>
+            {% endif %}
+          </div>
+
+          <button type="button" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" aria-label="Menü öffnen" class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-stone-700 text-stone-200 hover:border-amber-500 lg:hidden">
+            <span class="sr-only">Menü</span>
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
+        </div>
+
+        <div id="mobile-menu" x-show="open" x-cloak class="mx-auto max-w-5xl border-t border-stone-800 pt-3 lg:hidden">
+          <nav class="grid grid-cols-2 gap-1" aria-label="Mobiles Menü">
+            {% if user.is_authenticated %}
+              {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Lounge</a>{% endif %}
+              {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Séparée</a>{% endif %}
+              {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Concierge</a>{% endif %}
+              {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Playbook</a>{% endif %}
+              {% if nav_modules.vitrine %}<a href="{% url 'vitrine:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Vitrine</a>{% endif %}
+              {% if nav_modules.feed %}<a href="{% url 'feed:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Logbuch</a>{% endif %}
+              {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Deep Talk</a>{% endif %}
+              {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Krisenmodus</a>{% endif %}
+              {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Punkte</a>{% endif %}
+              <a href="{% url 'accounts:profile' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Profil</a>
+              {% if user.is_staff %}<a href="/management/" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Verwaltung</a>{% endif %}
+              {% if user.is_staff %}<a href="/admin/" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Django-Admin</a>{% endif %}
+              {% for item in nav_header_items %}<a href="{{ item.url }}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">{{ item.label }}</a>{% endfor %}
+              <form method="post" action="{% url 'accounts:logout' %}" class="col-span-2">
+                {% csrf_token %}
+                <button type="submit" class="w-full rounded-md border border-stone-800 px-3 py-3 text-left text-sm text-stone-300 hover:border-amber-700 hover:text-amber-400">Abmelden</button>
+              </form>
+            {% else %}
+              <a href="{% url 'accounts:login' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Anmelden</a>
+              <a href="{% url 'accounts:register' %}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">Registrieren</a>
+              {% for item in nav_header_items %}<a href="{{ item.url }}" class="rounded-md px-3 py-3 text-sm text-stone-200 hover:bg-stone-900">{{ item.label }}</a>{% endfor %}
+            {% endif %}
+          </nav>
+        </div>
       </header>
 
       {% if messages %}
@@ -45,13 +95,11 @@
         {% block content %}{% endblock %}
       </main>
       <footer class="space-y-3 border-t border-stone-800 pt-6 text-xs text-stone-500">
-        <nav class="flex flex-wrap gap-4">
-          <button type="button" id="shield-activate" class="text-stone-500 hover:text-stone-300">Privacy Shield</button>
-          <a href="{% url 'pages:detail' 'agb' %}" class="hover:text-stone-300">AGB</a>
-          <a href="{% url 'pages:detail' 'impressum' %}" class="hover:text-stone-300">Impressum</a>
-          <a href="{% url 'pages:detail' 'datenschutz' %}" class="hover:text-stone-300">Datenschutz</a>
-          <a href="{% url 'pages:detail' 'partner' %}" class="hover:text-stone-300">Partner</a>
-          <a href="{% url 'pages:detail' 'disclaimer' %}" class="hover:text-stone-300">Disclaimer</a>
+        <nav class="flex flex-wrap gap-x-4 gap-y-2" aria-label="Fußzeile">
+          <button type="button" id="shield-activate" class="hover:text-stone-300">Privacy Shield</button>
+          {% for item in nav_footer_items %}
+            <a href="{{ item.url }}" class="hover:text-stone-300">{{ item.label }}</a>
+          {% endfor %}
         </nav>
         <p>Kein Therapieersatz. Keine Währung für Sex. Kein Druckmittel.</p>
       </footer>

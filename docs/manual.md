@@ -131,14 +131,31 @@ Admin → „Statische Seiten“. AGB, Impressum, Datenschutz, Partner und Discl
 sind vorbefüllt. TinyMCE lädt lokal; Bilder können als Inline-Medien mit
 Alt-Text hochgeladen werden. Vor Produktivbetrieb rechtlich prüfen.
 
-### 3.3 Systemkonfiguration
+### 3.3 Landing, Menü und Seiten
+
+Portal-Admins bearbeiten unter `/admin/pages/`:
+
+- **Landing-Einstellungen:** Hero-Titel, Einleitung und beide CTA-Buttons.
+- **Landing-Bereiche:** beliebig viele Text-/Inhaltsbereiche mit TinyMCE,
+  Reihenfolge und Sichtbarkeit; optional mit Link.
+- **Menüeinträge:** eigene Links für Kopfmenü oder Fußzeile, Reihenfolge,
+  Sichtbarkeit und „nur angemeldet“.
+- **Statische Seiten:** AGB, Impressum, Datenschutz, Partner, Disclaimer und
+  weitere Seiten mit TinyMCE und Bild-Upload.
+
+Die Kopfzeile zeigt zusätzlich automatisch die für die Rolle freigegebenen
+Module; die Fußzeile wird aus den Menüeinträgen gespeichert. URLs können relativ
+(`/seite/agb/`) oder absolut sein. Die Landing-Seite ist mobil als einspaltige
+Kartenansicht, Menüs als aufklappbares mobiles Menü umgesetzt.
+
+### 3.4 Systemkonfiguration
 
 - Domain: Django Sites (`SITE_ID=1`) auf die echte Domain setzen.
 - E-Mail: SMTP in `.env`; in Dev Mailhog `http://localhost:8025`.
 - `PORTAL_BASE_URL` setzen, damit Push-Links auf die richtige Domain zeigen.
 - TLS: in Produktion ACME/Domain; in Dev Caddy-intern (siehe README).
 
-### 3.4 Push-Kanäle anlegen
+### 3.5 Push-Kanäle anlegen
 
 Admin → „Benachrichtigungskanäle“ → „Hinzufügen“:
 
@@ -485,3 +502,80 @@ wird verschlüsselt gespeichert und ist im DSGVO-Export enthalten.
 - Der lokale Privacy-Shield-PIN ist ein Sichtschutz, keine Verschlüsselung.
 - Club Zweisam ist kein Therapieersatz; bei Gefahr: Notruf 112,
   Telefonseelsorge 0800 111 0 111, Hilfetelefon 116 016.
+
+---
+
+## 10. SMTP und E-Mail-Versand
+
+E-Mail wird für Aktivierung, Passwort-Reset und Systembenachrichtigungen
+benötigt. In Entwicklung zeigt `EMAIL_HOST=mailhog` auf Mailhog; in Produktion
+muss ein echter SMTP-Server hinterlegt werden.
+
+### 10.1 Was du vom Provider brauchst
+
+Kläre vor dem Eintragen:
+
+1. SMTP-Hostname (z. B. `smtp.example.org`)
+2. Port: meist `587` (STARTTLS), `465` (SSL) oder `25` (intern)
+3. Verschlüsselung: STARTTLS (`EMAIL_USE_TLS=True`) oder SSL
+   (`EMAIL_USE_SSL=True`) – nie beides gleichzeitig
+4. SMTP-Benutzername
+5. SMTP-Passwort oder App-Passwort (viele Anbieter verlangen ein App-Passwort)
+6. Erlaubte Absenderadresse (`DEFAULT_FROM_EMAIL`)
+7. Ob der Provider SMTP-AUTH, IP-Freigaben oder Domains (SPF/DKIM/DMARC)
+   verlangt
+8. Limits (Mails/Tag, Empfänger), damit Aktivierungsmails nicht blockiert werden
+
+### 10.2 Eintrag in `.env`
+
+```dotenv
+EMAIL_HOST=smtp.example.org
+EMAIL_PORT=587
+EMAIL_HOST_USER=club-zweisam
+EMAIL_HOST_PASSWORD=dein-app-passwort
+EMAIL_USE_TLS=True
+EMAIL_USE_SSL=False
+EMAIL_TIMEOUT=10
+DEFAULT_FROM_EMAIL=Club Zweisam <noreply@example.org>
+```
+
+Für Port 465:
+
+```dotenv
+EMAIL_PORT=465
+EMAIL_USE_TLS=False
+EMAIL_USE_SSL=True
+```
+
+Besondere Zeichen im Passwort: `.env` kennt kein Shell-Quoting im gleichen
+Sinne; bei `#` oder Leerzeichen den Wert in einfache Anführungszeichen setzen
+oder ein App-Passwort ohne Sonderzeichen verwenden. `.env` niemals committen.
+
+### 10.3 Änderungen anwenden
+
+Docker Compose liest `env_file` beim Erstellen des Containers. Ein einfacher
+Restart reicht nicht immer:
+
+```bash
+docker compose up -d --force-recreate web
+```
+
+Danach testen:
+
+```bash
+docker compose exec web python manage.py email_test --to deine@adresse.tld
+```
+
+Die Testmail nutzt denselben SMTP-Weg wie Aktivierung und Passwort-Reset.
+In Dev erscheint sie in Mailhog: <http://localhost:8025>.
+
+### 10.4 Wenn der Versand fehlschlägt
+
+- Host/Port/TLS-Kombination prüfen (587 = STARTTLS, 465 = SSL).
+- Zugangsdaten/App-Passwort prüfen.
+- Container-DNS und Firewall prüfen: `docker compose exec web getent hosts smtp.example.org`
+- Provider-Logs und Web-Logs prüfen; keine Passwörter in Logs posten.
+- Absenderdomain mit SPF/DKIM/DMARC einrichten, sonst landen Mails im Spam.
+- Bei `DEBUG=False` die Site-Domain in Django Sites auf die echte Domain setzen.
+- Bei Gmail/Outlook: App-Passwort und SMTP-AUTH aktivieren; reguläre
+  Kontopasswörter funktionieren oft nicht.

@@ -18,6 +18,10 @@
 - Einrichtungsassistent unter `/management/messenger/` für Plattform-Admins;
   WhatsApp bleibt offiziell Cloud-API-basiert (kein WhatsApp-Web-QR).
 - Ausführliche Bedienungsanleitung: `docs/manual.md`.
+- CMS für Landing-Hero, Landing-Bereiche, Kopf-/Fußzeilenmenü und statische
+  Seiten (TinyMCE, Reihenfolge, Sichtbarkeit); responsive Navigation und
+  einheitliche Formular-/Rich-Text-Styles.
+- SMTP-Konfiguration über `.env` mit `email_test`-Kommando und Anbieter-Checkliste.
 
 ## Fortschritt
 - [x] M0 – Setup & Grundgerüst (2026-11-13, freigegeben)

@@ -58,6 +58,12 @@ Das Prod-Image enthält keine Dev-Werkzeuge.
 
 - Neue Konten sind erst nach Klick auf den Aktivierungslink nutzbar.
 - Dev: Mailhog `http://localhost:8025`; Produktion: SMTP in `.env` konfigurieren.
+- SMTP-Variablen: `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`,
+  `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_TIMEOUT`,
+  `DEFAULT_FROM_EMAIL`. Entweder STARTTLS (587) **oder** SSL (465), nie beides.
+- Nach Änderung: `docker compose up -d --force-recreate web`.
+- Test: `docker compose exec web python manage.py email_test --to <adresse>`.
+- Vor Produktivbetrieb SPF/DKIM/DMARC und Absenderdomain einrichten.
 - Django Sites (`SITE_ID=1`) auf die echte Domain setzen:
   `docker compose exec web python manage.py shell` →
   `Site.objects.filter(pk=1).update(domain="example.org", name="Club Zweisam")`.
