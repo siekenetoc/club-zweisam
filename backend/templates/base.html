@@ -15,7 +15,7 @@
         <a href="{% url 'clubroom:home' %}" class="text-lg font-semibold tracking-wide">Club Zweisam</a>
         <nav class="flex items-center gap-4 text-sm">
           {% if user.is_authenticated %}
-            <span class="text-stone-400">{{ user.username }}</span>
+            <a href="{% url 'accounts:profile' %}" class="text-stone-400 hover:text-amber-400">{{ user.username }}</a>
             <form method="post" action="{% url 'accounts:logout' %}">
               {% csrf_token %}
               <button type="submit" class="text-stone-300 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">

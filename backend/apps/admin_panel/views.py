@@ -64,6 +64,11 @@ def messenger_setup(request):
     if channel_id:
         channel = get_object_or_404(NotificationChannel, pk=channel_id)
 
+    if request.POST.get("action") == "delete" and channel is not None:
+        channel.delete()
+        messages.success(request, "Kanal gelöscht.")
+        return redirect("admin_panel:messenger_setup")
+
     if request.POST.get("action") == "telegram_discover":
         form = MessengerSetupForm(request.POST)
         token = request.POST.get("telegram_bot_token", "")

@@ -150,7 +150,13 @@ Admin → „Benachrichtigungskanäle“ → „Hinzufügen“:
 
 Danach sieht jedes Clubraum-Mitglied den Kanal in der Lounge unter
 „Push-Benachrichtigungen“ und kann ihn selbst aktivieren. Ohne Abonnement wird
-nichts gesendet.
+nichts gesendet. Kanäle können im Assistenten über **Löschen** entfernt werden;
+damit werden auch alle Abonnements dieses Kanals gelöscht.
+
+Zusätzlich können Nutzer in ihrem eigenen Profil unter `/konto/` **persönliche
+Telegram- oder WhatsApp-Kanäle** anlegen, ohne auf einen Portal-Admin zu warten.
+Weitere Anbieter (Signal, Element, Gotify) bleiben wegen der externen
+Server-URLs und der zentralen Konfiguration beim Portal-Admin.
 
 Inhalte der Push-Nachricht sind immer gleich und inhaltslos:
 
@@ -283,7 +289,11 @@ gestalten – ohne Leistungsdruck.
   keine Netzwerkanfrage.
 - **Safe Mode:** puffert Benachrichtigungen; beim Deaktivieren werden sie ohne
   Inhalt zugestellt.
-- **Konto & Daten:** Export und Löschung in der Lounge.
+- **Profil:** `/konto/` zeigt Konto, Clubraum/Rolle, Passwortwechsel, Export,
+  Löschung und die eigenen Push-Kanäle.
+- **Eigene Push-Kanäle:** Im Profil können Telegram- oder WhatsApp-Kanäle
+  selbst angelegt, getestet, bearbeitet und gelöscht werden (max. fünf).
+- **Konto & Daten:** Export und Löschung in der Lounge bzw. im Profil.
 - **Push:** nur inhaltslose Links; selbst aktivieren/deaktivieren.
 
 ### 5.5 Beziehung verbessern – konkret
@@ -341,6 +351,7 @@ Django-Admin unter „Benachrichtigungskanäle“ editierbar.
 | Signal | Ja: API-URL + Nummer | signal-cli-REST betreiben, Nummer registrieren/verknüpfen |
 | Element | Ja: Homeserver + Token + Raum | Matrix-Konto, Raum, Token |
 | WhatsApp | Ja: Phone-ID + Token + Vorlage | Meta-Business-App, Nummer, Token, Vorlagenfreigabe |
+| Persönliche Kanäle | Ja, im Profil `/konto/` für Telegram/WhatsApp | Nur eigene Zugangsdaten |
 
 **WhatsApp-Web-QR ist kein unterstützter Weg.** Die offizielle WhatsApp Cloud
 API ist eine Business-Schnittstelle; sie kennt kein Koppeln wie

@@ -138,6 +138,9 @@ bewusst nicht unterstützt.
 - `PORTAL_BASE_URL` in `.env` auf die echte Portal-Domain setzen.
 - Nutzer abonnieren in der Lounge unter „Push-Benachrichtigungen“.
 - Test: `docker compose exec web python manage.py push_test --channel <ID>`
+- Nutzer verwalten eigene Telegram-/WhatsApp-Kanäle unter `/konto/` (max. fünf).
+- Portal-Admins können Kanäle im Assistenten löschen; Abonnements werden
+  mitgelöscht.
 - Externe Nachrichten sind inhaltslos; Safe Mode puffert.
 - Fehlzustellungen stehen im Web-Log (ohne Secrets) und werden nicht
   automatisch wiederholt.

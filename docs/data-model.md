@@ -100,6 +100,9 @@
 - `NotificationSubscription`
   - `channel`, `user`, `destination: EncryptedTextField`, `is_enabled`
   - eindeutig pro Kanal und Nutzer
+- `PersonalNotificationChannel`
+  - `user`, `provider` (Telegram/WhatsApp im UI), `label`
+  - `config: EncryptedTextField`, `is_enabled`; max. fünf pro Nutzer
 
 ### points
 - `Ledger`

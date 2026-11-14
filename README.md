@@ -123,6 +123,8 @@ Umgesetzt in M9:
 - Keine Titel, Wünsche, Antworten, Matches oder Ereignistypen in externen Kanälen
 - Pro Nutzer Opt-in in der Lounge; Ziel kann pro Nutzer oder als Standardziel
   im Kanal hinterlegt werden
+- Eigenes Profil unter `/konto/` mit Passwortwechsel, Export/Löschung und
+  persönlichen Telegram-/WhatsApp-Kanälen (max. fünf)
 - Kanäle werden von Portal-Admins im Django-Admin angelegt; Secrets und Ziele
   sind verschlüsselt
 - Safe Mode puffert Pushes; Test mit
@@ -244,7 +246,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 155 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 159 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

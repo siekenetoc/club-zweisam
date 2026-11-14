@@ -182,6 +182,43 @@ class NotificationSubscription(TimestampedModel):
         return f"{self.user} – {self.channel}"
 
 
+class PersonalNotificationChannel(TimestampedModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="personal_notification_channels",
+    )
+    provider = models.CharField(max_length=16, choices=PROVIDER_CHOICES)
+    label = models.CharField(max_length=80)
+    config = EncryptedTextField(blank=True)
+    is_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Persönlicher Push-Kanal"
+        verbose_name_plural = "Persönliche Push-Kanäle"
+        ordering = ["provider", "label"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "label"], name="unique_personal_channel_label")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.get_provider_display()} – {self.label}"
+
+    def get_config(self) -> dict:
+        import json
+
+        try:
+            value = json.loads(self.config or "{}")
+        except (TypeError, ValueError):
+            return {}
+        return value if isinstance(value, dict) else {}
+
+    def set_config(self, value: dict) -> None:
+        import json
+
+        self.config = json.dumps(value, ensure_ascii=False)
+
+
 class Notification(TimestampedModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -19,6 +19,7 @@ from apps.feed.models import (
     Notification,
     NotificationChannel,
     NotificationSubscription,
+    PersonalNotificationChannel,
 )
 from apps.feed.services import record_event
 from apps.lounge.services import set_safe_mode
@@ -339,6 +340,69 @@ def _platform_admin():
     return user
 
 
+def test_profile_allows_personal_channel_creation(client):
+    clubroom, anna, _ = make_room()
+    client.force_login(anna)
+    assert client.get(reverse("accounts:profile")).status_code == 200
+    response = client.post(
+        reverse("accounts:profile"),
+        {
+            "action": "save",
+            "provider": "telegram",
+            "label": "Mein Telegram",
+            "default_target": "42",
+            "telegram_bot_token": "123:secret",
+            "is_enabled": "on",
+        },
+    )
+    assert response.status_code == 302
+    channel = PersonalNotificationChannel.objects.get(user=anna, label="Mein Telegram")
+    assert channel.get_config()["default_target"] == "42"
+    assert channel.is_enabled is True
+
+    raw = PersonalNotificationChannel.objects.get(pk=channel.pk)
+    assert raw.get_config()["bot_token"] == "123:secret"
+    content = client.get(reverse("accounts:profile")).content.decode()
+    assert "Mein Telegram" in content
+    assert "Löschen" in content
+
+
+def test_personal_channel_delivery_without_subscription(
+    monkeypatch, django_capture_on_commit_callbacks
+):
+    clubroom, anna, bea = make_room()
+    channel = PersonalNotificationChannel.objects.create(
+        user=bea, provider="telegram", label="Persönlich", is_enabled=True
+    )
+    channel.set_config({"bot_token": "bot", "default_target": "99"})
+    channel.save()
+    calls = []
+    monkeypatch.setattr(
+        "apps.feed.delivery._http_json",
+        lambda *args, **kwargs: calls.append(args),
+    )
+    with django_capture_on_commit_callbacks(execute=True):
+        record_event(clubroom=clubroom, event_type=EVENT_CHECKIN_CREATED, actor=anna)
+    assert len(calls) == 1
+    assert "api.telegram.org" in calls[0][1]
+
+
+def test_personal_channel_can_be_deleted(client):
+    clubroom, anna, _ = make_room()
+    channel = PersonalNotificationChannel.objects.create(
+        user=anna, provider="telegram", label="Weg damit", is_enabled=True
+    )
+    channel.set_config({"bot_token": "bot", "default_target": "42"})
+    channel.save()
+    client.force_login(anna)
+    response = client.post(
+        reverse("accounts:profile"),
+        {"channel_id": channel.pk, "action": "delete"},
+    )
+    assert response.status_code == 302
+    assert not PersonalNotificationChannel.objects.filter(pk=channel.pk).exists()
+
+
 def test_messenger_setup_is_platform_admin_only(client):
     clubroom, _, _ = make_room()
     staff = User.objects.create_user(
@@ -413,6 +477,20 @@ def test_messenger_setup_requires_provider_fields(client):
     assert response.status_code == 200
     assert "Pflichtfeld für WhatsApp" in response.content.decode()
     assert not NotificationChannel.objects.filter(label="Kaputt").exists()
+
+
+def test_portal_admin_can_delete_channel(client):
+    clubroom, _, _ = make_room()
+    channel = make_channel(clubroom)
+    subscribe(channel, User.objects.get(username="anna"))
+    client.force_login(_platform_admin())
+    response = client.post(
+        reverse("admin_panel:messenger_setup"),
+        {"channel_id": channel.pk, "action": "delete"},
+    )
+    assert response.status_code == 302
+    assert not NotificationChannel.objects.filter(pk=channel.pk).exists()
+    assert not NotificationSubscription.objects.filter(channel_id=channel.pk).exists()
 
 
 def test_messenger_setup_test_action(monkeypatch, client):

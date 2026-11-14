@@ -16,6 +16,7 @@ from apps.feed.models import (
     PROVIDER_WHATSAPP,
     NotificationChannel,
     NotificationSubscription,
+    PersonalNotificationChannel,
 )
 
 logger = logging.getLogger(__name__)
@@ -176,7 +177,7 @@ SENDERS = {
 }
 
 
-def send_via_channel(channel: NotificationChannel, destination: str) -> bool:
+def send_via_channel(channel, destination: str) -> bool:
     config = channel.get_config()
     sender = SENDERS.get(channel.provider)
     if sender is None:
@@ -213,6 +214,13 @@ def dispatch_notification(notification) -> int:
     if notification.delivered_at is None or notification.clubroom_id is None:
         return 0
     sent = 0
+    for channel in PersonalNotificationChannel.objects.filter(
+        user_id=notification.user_id, is_enabled=True
+    ):
+        target = (channel.get_config().get("default_target") or "").strip()
+        if target or channel.provider == PROVIDER_GOTIFY:
+            if send_via_channel(channel, target):
+                sent += 1
     channels = NotificationChannel.objects.filter(
         clubroom_id=notification.clubroom_id, is_enabled=True
     )

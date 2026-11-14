@@ -14,7 +14,11 @@ from apps.clubroom.models import Clubroom, Membership
 from apps.clubroom.permissions import OWNER
 from apps.clubroom.services import create_clubroom
 from apps.core.crypto import decrypt_text, encrypt_text
-from apps.feed.models import NotificationChannel, NotificationSubscription
+from apps.feed.models import (
+    NotificationChannel,
+    NotificationSubscription,
+    PersonalNotificationChannel,
+)
 from apps.lounge.models import CheckIn
 from apps.points.models import Ledger
 from apps.points.services import award_points, get_or_create_ledger
@@ -71,6 +75,11 @@ def test_export_contains_own_data_but_no_partner_secrets(client):
     channel.set_config({"bot_token": "secret", "default_target": "42"})
     channel.save()
     NotificationSubscription.objects.create(channel=channel, user=anna, destination="MEIN-ZIEL")
+    personal = PersonalNotificationChannel.objects.create(
+        user=anna, provider="telegram", label="Privatkanal", is_enabled=True
+    )
+    personal.set_config({"bot_token": "secret", "default_target": "99"})
+    personal.save()
 
     client.force_login(anna)
     response = client.get(reverse("accounts:export"))
@@ -83,6 +92,7 @@ def test_export_contains_own_data_but_no_partner_secrets(client):
     assert "Meine Alternative" in serialized
     assert "MEIN-ZIEL" in serialized
     assert "Testkanal" in serialized
+    assert "Privatkanal" in serialized
     assert "Partner GEHEIMER Inhalt" not in serialized
     assert "Anker" not in serialized
     assert str(own_wish.pk) in serialized or own_wish.title in serialized
@@ -141,6 +151,7 @@ def test_delete_requires_password_and_anonymizes(client):
     assert CheckIn.objects.filter(user=anna).count() == 0
     assert Ledger.objects.filter(owner=anna).count() == 0
     assert NotificationSubscription.objects.filter(user=anna).count() == 0
+    assert PersonalNotificationChannel.objects.filter(user=anna).count() == 0
 
     own_wish.refresh_from_db()
     assert own_wish.body == ""
@@ -220,6 +231,11 @@ def test_key_rotation_reencrypts_all_sensitive_fields():
         subscription = NotificationSubscription.objects.create(
             channel=channel, user=anna, destination="GEHEIM-ZIEL"
         )
+        personal = PersonalNotificationChannel.objects.create(
+            user=anna, provider="telegram", label="Rotation-Personal", is_enabled=True
+        )
+        personal.set_config({"bot_token": "GEHEIM-PERSONAL", "default_target": "99"})
+        personal.save()
         round_obj = start_round(clubroom=clubroom, deck=Deck.objects.get(code="A"), user=anna)
         secret = submit_answer(
             round_obj=round_obj,
@@ -252,4 +268,6 @@ def test_key_rotation_reencrypts_all_sensitive_fields():
         subscription.refresh_from_db()
         assert channel.get_config()["app_token"] == "GEHEIM"
         assert subscription.destination == "GEHEIM-ZIEL"
+        personal.refresh_from_db()
+        assert personal.get_config()["bot_token"] == "GEHEIM-PERSONAL"
         assert encrypt_text("Test").startswith("enc:v1:")

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Profil – Club Zweisam{% endblock %}
+
+{% block content %}
+  <section class="space-y-8">
+    <div>
+      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Konto</p>
+      <h1 class="mt-2 text-3xl font-semibold">Dein Profil</h1>
+      <p class="mt-2 text-stone-400">Persönliche Daten, Sicherheit und eigene Push-Kanäle.</p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Konto</h2>
+        <dl class="mt-3 space-y-1 text-sm text-stone-300">
+          <div class="flex justify-between gap-3"><dt class="text-stone-500">Benutzername</dt><dd>{{ user.username }}</dd></div>
+          <div class="flex justify-between gap-3"><dt class="text-stone-500">E-Mail</dt><dd>{{ user.email }}</dd></div>
+          <div class="flex justify-between gap-3"><dt class="text-stone-500">Volljährigkeit</dt><dd>{% if user.age_verified %}bestätigt{% else %}offen{% endif %}</dd></div>
+        </dl>
+      </div>
+      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Clubraum</h2>
+        {% if membership %}
+          <p class="mt-3 text-sm text-stone-200">{{ membership.clubroom.name }}</p>
+          <p class="text-xs text-stone-500">{{ membership.get_role_display }}</p>
+        {% else %}
+          <p class="mt-3 text-sm text-stone-400">Noch kein Clubraum.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url 'account_change_password' %}" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Passwort ändern</a>
+      <a href="{% url 'lounge:index' %}" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Portal-Push-Kanäle in der Lounge</a>
+      <a href="{% url 'accounts:export' %}" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Daten exportieren</a>
+      <a href="{% url 'accounts:delete' %}" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-red-700 hover:text-red-300">Konto löschen</a>
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Meine eigenen Push-Kanäle</h2>
+      <p class="text-sm text-stone-400">
+        Du kannst hier eigene Telegram- oder WhatsApp-Kanäle anlegen. Die
+        Nachricht ist inhaltslos und enthält nur einen Link auf die Lounge.
+        Weitere Anbieter richtet der Portal-Admin ein.
+      </p>
+      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        {% for channel in channels %}
+          <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <div class="min-w-0">
+              <p class="truncate text-sm text-stone-200">{{ channel.label }}</p>
+              <p class="text-xs text-stone-500">{{ channel.get_provider_display }} · {% if channel.is_enabled %}aktiv{% else %}inaktiv{% endif %}</p>
+            </div>
+            <div class="flex shrink-0 items-center gap-2">
+              <a href="?channel={{ channel.pk }}" class="inline-flex h-8 items-center rounded-md border border-stone-700 px-3 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Bearbeiten</a>
+              <form method="post" class="inline-flex">
+                {% csrf_token %}
+                <input type="hidden" name="channel_id" value="{{ channel.pk }}" />
+                <button type="submit" name="action" value="test" class="inline-flex h-8 items-center rounded-md border border-stone-700 px-3 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Test</button>
+              </form>
+              <form method="post" class="inline-flex">
+                {% csrf_token %}
+                <input type="hidden" name="channel_id" value="{{ channel.pk }}" />
+                <button type="submit" name="action" value="delete" class="inline-flex h-8 items-center rounded-md border border-stone-700 px-3 text-xs text-stone-400 hover:border-red-700 hover:text-red-300">Löschen</button>
+              </form>
+            </div>
+          </div>
+        {% empty %}
+          <p class="px-4 py-5 text-sm text-stone-500">Noch kein eigener Kanal.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <form method="post" class="space-y-4 rounded-lg border border-stone-800 bg-stone-900/60 p-5" x-data="{ provider: '{{ form.provider.value|default:'telegram' }}' }">
+      {% csrf_token %}
+      {{ form.channel_id }}
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">{% if editing %}Kanal bearbeiten{% else %}Eigenen Kanal anlegen{% endif %}</h2>
+      {% for error in form.non_field_errors %}
+        <p class="rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">{{ error }}</p>
+      {% endfor %}
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="id_provider" class="mb-1 block text-sm text-stone-300">Messenger</label>
+          <select name="provider" id="id_provider" x-model="provider" class="w-full rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-stone-100">
+            {% for value, label in form.fields.provider.choices %}
+              <option value="{{ value }}" {% if form.provider.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="{{ form.label.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ form.label.label }}</label>
+          {{ form.label }}
+          {% for error in form.label.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+      <div>
+        <label for="{{ form.default_target.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ form.default_target.label }}</label>
+        {{ form.default_target }}
+        {% for error in form.default_target.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div x-show="provider === 'telegram'" x-cloak class="space-y-2 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+        <p class="text-xs text-stone-400">Eigener Bot von @BotFather. In Gruppe/Privatchat „Start“ bzw. Bot hinzufügen.</p>
+        <label for="{{ form.telegram_bot_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.telegram_bot_token.label }}</label>
+        {{ form.telegram_bot_token }}
+        {% for error in form.telegram_bot_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+      </div>
+      <div x-show="provider === 'whatsapp'" x-cloak class="space-y-2 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+        <p class="text-xs text-stone-400">WhatsApp Cloud API benötigt Meta-Konto, Phone Number ID, Token und Template.</p>
+        <label for="{{ form.whatsapp_access_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_access_token.label }}</label>
+        {{ form.whatsapp_access_token }}
+        {% for error in form.whatsapp_access_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+        <label for="{{ form.whatsapp_phone_number_id.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_phone_number_id.label }}</label>
+        {{ form.whatsapp_phone_number_id }}
+        {% for error in form.whatsapp_phone_number_id.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
+        <div class="grid gap-2 sm:grid-cols-3">
+          <div><label for="{{ form.whatsapp_template_name.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_template_name.label }}</label>{{ form.whatsapp_template_name }}</div>
+          <div><label for="{{ form.whatsapp_template_language.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_template_language.label }}</label>{{ form.whatsapp_template_language }}</div>
+          <div><label for="{{ form.whatsapp_api_version.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_api_version.label }}</label>{{ form.whatsapp_api_version }}</div>
+        </div>
+      </div>
+      <label class="flex items-center gap-2 text-sm text-stone-300">{{ form.is_enabled }} {{ form.is_enabled.label }}</label>
+      <button type="submit" name="action" value="save" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Speichern</button>
+    </form>
+  </section>
+{% endblock %}

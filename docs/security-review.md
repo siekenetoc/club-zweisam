@@ -7,7 +7,7 @@ Stand: 2026-11-13. Grundlage: `docs/architecture.md`, `docs/data-model.md`,
 
 | Prüfung | Ergebnis |
 |---|---|
-| `pytest` | 155 Tests grün |
+| `pytest` | 159 Tests grün |
 | Playwright E2E | 2 Tests grün (Registrierung, Clubraum, Séparée, Concierge, Playbook, Lounge, Logbuch, Deep Talk, Krisenmodus, Punkte, Privacy Shield, Admin-Banner, Seiten) |
 | `ruff check .` | clean |
 | `black --check .` | clean |
@@ -117,6 +117,9 @@ bewusst nicht angeboten.
   Passwort-Reset über django-allauth sind umgesetzt; 2FA und Rate-Limit bleiben offen.
 - Externe Push-Kanäle sind inhaltslos und opt-in; Fehlzustellungen werden nur
   geloggt und nicht automatisch wiederholt.
+- Persönliche Kanäle sind auf Telegram und WhatsApp beschränkt, weil diese
+  feste API-Endpunkte nutzen. Signal/Element/Gotify mit frei wählbaren URLs
+  bleiben Portal-Admins vorbehalten (SSRF-Risiko).
 - Die Signup-Form kann bei doppelter E-Mail die Existenz offenlegen (Enumeration).
 - Kein automatischer Scheduler im Stack; Retention-Befehle müssen per Cron/
   systemd ausgeführt werden.
