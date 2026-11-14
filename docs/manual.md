@@ -392,8 +392,12 @@ das nicht möchte, nutzt In-App-Benachrichtigungen, Telegram oder Gotify.
 
 1. Bei `@BotFather` einen Bot anlegen, Token kopieren.
 2. Bot in die gewünschte Gruppe einladen.
-3. Chat-ID der Gruppe ermitteln (z. B. über `getUpdates` oder einen Info-Bot).
-4. `/management/messenger/` → Telegram → Token und Chat-ID eintragen.
+3. Bot in die Gruppe einladen und dort eine Nachricht senden oder den Bot
+   erwähnen. Bei aktivierter Privacy-Mode in BotFather `/setprivacy` →
+   `Disable` setzen und den Bot neu hinzufügen.
+4. `/management/messenger/` → Telegram → Token eintragen → **Chat-ID
+   ermitteln** → gefundene Gruppe übernehmen (ID ist negativ, z. B.
+   `-1001234567890`). Alternativ die numerische ID manuell eintragen.
 5. Speichern und Testnachricht senden; Nutzer abonnieren.
 6. Telegram-Bots sind nicht Ende-zu-Ende-verschlüsselt; nur inhaltslose Pings.
 
@@ -446,6 +450,9 @@ wird verschlüsselt gespeichert und ist im DSGVO-Export enthalten.
   ausführen; Logs auf „Push-Zustellung fehlgeschlagen“ prüfen.
 - **WhatsApp:** Vorlage genehmigt? Token gültig? Empfänger im Testmodus?
   24-Stunden-Fenster beachten.
+- **Telegram „chat not found“:** Als Ziel wurde ein Gruppenname statt der
+  numerischen Chat-ID verwendet. Bot in die Gruppe einladen, Nachricht senden,
+  „Chat-ID ermitteln“ nutzen; Gruppen-IDs sind negativ.
 - **Signal:** API erreichbar? Nummer registriert? `insecure_tls` nur bei
   selbstsigniertem Zertifikat.
 - **Element:** Raum unverschlüsselt? Bot im Raum? Token gültig?

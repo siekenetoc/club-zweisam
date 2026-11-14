@@ -1,6 +1,7 @@
 import json
 import logging
 import ssl
+import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
@@ -184,6 +185,20 @@ def send_via_channel(channel: NotificationChannel, destination: str) -> bool:
     try:
         sender(config, destination, notification_text())
         return True
+    except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read().decode("utf-8", errors="replace")[:300]
+        except OSError:
+            pass
+        logger.warning(
+            "Push-Zustellung fehlgeschlagen (Kanal %s, Provider %s): HTTP %s %s",
+            channel.pk,
+            channel.provider,
+            exc.code,
+            detail,
+        )
+        return False
     except Exception as exc:
         logger.warning(
             "Push-Zustellung fehlgeschlagen (Kanal %s, Provider %s): %s",

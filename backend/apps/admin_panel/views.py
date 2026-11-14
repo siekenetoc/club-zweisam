@@ -20,6 +20,7 @@ from apps.clubroom.models import Clubroom, Membership
 from apps.core.permissions import is_platform_admin
 from apps.feed.delivery import send_via_channel
 from apps.feed.models import NotificationChannel
+from apps.feed.telegram import TelegramError, discover_chats
 from apps.playbook.models import Challenge
 from apps.roulette.models import Match
 from apps.wishes.models import Wish
@@ -62,6 +63,35 @@ def messenger_setup(request):
     channel = None
     if channel_id:
         channel = get_object_or_404(NotificationChannel, pk=channel_id)
+
+    if request.POST.get("action") == "telegram_discover":
+        form = MessengerSetupForm(request.POST)
+        token = request.POST.get("telegram_bot_token", "")
+        telegram_chats = []
+        try:
+            telegram_chats = discover_chats(token)
+        except TelegramError as exc:
+            messages.error(request, f"Chat-ID-Ermittlung fehlgeschlagen: {exc}")
+        if not telegram_chats:
+            messages.warning(
+                request,
+                "Keine Chats gefunden. Bot in die Gruppe einladen, dort eine "
+                "Nachricht senden oder den Bot erwähnen. Bei aktivierter "
+                "Privacy-Mode in BotFather ggf. /setprivacy -> Disable und Bot "
+                "neu hinzufügen.",
+            )
+        return render(
+            request,
+            "admin_panel/messenger.html",
+            {
+                "form": form,
+                "channels": NotificationChannel.objects.select_related("clubroom").order_by(
+                    "clubroom__name", "provider", "label"
+                ),
+                "telegram_chats": telegram_chats,
+                "editing": channel,
+            },
+        )
 
     if request.POST.get("action") == "test" and channel is not None:
         config = channel.get_config()

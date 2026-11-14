@@ -377,6 +377,27 @@ def test_messenger_setup_creates_telegram_channel(client):
     assert channel.is_enabled is True
 
 
+def test_telegram_chat_discovery(monkeypatch, client):
+    clubroom, _, _ = make_room()
+    monkeypatch.setattr(
+        "apps.admin_panel.views.discover_chats",
+        lambda token: [
+            {"id": -1001234567890, "type": "supergroup", "title": "Jana und Olli", "username": ""}
+        ],
+    )
+    client.force_login(_platform_admin())
+    response = client.post(
+        reverse("admin_panel:messenger_setup"),
+        {
+            "provider": "telegram",
+            "telegram_bot_token": "123:secret",
+            "action": "telegram_discover",
+        },
+    )
+    assert response.status_code == 200
+    assert "ID -1001234567890 übernehmen" in response.content.decode()
+
+
 def test_messenger_setup_requires_provider_fields(client):
     clubroom, _, _ = make_room()
     client.force_login(_platform_admin())

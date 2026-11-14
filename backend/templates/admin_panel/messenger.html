@@ -96,8 +96,20 @@
       </div>
 
       <div x-show="provider === 'telegram'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
-        <p class="text-sm text-stone-300">Telegram-Bot über @BotFather; Bot in die Gruppe einladen und Chat-ID als Standardziel eintragen.</p>
+        <p class="text-sm text-stone-300">Telegram-Bot über @BotFather; Bot in die Gruppe einladen und die numerische Chat-ID als Standardziel eintragen.</p>
         <div><label for="{{ form.telegram_bot_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.telegram_bot_token.label }}</label>{{ form.telegram_bot_token }}{% for error in form.telegram_bot_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
+        <button type="submit" name="action" value="telegram_discover" formnovalidate class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Chat-ID ermitteln</button>
+        {% if telegram_chats %}
+          <div class="space-y-2 rounded-md border border-stone-800 bg-stone-900/60 p-3">
+            <p class="text-xs text-stone-400">Gefundene Chats – Ziel übernehmen:</p>
+            {% for chat in telegram_chats %}
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="text-stone-300">{{ chat.title }}{% if chat.username %} (@{{ chat.username }}){% endif %} · {{ chat.type }}</span>
+                <button type="button" onclick="document.getElementById('id_default_target').value='{{ chat.id }}'; document.getElementById('id_provider').value='telegram';" class="rounded border border-stone-700 px-2 py-1 text-stone-300 hover:border-amber-500 hover:text-amber-400">ID {{ chat.id }} übernehmen</button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
 
       <div x-show="provider === 'signal'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
