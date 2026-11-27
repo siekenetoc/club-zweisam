@@ -15,7 +15,7 @@
 
     {% include "crisis/_help.html" %}
 
-    <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+    <div class="app-card-soft p-5">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Krisenraum</h2>
       {% if crisis_session %}
         <p class="mt-2 text-sm text-stone-300">Ein Krisenraum ist geöffnet seit {{ crisis_session.started_at|date:"d.m.Y H:i" }}.</p>

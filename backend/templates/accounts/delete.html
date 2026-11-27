@@ -1,32 +1,25 @@
-{% extends "base.html" %}
-
+{% extends "base_form.html" %}
 {% block title %}Konto löschen – Club Zweisam{% endblock %}
-
-{% block content %}
-  <section class="mx-auto max-w-lg space-y-6">
+{% block form_kicker %}Konto & Daten{% endblock %}
+{% block form_title %}Ein Ende mit Klarheit.{% endblock %}
+{% block form_title_mobile %}Konto löschen{% endblock %}
+{% block form_intro %}Dein Konto wird anonymisiert, Mitgliedschaften werden widerrufen und eigene Inhalte gelöscht.{% endblock %}
+{% block form_content %}
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold text-stone-50">Konto löschen</h2>
+    <p class="mt-1 text-sm text-stone-400">Audit-Einträge bleiben pseudonym erhalten. Diese Aktion ist nicht umkehrbar.</p>
+  </div>
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
     <div>
-      <p class="text-sm uppercase tracking-[0.3em] text-red-400">Konto & Daten</p>
-      <h1 class="mt-2 text-2xl font-semibold">Konto löschen</h1>
-      <p class="mt-2 text-sm text-stone-400">
-        Dein Konto wird anonymisiert, Mitgliedschaften werden widerrufen und
-        eigene Inhalte gelöscht. Audit-Einträge bleiben pseudonym erhalten.
-        Diese Aktion ist nicht umkehrbar.
-      </p>
+      <label for="password" class="form-label">Passwort zur Bestätigung</label>
+      <input id="password" name="password" type="password" required />
     </div>
-
-    <form method="post" class="space-y-4 rounded-lg border border-red-900 bg-red-950/20 p-5">
-      {% csrf_token %}
-      <div>
-        <label for="password" class="mb-1 block text-sm text-stone-300">Passwort zur Bestätigung</label>
-        <input id="password" name="password" type="password" required class="w-full rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-stone-100" />
-      </div>
-      <label class="flex items-start gap-2 text-sm text-stone-300">
-        <input type="checkbox" name="confirm" value="1" required class="mt-1 h-4 w-4 rounded border-stone-600 bg-stone-900" />
-        Ich verstehe, dass mein Konto anonymisiert und meine Inhalte gelöscht werden.
-      </label>
-      <button type="submit" class="w-full rounded-md bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-600">Endgültig löschen</button>
-    </form>
-
-    <a href="{% url 'lounge:index' %}" class="text-sm text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">Zurück</a>
-  </section>
+    <label class="flex items-start gap-3 rounded-xl border border-rose-500/20 bg-rose-500/[0.06] px-4 py-3 text-sm text-stone-300">
+      <input type="checkbox" name="confirm" value="1" required />
+      <span>Ich verstehe, dass mein Konto anonymisiert und meine Inhalte gelöscht werden.</span>
+    </label>
+    <button type="submit" class="rounded-full bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-400">Endgültig löschen</button>
+  </form>
+  <a href="{% url 'accounts:profile' %}" class="mt-6 inline-block text-sm text-stone-400 underline decoration-white/20 underline-offset-4 hover:text-amber-300">Zurück zum Profil</a>
 {% endblock %}

@@ -21,7 +21,7 @@
       <a href="{% url 'admin_panel:dashboard' %}" class="text-sm text-stone-400 underline decoration-stone-600 underline-offset-4 hover:text-amber-400">Zurück</a>
     </div>
 
-    <form method="post" class="max-w-lg space-y-4 rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+    <form method="post" class="max-w-lg space-y-4 app-card-soft p-5">
       {% csrf_token %}
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Antrag stellen</h2>
       {% for error in form.non_field_errors %}
@@ -41,7 +41,7 @@
 
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Anträge</h2>
-      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+      <div class="divide-y divide-stone-800 app-card-soft">
         {% for item in requests %}
           <div class="space-y-2 px-4 py-4">
             <div class="flex flex-wrap items-center justify-between gap-2">

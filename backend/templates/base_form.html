@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-start lg:gap-10">
+    <aside class="form-aside relative hidden overflow-hidden rounded-3xl border border-white/10 p-8 lg:block">
+      <div class="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border border-amber-400/20"></div>
+      <div class="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full border border-rose-400/10"></div>
+      <div class="relative">
+        <div class="icon-tile">
+          {% block form_icon %}
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.5 19 6v5.4c0 4.3-2.8 7.5-7 9.1-4.2-1.6-7-4.8-7-9.1V6l7-2.5Z" />
+              <path stroke-linecap="round" d="m9 12 2 2 4-4" />
+            </svg>
+          {% endblock %}
+        </div>
+        <p class="app-kicker mt-6">{% block form_kicker %}Club Zweisam{% endblock %}</p>
+        <h1 class="mt-3 text-balance text-3xl font-semibold leading-tight tracking-tight text-stone-50">
+          {% block form_title %}Willkommen{% endblock %}
+        </h1>
+        <p class="mt-4 max-w-md text-sm leading-relaxed text-stone-400">
+          {% block form_intro %}Ein privater Raum für zwei Menschen.{% endblock %}
+        </p>
+        <ul class="mt-8 space-y-3 text-sm text-stone-400">
+          <li class="flex items-start gap-3"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-400/25 bg-amber-400/10 text-[0.6rem] text-amber-300">01</span>Verschlüsselt, diskret und ohne externe Werbung.</li>
+          <li class="flex items-start gap-3"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-400/25 bg-amber-400/10 text-[0.6rem] text-amber-300">02</span>Consent zuerst: Nein ist neutral und kostet keine Punkte.</li>
+          <li class="flex items-start gap-3"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-400/25 bg-amber-400/10 text-[0.6rem] text-amber-300">03</span>Nur ihr zwei entscheidet, was sichtbar wird.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="min-w-0">
+      <div class="mb-5 lg:hidden">
+        <p class="app-kicker">{% block form_kicker_mobile %}Club Zweisam{% endblock %}</p>
+        <h1 class="mt-2 text-2xl font-semibold text-stone-50">
+          {% block form_title_mobile %}Willkommen{% endblock %}
+        </h1>
+      </div>
+      <div class="form-card">
+        {% block form_content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

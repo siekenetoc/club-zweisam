@@ -32,7 +32,7 @@
       <h2 class="text-xs uppercase tracking-widest text-stone-500">
         {% if session.mode == "repair" %}Versöhnungskarten{% else %}Leitfragen{% endif %}
       </h2>
-      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+      <div class="divide-y divide-stone-800 app-card-soft">
         {% for prompt in prompts %}
           <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
             <p class="max-w-xl text-sm {% if prompt.answered %}text-stone-500 line-through{% else %}text-stone-200{% endif %}">{{ prompt.text }}</p>

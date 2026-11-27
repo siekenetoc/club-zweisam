@@ -29,34 +29,34 @@
     </div>
 
     <dl class="grid gap-4 sm:grid-cols-3">
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <dt class="text-xs uppercase tracking-widest text-stone-500">Nutzer</dt>
         <dd class="mt-2 text-2xl font-semibold">{{ user_count }}</dd>
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <dt class="text-xs uppercase tracking-widest text-stone-500">Clubräume</dt>
         <dd class="mt-2 text-2xl font-semibold">{{ clubroom_count }}</dd>
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <dt class="text-xs uppercase tracking-widest text-stone-500">Aktive Mitgliedschaften</dt>
         <dd class="mt-2 text-2xl font-semibold">{{ active_memberships }}</dd>
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <dt class="text-xs uppercase tracking-widest text-stone-500">Wünsche</dt>
         <dd class="mt-2 text-2xl font-semibold">{{ wish_count }}</dd>
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <dt class="text-xs uppercase tracking-widest text-stone-500">Matches</dt>
         <dd class="mt-2 text-2xl font-semibold">{{ match_count }}</dd>
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <dt class="text-xs uppercase tracking-widest text-stone-500">Challenges</dt>
         <dd class="mt-2 text-2xl font-semibold">{{ challenge_count }}</dd>
       </div>
     </dl>
 
     {% if is_superuser %}
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Break-Glass</h2>
         <p class="mt-2 text-sm text-stone-300">{{ pending_break_glass }} offene Anträge.</p>
         <p class="mt-1 text-xs text-stone-500">Vier-Augen-Prinzip, 24 Stunden, Nutzer-Benachrichtigung.</p>

@@ -23,7 +23,7 @@
     </div>
 
     {% if clubroom.rules %}
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Hausregeln</h2>
         <p class="mt-2 whitespace-pre-line text-stone-200">{{ clubroom.rules }}</p>
       </div>
@@ -31,7 +31,7 @@
 
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Mitglieder</h2>
-      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+      <div class="divide-y divide-stone-800 app-card-soft">
         {% for member in members %}
           <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div>
@@ -54,7 +54,7 @@
     {% if is_owner and pending_invitations %}
       <div class="space-y-3">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Offene Einladungen</h2>
-        <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        <div class="divide-y divide-stone-800 app-card-soft">
           {% for invitation in pending_invitations %}
             <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
               <div>

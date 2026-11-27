@@ -11,7 +11,7 @@
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Konto</h2>
         <dl class="mt-3 space-y-1 text-sm text-stone-300">
           <div class="flex justify-between gap-3"><dt class="text-stone-500">Benutzername</dt><dd>{{ user.username }}</dd></div>
@@ -20,7 +20,7 @@
           <div class="flex justify-between gap-3"><dt class="text-stone-500">Volljährigkeit</dt><dd>{% if user.age_verified %}bestätigt{% else %}offen{% endif %}</dd></div>
         </dl>
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Clubraum</h2>
         {% if membership %}
           <p class="mt-3 text-sm text-stone-200">{{ membership.clubroom.name }}</p>
@@ -39,7 +39,7 @@
       <a href="{% url 'accounts:delete' %}" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-red-700 hover:text-red-300">Konto löschen</a>
     </div>
 
-    <form method="post" class="space-y-4 rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+    <form method="post" class="space-y-4 app-card-soft p-5">
       {% csrf_token %}
       <input type="hidden" name="action" value="profile_save" />
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Profildaten bearbeiten</h2>
@@ -62,7 +62,7 @@
         Nachricht ist inhaltslos und enthält nur einen Link auf die Lounge.
         Weitere Anbieter richtet der Portal-Admin ein.
       </p>
-      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+      <div class="divide-y divide-stone-800 app-card-soft">
         {% for channel in channels %}
           <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div class="min-w-0">
@@ -89,7 +89,7 @@
       </div>
     </div>
 
-    <form method="post" class="space-y-4 rounded-lg border border-stone-800 bg-stone-900/60 p-5" x-data="{ provider: '{{ form.provider.value|default:'telegram' }}' }">
+    <form method="post" class="space-y-4 app-card-soft p-5" x-data="{ provider: '{{ form.provider.value|default:'telegram' }}' }">
       {% csrf_token %}
       {{ form.channel_id }}
       <h2 class="text-xs uppercase tracking-widest text-stone-500">{% if editing %}Kanal bearbeiten{% else %}Eigenen Kanal anlegen{% endif %}</h2>
@@ -117,13 +117,13 @@
         {% for error in form.default_target.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
       </div>
 
-      <div x-show="provider === 'telegram'" x-cloak class="space-y-2 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+      <div x-show="provider === 'telegram'" x-cloak class="space-y-2 rounded-xl border border-white/10 bg-black/20 p-4">
         <p class="text-xs text-stone-400">Eigener Bot von @BotFather. In Gruppe/Privatchat „Start“ bzw. Bot hinzufügen.</p>
         <label for="{{ form.telegram_bot_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.telegram_bot_token.label }}</label>
         {{ form.telegram_bot_token }}
         {% for error in form.telegram_bot_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
       </div>
-      <div x-show="provider === 'whatsapp'" x-cloak class="space-y-2 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+      <div x-show="provider === 'whatsapp'" x-cloak class="space-y-2 rounded-xl border border-white/10 bg-black/20 p-4">
         <p class="text-xs text-stone-400">WhatsApp Cloud API benötigt Meta-Konto, Phone Number ID, Token und Template.</p>
         <label for="{{ form.whatsapp_access_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_access_token.label }}</label>
         {{ form.whatsapp_access_token }}

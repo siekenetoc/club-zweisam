@@ -25,7 +25,7 @@
 
     <div class="space-y-4">
       {% for state in states %}
-        <article class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+        <article class="app-card-soft p-5">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <h2 class="max-w-xl font-medium">{{ state.question.text }}</h2>
             <span class="text-xs uppercase tracking-widest text-stone-500">Frage {{ state.question.order }}</span>
@@ -43,11 +43,11 @@
               {% endif %}
               {% if state.match.result != 'none' %}
                 <div class="grid gap-2 text-sm sm:grid-cols-2">
-                  <div class="rounded-md border border-stone-800 bg-stone-950/50 px-3 py-2">
+                  <div class="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
                     <p class="text-xs text-stone-500">Deine Antwort</p>
                     <p class="mt-1">{{ state.own_label|default:"–" }}</p>
                   </div>
-                  <div class="rounded-md border border-stone-800 bg-stone-950/50 px-3 py-2">
+                  <div class="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
                     <p class="text-xs text-stone-500">Antwort von {{ state.partner_name }}</p>
                     <p class="mt-1">{{ state.partner_label|default:"–" }}</p>
                   </div>

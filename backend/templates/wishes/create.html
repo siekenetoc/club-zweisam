@@ -1,36 +1,27 @@
-{% extends "base.html" %}
-
+{% extends "base_form.html" %}
 {% block title %}Wunsch stellen – Club Zweisam{% endblock %}
-
-{% block content %}
-  <section class="mx-auto max-w-lg space-y-6">
-    <div>
-      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
-      <h1 class="mt-2 text-2xl font-semibold">Wunsch stellen</h1>
-      <p class="mt-2 text-sm text-stone-400">
-        Ein Wunsch ist eine Frage, keine Forderung. Die andere Person kann
-        annehmen, teilweise annehmen, eine Alternative vorschlagen, verschieben,
-        ablehnen oder eine Grenze setzen.
-      </p>
-    </div>
-
-    <form method="post" class="space-y-4">
-      {% csrf_token %}
-      {% for error in form.non_field_errors %}
-        <p class="rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">{{ error }}</p>
-      {% endfor %}
-      {% for field in form %}
-        <div>
-          <label for="{{ field.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ field.label }}</label>
-          {{ field }}
-          {% for error in field.errors %}
-            <p class="mt-1 text-xs text-red-300">{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="w-full rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
-        Wunsch speichern
-      </button>
-    </form>
-  </section>
+{% block form_kicker %}Concierge{% endblock %}
+{% block form_title %}Ein Wunsch ist eine Frage.{% endblock %}
+{% block form_title_mobile %}Wunsch stellen{% endblock %}
+{% block form_intro %}Die andere Person kann annehmen, eine Alternative vorschlagen, verschieben, ablehnen oder eine Grenze setzen.{% endblock %}
+{% block form_icon %}
+  <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7 2.9C19 15.7 12 20 12 20Z"/></svg>
+{% endblock %}
+{% block form_content %}
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold text-stone-50">Wunsch stellen</h2>
+    <p class="mt-1 text-sm text-stone-400">Formuliere ihn als Einladung, nicht als Forderung.</p>
+  </div>
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+    {% for error in form.non_field_errors %}<p class="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{{ error }}</p>{% endfor %}
+    {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn-primary w-full">Wunsch speichern</button>
+  </form>
 {% endblock %}

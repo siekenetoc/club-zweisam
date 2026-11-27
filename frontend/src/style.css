@@ -3,6 +3,32 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+    --cz-ink: #090807;
+    --cz-amber: #f5b942;
+    --cz-rose: #f08a7a;
+    --cz-mint: #8bd8bd;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body.app-bg {
+    background:
+      radial-gradient(ellipse 80% 55% at 12% -10%, rgba(245, 185, 66, 0.16), transparent 60%),
+      radial-gradient(ellipse 55% 45% at 100% 0%, rgba(240, 138, 122, 0.12), transparent 65%),
+      radial-gradient(ellipse 70% 50% at 50% 110%, rgba(139, 216, 189, 0.08), transparent 65%),
+      var(--cz-ink);
+  }
+
+  ::selection {
+    background: rgba(245, 185, 66, 0.3);
+    color: #fff7e6;
+  }
+
   [x-cloak] {
     display: none !important;
   }
@@ -10,20 +36,131 @@
   input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
   select,
   textarea {
-    @apply w-full rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-500 focus:outline-none;
+    @apply w-full rounded-xl border border-white/10 bg-white/[0.045] px-4 py-3 text-sm text-stone-100 shadow-inner shadow-black/20 placeholder-stone-500 transition focus:border-amber-400/70 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-amber-400/15;
   }
 
   input[type="checkbox"],
   input[type="radio"] {
-    @apply h-4 w-4 rounded border-stone-600 bg-stone-900 text-amber-500 focus:ring-amber-500;
+    @apply h-4 w-4 rounded border-white/20 bg-stone-900 text-amber-500 focus:ring-amber-400/40;
   }
 
   textarea {
-    @apply min-h-24;
+    @apply min-h-28;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
 @layer components {
+  .app-shell {
+    @apply mx-auto w-full max-w-7xl;
+  }
+
+  .app-card {
+    @apply rounded-3xl border border-white/10 bg-white/[0.035] shadow-[0_24px_80px_-40px_rgba(0,0,0,0.9)] backdrop-blur-xl;
+  }
+
+  .app-card-soft {
+    @apply rounded-2xl border border-white/[0.07] bg-white/[0.025] backdrop-blur;
+  }
+
+  .app-kicker {
+    @apply text-[0.68rem] font-medium uppercase tracking-[0.32em] text-amber-400;
+  }
+
+  .app-title {
+    @apply text-balance text-3xl font-semibold leading-tight tracking-tight text-stone-50 sm:text-4xl;
+  }
+
+  .gradient-text {
+    background: linear-gradient(115deg, #fff4d6 0%, #f5b942 42%, #f08a7a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .nav-pill {
+    @apply inline-flex items-center rounded-full px-3 py-2 text-sm text-stone-300 transition hover:bg-white/[0.06] hover:text-amber-200;
+  }
+
+  .nav-pill-active {
+    @apply bg-amber-400/10 text-amber-200 ring-1 ring-inset ring-amber-400/20;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400 px-5 py-2.5 text-sm font-semibold text-stone-950 shadow-lg shadow-amber-500/15 transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm text-stone-200 transition hover:border-amber-400/50 hover:bg-white/[0.06] hover:text-amber-200;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm text-red-200 transition hover:border-red-400/50 hover:bg-red-500/15;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-stone-300;
+  }
+
+  .icon-tile {
+    @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-400/20 bg-gradient-to-br from-amber-400/20 via-orange-400/10 to-rose-400/10 text-amber-300 shadow-lg shadow-amber-500/5;
+  }
+
+  .form-aside {
+    background:
+      radial-gradient(circle at 20% 10%, rgba(245, 185, 66, 0.18), transparent 55%),
+      radial-gradient(circle at 90% 80%, rgba(240, 138, 122, 0.12), transparent 60%),
+      rgba(255, 255, 255, 0.025);
+  }
+
+  .form-card {
+    @apply rounded-3xl border border-white/10 bg-white/[0.045] p-6 shadow-[0_24px_80px_-45px_rgba(0,0,0,0.95)] backdrop-blur-xl sm:p-8;
+  }
+
+  .form-label {
+    @apply mb-2 block text-sm font-medium text-stone-200;
+  }
+
+  .form-error {
+    @apply mt-1.5 text-xs text-rose-300;
+  }
+
+  .surface-glow {
+    position: relative;
+  }
+  .surface-glow::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(245, 185, 66, 0.35), transparent 35%, rgba(240, 138, 122, 0.2));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .brand-mark {
+    filter: drop-shadow(0 8px 20px rgba(245, 185, 66, 0.22));
+  }
+
+  .mobile-dock {
+    @apply fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-stone-950/90 px-3 pb-[calc(0.6rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl lg:hidden;
+  }
+
+  .dock-link {
+    @apply flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-[0.68rem] text-stone-400 transition hover:bg-white/[0.05] hover:text-amber-200;
+  }
+
   .rich-text h1 {
     @apply mt-6 text-2xl font-semibold text-stone-100;
   }

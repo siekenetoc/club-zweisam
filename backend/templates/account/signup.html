@@ -1,43 +1,49 @@
-{% extends "account/base_entrance.html" %}
-{% block head_title %}Registrieren{% endblock %}
-{% block content %}
-  <section class="mx-auto max-w-md space-y-6">
-    <div>
-      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Zugang</p>
-      <h1 class="mt-2 text-2xl font-semibold">Konto anlegen</h1>
-      <p class="mt-2 text-sm text-stone-400">
-        Nach dem Absenden senden wir einen Aktivierungslink per E-Mail.
-        Erst danach ist die Anmeldung möglich.
-      </p>
-    </div>
-
-    <form method="post" action="" class="space-y-4">
-      {% csrf_token %}
-      {% if form.non_field_errors %}
-        <div class="space-y-1 rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">
-          {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+{% extends "base_form.html" %}
+{% block title %}Registrieren – Club Zweisam{% endblock %}
+{% block form_kicker %}Dein Zugang{% endblock %}
+{% block form_title %}Ein Raum, der nur euch gehört.{% endblock %}
+{% block form_title_mobile %}Konto anlegen{% endblock %}
+{% block form_intro %}Registriere dich, bestätige deine E-Mail und gründe anschließend euren Clubraum.{% endblock %}
+{% block form_content %}
+  <div class="mb-6">
+    <p class="app-kicker lg:hidden">Dein Zugang</p>
+    <h2 class="mt-2 text-xl font-semibold text-stone-50">Konto anlegen</h2>
+    <p class="mt-1 text-sm text-stone-400">Nach dem Absenden senden wir einen Aktivierungslink per E-Mail.</p>
+  </div>
+  <form method="post" action="" class="space-y-5">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="space-y-1 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+    {% for field in form %}
+      {% if field.field.widget.input_type == "checkbox" %}
+        <label class="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3 text-sm text-stone-300">
+          {{ field }}
+          <span>{{ field.label }}</span>
+        </label>
+        {% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      {% else %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="mt-1.5 text-xs text-stone-500">{{ field.help_text|safe }}</div>{% endif %}
+          {% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
         </div>
       {% endif %}
-      {% for field in form %}
-        <div>
-          <label for="{{ field.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}<div class="mt-1 text-xs text-stone-500">{{ field.help_text|safe }}</div>{% endif %}
-          {% for error in field.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}
-        </div>
-      {% endfor %}
-      <p class="text-xs text-stone-500">
-        Mit der Registrierung bestätigst du Volljährigkeit sowie
-        <a href="{% url 'pages:detail' 'agb' %}" class="underline decoration-stone-600 underline-offset-4">AGB</a>
-        und
-        <a href="{% url 'pages:detail' 'datenschutz' %}" class="underline decoration-stone-600 underline-offset-4">Datenschutz</a>.
-      </p>
-      <button type="submit" class="w-full rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Konto anlegen</button>
-    </form>
-
-    <p class="text-sm text-stone-400">
-      Schon registriert?
-      <a href="{% url 'accounts:login' %}" class="text-amber-400 underline underline-offset-4">Anmelden</a>
+    {% endfor %}
+    {{ redirect_field }}
+    <p class="text-xs leading-relaxed text-stone-500">
+      Mit der Registrierung bestätigst du Volljährigkeit sowie
+      <a href="{% url 'pages:detail' 'agb' %}" class="underline decoration-white/20 underline-offset-4 hover:text-amber-300">AGB</a>
+      und
+      <a href="{% url 'pages:detail' 'datenschutz' %}" class="underline decoration-white/20 underline-offset-4 hover:text-amber-300">Datenschutz</a>.
     </p>
-  </section>
+    <button type="submit" class="btn-primary w-full">Konto anlegen</button>
+  </form>
+  <p class="mt-6 text-sm text-stone-400">
+    Schon registriert?
+    <a href="{% url 'accounts:login' %}" class="text-amber-300 underline underline-offset-4">Anmelden</a>
+  </p>
 {% endblock %}

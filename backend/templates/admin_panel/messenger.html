@@ -25,7 +25,7 @@
 
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Bestehende Kanäle</h2>
-      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+      <div class="divide-y divide-stone-800 app-card-soft">
         {% for channel in channels %}
           <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div class="min-w-0">
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <form method="post" class="space-y-5 rounded-lg border border-stone-800 bg-stone-900/60 p-5" x-data="{ provider: '{{ form.provider.value|default:'telegram' }}', applyTarget(id) { document.getElementById('id_default_target').value = id; document.getElementById('id_provider').value = 'telegram'; } }">
+    <form method="post" class="space-y-5 app-card-soft p-5" x-data="{ provider: '{{ form.provider.value|default:'telegram' }}', applyTarget(id) { document.getElementById('id_default_target').value = id; document.getElementById('id_provider').value = 'telegram'; } }">
       {% csrf_token %}
       {{ form.channel_id }}
       <h2 class="text-xs uppercase tracking-widest text-stone-500">{% if editing %}Kanal bearbeiten{% else %}Neuen Kanal anlegen{% endif %}</h2>
@@ -90,7 +90,7 @@
         <p class="mt-1 text-xs text-stone-500">Ziel kann auch pro Nutzer in der Lounge gesetzt werden.</p>
       </div>
 
-      <div x-show="provider === 'whatsapp'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+      <div x-show="provider === 'whatsapp'" x-cloak class="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
         <p class="text-sm text-stone-300">WhatsApp Cloud API (Meta). Vorlage für stabile Zustellung erforderlich.</p>
         <div><label for="{{ form.whatsapp_phone_number_id.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_phone_number_id.label }}</label>{{ form.whatsapp_phone_number_id }}{% for error in form.whatsapp_phone_number_id.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
         <div><label for="{{ form.whatsapp_access_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.whatsapp_access_token.label }}</label>{{ form.whatsapp_access_token }}{% for error in form.whatsapp_access_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <div x-show="provider === 'telegram'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+      <div x-show="provider === 'telegram'" x-cloak class="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
         <p class="text-sm text-stone-300">Telegram-Bot über @BotFather; Bot in die Gruppe einladen und die numerische Chat-ID als Standardziel eintragen. Die Gruppe muss von dir angelegt werden – Bots können keine Gruppen erstellen. Für einen schnellen Test reicht der Privatchat mit dem Bot (dort „Start“ drücken).</p>
         <div><label for="{{ form.telegram_bot_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.telegram_bot_token.label }}</label>{{ form.telegram_bot_token }}{% for error in form.telegram_bot_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
         <button type="submit" name="action" value="telegram_discover" formnovalidate class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-200 hover:border-amber-500 hover:text-amber-400">Chat-ID ermitteln</button>
@@ -118,20 +118,20 @@
         {% endif %}
       </div>
 
-      <div x-show="provider === 'signal'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+      <div x-show="provider === 'signal'" x-cloak class="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
         <p class="text-sm text-stone-300">signal-cli REST API selbst betreiben; Nummer registrieren oder Gerät verknüpfen.</p>
         <div><label for="{{ form.signal_api_url.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.signal_api_url.label }}</label>{{ form.signal_api_url }}{% for error in form.signal_api_url.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
         <div><label for="{{ form.signal_sender_number.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.signal_sender_number.label }}</label>{{ form.signal_sender_number }}{% for error in form.signal_sender_number.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
         <div><label for="{{ form.signal_authorization.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.signal_authorization.label }}</label>{{ form.signal_authorization }}</div>
       </div>
 
-      <div x-show="provider === 'element'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+      <div x-show="provider === 'element'" x-cloak class="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
         <p class="text-sm text-stone-300">Dedizierten unverschlüsselten Hinweisraum verwenden. E2EE-Räume benötigen einen anderen Client.</p>
         <div><label for="{{ form.element_homeserver_url.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.element_homeserver_url.label }}</label>{{ form.element_homeserver_url }}{% for error in form.element_homeserver_url.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
         <div><label for="{{ form.element_access_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.element_access_token.label }}</label>{{ form.element_access_token }}{% for error in form.element_access_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
       </div>
 
-      <div x-show="provider === 'gotify'" x-cloak class="space-y-3 rounded-md border border-stone-800 bg-stone-950/40 p-4">
+      <div x-show="provider === 'gotify'" x-cloak class="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
         <p class="text-sm text-stone-300">Selbst gehostetes Gotify; App-Token aus Gotify eintragen.</p>
         <div><label for="{{ form.gotify_server_url.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.gotify_server_url.label }}</label>{{ form.gotify_server_url }}{% for error in form.gotify_server_url.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>
         <div><label for="{{ form.gotify_app_token.id_for_label }}" class="mb-1 block text-xs text-stone-400">{{ form.gotify_app_token.label }}</label>{{ form.gotify_app_token }}{% for error in form.gotify_app_token.errors %}<p class="mt-1 text-xs text-red-300">{{ error }}</p>{% endfor %}</div>

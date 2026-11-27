@@ -19,7 +19,7 @@
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Gespräch</h2>
         {% if talk_session %}
           <p class="mt-2 text-sm text-stone-300">Aktive Sitzung seit {{ talk_session.started_at|date:"d.m.Y H:i" }}.</p>
@@ -32,7 +32,7 @@
           </form>
         {% endif %}
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Reparatur</h2>
         {% if repair_session %}
           <p class="mt-2 text-sm text-stone-300">Aktive Sitzung seit {{ repair_session.started_at|date:"d.m.Y H:i" }}.</p>
@@ -50,7 +50,7 @@
     {% if sessions %}
       <div class="space-y-3">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Verlauf</h2>
-        <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+        <div class="divide-y divide-stone-800 app-card-soft">
           {% for session in sessions %}
             <a href="{% url 'deep_talk:session' session.pk %}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-stone-900">
               <span>{{ session.get_mode_display }}</span>

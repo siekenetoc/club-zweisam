@@ -3,32 +3,76 @@
 {% block title %}{{ landing.hero_title }} – Club Zweisam{% endblock %}
 
 {% block content %}
-  <section class="space-y-8">
-    <div class="space-y-4">
-      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ landing.hero_kicker }}</p>
-      <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">{{ landing.hero_title }}</h1>
-      <p class="max-w-2xl text-stone-300">{{ landing.hero_text }}</p>
-      <div class="flex flex-wrap gap-3">
-        {% if landing.primary_cta_label %}
-          <a href="{{ landing.primary_cta_url }}" class="rounded-full bg-amber-500 px-5 py-2.5 text-sm font-medium text-stone-950 hover:bg-amber-400">{{ landing.primary_cta_label }}</a>
-        {% endif %}
-        {% if landing.secondary_cta_label %}
-          <a href="{{ landing.secondary_cta_url }}" class="rounded-full border border-stone-700 px-5 py-2.5 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">{{ landing.secondary_cta_label }}</a>
-        {% endif %}
+  <section class="space-y-10">
+    <div class="grid items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-12">
+      <div class="space-y-6">
+        <span class="chip border-amber-400/20 bg-amber-400/[0.07] text-amber-200">
+          <span class="mr-2 h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+          Privater Raum für zwei
+        </span>
+        <div>
+          <p class="app-kicker">{{ landing.hero_kicker }}</p>
+          <h1 class="mt-4 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+            <span class="gradient-text">{{ landing.hero_title }}</span>
+          </h1>
+          <p class="mt-5 max-w-xl text-base leading-relaxed text-stone-400 sm:text-lg">{{ landing.hero_text }}</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          {% if landing.primary_cta_label %}
+            <a href="{{ landing.primary_cta_url }}" class="btn-primary">{{ landing.primary_cta_label }}</a>
+          {% endif %}
+          {% if landing.secondary_cta_label %}
+            <a href="{{ landing.secondary_cta_url }}" class="btn-ghost">{{ landing.secondary_cta_label }}</a>
+          {% endif %}
+        </div>
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-stone-500">
+          <span class="inline-flex items-center gap-2"><svg class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 4 4L19 6"/></svg>Verschlüsselt gespeichert</span>
+          <span class="inline-flex items-center gap-2"><svg class="h-4 w-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.5 19 6v5.4c0 4.3-2.8 7.5-7 9.1-4.2-1.6-7-4.8-7-9.1V6l7-2.5Z"/></svg>Consent zuerst</span>
+          <span class="inline-flex items-center gap-2"><svg class="h-4 w-4 text-rose-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7 2.9C19 15.7 12 20 12 20Z"/></svg>Nur ihr zwei</span>
+        </div>
+      </div>
+
+      <div class="surface-glow relative mx-auto w-full max-w-md lg:max-w-none">
+        <div class="form-aside relative overflow-hidden rounded-[2rem] border border-white/10 p-6 sm:p-8">
+          <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full border border-amber-400/20"></div>
+          <div class="pointer-events-none absolute -bottom-20 -left-10 h-48 w-48 rounded-full border border-rose-400/10"></div>
+          <svg viewBox="0 0 420 300" class="relative h-auto w-full" role="img" aria-label="Zwei verbundene Kreise als Symbol für den Clubraum">
+            <defs>
+              <linearGradient id="hero-a" x1="60" y1="40" x2="360" y2="280" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FFE7A8"/><stop offset=".5" stop-color="#F5B942"/><stop offset="1" stop-color="#F08A7A"/>
+              </linearGradient>
+              <linearGradient id="hero-b" x1="80" y1="270" x2="360" y2="20" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#8BD8BD"/><stop offset="1" stop-color="#F5B942" stop-opacity=".15"/>
+              </linearGradient>
+            </defs>
+            <circle cx="165" cy="150" r="78" fill="none" stroke="url(#hero-a)" stroke-width="2.2" opacity=".9"/>
+            <circle cx="255" cy="150" r="78" fill="none" stroke="url(#hero-b)" stroke-width="2.2" opacity=".9"/>
+            <path d="M210 78c12 20 18 42 18 72s-6 52-18 72c-12-20-18-42-18-72s6-52 18-72Z" fill="url(#hero-a)" opacity=".18"/>
+            <circle cx="210" cy="150" r="4" fill="#FFE7A8"/>
+            <path d="M70 230c55-18 90-18 140 0s85 18 140 0" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+            <path d="M70 70c55 18 90 18 140 0s85-18 140 0" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+          </svg>
+          <div class="relative mt-4 grid grid-cols-3 gap-2 text-center">
+            <div class="rounded-2xl border border-white/10 bg-black/20 p-3"><p class="text-lg font-semibold text-stone-100">2</p><p class="text-[0.65rem] uppercase tracking-widest text-stone-500">Hauptmitglieder</p></div>
+            <div class="rounded-2xl border border-white/10 bg-black/20 p-3"><p class="text-lg font-semibold text-stone-100">8</p><p class="text-[0.65rem] uppercase tracking-widest text-stone-500">Module</p></div>
+            <div class="rounded-2xl border border-white/10 bg-black/20 p-3"><p class="text-lg font-semibold text-stone-100">1</p><p class="text-[0.65rem] uppercase tracking-widest text-stone-500">Safeword</p></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
       {% for section in landing_sections %}
-        <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
-          <h2 class="text-xs uppercase tracking-widest text-stone-500">{{ section.title }}</h2>
+        <article class="surface-glow group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-6 transition hover:-translate-y-0.5 hover:bg-white/[0.05]">
+          <div class="mb-5 h-px w-12 bg-gradient-to-r from-amber-300 to-rose-300/20"></div>
+          <h2 class="text-lg font-semibold text-stone-100">{{ section.title }}</h2>
           {% if section.body_html %}
-            <div class="rich-text mt-2 text-stone-200">{{ section.body_html|safe }}</div>
+            <div class="rich-text mt-2 text-sm text-stone-400">{{ section.body_html|safe }}</div>
           {% endif %}
           {% if section.link_label and section.link_url %}
-            <a href="{{ section.link_url }}" class="mt-3 inline-block text-sm text-amber-400 underline decoration-amber-800 underline-offset-4 hover:text-amber-300">{{ section.link_label }}</a>
+            <a href="{{ section.link_url }}" class="mt-4 inline-flex items-center gap-2 text-sm text-amber-300 transition group-hover:gap-3">{{ section.link_label }} <span aria-hidden="true">→</span></a>
           {% endif %}
-        </div>
+        </article>
       {% endfor %}
     </div>
   </section>

@@ -21,7 +21,7 @@
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Zu beantworten</h2>
       {% for wish in incoming %}
-        <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-amber-700">
+        <a href="{% url 'wishes:detail' wish.pk %}" class="block app-card-soft p-5 hover:border-amber-700">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <p class="font-medium">{{ wish.title }}</p>
             <span class="text-xs uppercase tracking-widest text-amber-500">{{ wish.type_label }}</span>
@@ -29,7 +29,7 @@
           <p class="mt-1 text-xs text-stone-500">Intensität {{ wish.intensity }} · {{ wish.get_timeframe_display }}{% if wish.category %} · {{ wish.category }}{% endif %}</p>
         </a>
       {% empty %}
-        <p class="rounded-lg border border-stone-800 bg-stone-900/60 p-5 text-sm text-stone-400">Keine offenen Wünsche an dich.</p>
+        <p class="app-card-soft p-5 text-sm text-stone-400">Keine offenen Wünsche an dich.</p>
       {% endfor %}
     </div>
 
@@ -37,7 +37,7 @@
       <div class="space-y-3">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Privat</h2>
         {% for wish in private %}
-          <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-amber-700">
+          <a href="{% url 'wishes:detail' wish.pk %}" class="block app-card-soft p-5 hover:border-amber-700">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <p class="font-medium">{{ wish.title }}</p>
               <span class="text-xs text-stone-500">Nur für dich</span>
@@ -52,7 +52,7 @@
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Deine Wünsche</h2>
       {% for wish in outgoing %}
         {% if wish.status != "draft" %}
-          <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-amber-700">
+          <a href="{% url 'wishes:detail' wish.pk %}" class="block app-card-soft p-5 hover:border-amber-700">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <p class="font-medium">{{ wish.title }}</p>
               <span class="text-xs text-stone-300">{{ wish.status_label }}</span>
@@ -61,21 +61,21 @@
           </a>
         {% endif %}
       {% empty %}
-        <p class="rounded-lg border border-stone-800 bg-stone-900/60 p-5 text-sm text-stone-400">Noch keine Wünsche gestellt.</p>
+        <p class="app-card-soft p-5 text-sm text-stone-400">Noch keine Wünsche gestellt.</p>
       {% endfor %}
     </div>
 
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Abgeschlossen</h2>
       {% for wish in closed %}
-        <a href="{% url 'wishes:detail' wish.pk %}" class="block rounded-lg border border-stone-800 bg-stone-900/60 p-5 hover:border-stone-600">
+        <a href="{% url 'wishes:detail' wish.pk %}" class="block app-card-soft p-5 hover:border-stone-600">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <p class="text-stone-300">{{ wish.title }}</p>
             <span class="text-xs text-stone-500">{{ wish.status_label }}</span>
           </div>
         </a>
       {% empty %}
-        <p class="rounded-lg border border-stone-800 bg-stone-900/60 p-5 text-sm text-stone-400">Noch nichts abgeschlossen.</p>
+        <p class="app-card-soft p-5 text-sm text-stone-400">Noch nichts abgeschlossen.</p>
       {% endfor %}
     </div>
   </section>

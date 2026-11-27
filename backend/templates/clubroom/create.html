@@ -1,35 +1,27 @@
-{% extends "base.html" %}
-
+{% extends "base_form.html" %}
 {% block title %}Clubraum gründen – Club Zweisam{% endblock %}
-
-{% block content %}
-  <section class="mx-auto max-w-lg space-y-6">
-    <div>
-      <p class="text-sm uppercase tracking-[0.3em] text-amber-500">Gründung</p>
-      <h1 class="mt-2 text-2xl font-semibold">Euren Clubraum aufsetzen</h1>
-      <p class="mt-2 text-sm text-stone-400">
-        Das Safeword wird verschlüsselt gespeichert und ist nur für die
-        Hauptmitglieder bestimmt. Es wird nie in Benachrichtigungen gesendet.
-      </p>
-    </div>
-
-    <form method="post" class="space-y-4">
-      {% csrf_token %}
-      {% for error in form.non_field_errors %}
-        <p class="rounded-md border border-red-800 bg-red-950/60 px-3 py-2 text-sm text-red-200">{{ error }}</p>
-      {% endfor %}
-      {% for field in form %}
-        <div>
-          <label for="{{ field.id_for_label }}" class="mb-1 block text-sm text-stone-300">{{ field.label }}</label>
-          {{ field }}
-          {% for error in field.errors %}
-            <p class="mt-1 text-xs text-red-300">{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="w-full rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
-        Clubraum gründen
-      </button>
-    </form>
-  </section>
+{% block form_kicker %}Gründung{% endblock %}
+{% block form_title %}Euer Raum beginnt hier.{% endblock %}
+{% block form_title_mobile %}Euren Clubraum aufsetzen{% endblock %}
+{% block form_intro %}Ein Name, ein Safeword, eure Regeln. Alles andere baut ihr gemeinsam darauf auf.{% endblock %}
+{% block form_icon %}
+  <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 19V9.5L12 4l8 5.5V19M8 19v-5h8v5"/><path stroke-linecap="round" d="M12 9v3M10.5 10.5h3"/></svg>
+{% endblock %}
+{% block form_content %}
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold text-stone-50">Euren Clubraum aufsetzen</h2>
+    <p class="mt-1 text-sm text-stone-400">Das Safeword wird verschlüsselt gespeichert und nie in Benachrichtigungen gesendet.</p>
+  </div>
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+    {% for error in form.non_field_errors %}<p class="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{{ error }}</p>{% endfor %}
+    {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn-primary w-full">Clubraum gründen</button>
+  </form>
 {% endblock %}

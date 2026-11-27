@@ -1,5 +1,7 @@
 # Club Zweisam
 
+[![CI](https://github.com/siekenetoc/club-zweisam/actions/workflows/ci.yml/badge.svg)](https://github.com/siekenetoc/club-zweisam/actions/workflows/ci.yml)
+
 Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
@@ -277,6 +279,26 @@ aus und startet Gunicorn; Static liefert Whitenoise. Produktions-Secrets liegen
 unter `/root/secrets-club-zweiraum.txt`; SMTP muss vor Aktivierung/Reset
 konfiguriert sein. `www.club-zweisam.de` benötigt zusätzlich einen DNS-A-Record
 auf denselben Server und ein Zertifikat mit `www`-SAN.
+
+## Frontend und Web-App
+
+- Dark Design mit warmen Gradienten, SVG-Marke, SVG-Hero und responsiver
+  Desktop-/Mobile-Navigation.
+- Zweispaltige Formularseiten: Kontext und Erklärung links, Formular rechts;
+  auf Smartphones einspaltig.
+- Mobile Dock mit Schnellzugriffen für authentifizierte Clubraum-Mitglieder.
+- PWA-Vorbereitung: Web-App-Manifest, Theme-Farbe, Apple-Meta-Tags,
+  installierbare Icons und `viewport-fit=cover`.
+- Gemeinsames Card-, Button-, Chip- und Form-System in `frontend/src/style.css`.
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) prüft bei Push und Pull Request:
+
+- Backend: ruff, black, bandit, pytest, pip-audit, `check --deploy`
+- Frontend: `npm ci`, Vite-Build, vorhandene Assets
+- E2E: kompletter Docker-Compose-Stack und Playwright
+- Dependabot aktualisiert pip-, npm- und Actions-Abhängigkeiten wöchentlich/monatlich.
 
 ## Tests und Qualität
 ```bash

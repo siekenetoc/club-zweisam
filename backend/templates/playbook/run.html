@@ -14,7 +14,7 @@
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <p class="text-xs uppercase tracking-widest text-stone-500">Timer</p>
         {% if run.is_active %}
           <div x-data="challengeTimer('{{ run.started_at|date:"c" }}', {{ run.challenge.duration_min }})" x-init="init()" class="mt-2">
@@ -25,7 +25,7 @@
           <p class="mt-2 text-sm text-stone-400">Beendet.</p>
         {% endif %}
       </div>
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+      <div class="app-card-soft p-5">
         <p class="text-xs uppercase tracking-widest text-stone-500">Status</p>
         {% if run.is_completed %}
           <p class="mt-2 text-emerald-300">Gemeinsam abgeschlossen am {{ run.completed_at|date:"d.m.Y H:i" }}.</p>
@@ -39,7 +39,7 @@
 
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Bestätigungen</h2>
-      <div class="divide-y divide-stone-800 rounded-lg border border-stone-800 bg-stone-900/60">
+      <div class="divide-y divide-stone-800 app-card-soft">
         {% for participant in run.participants %}
           <div class="flex items-center justify-between px-4 py-3 text-sm">
             <span>{{ participant.username }}</span>

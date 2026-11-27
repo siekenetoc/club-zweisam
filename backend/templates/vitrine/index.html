@@ -21,7 +21,7 @@
     {% if entries %}
       <div class="space-y-3">
         {% for entry in entries %}
-          <article class="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+          <article class="app-card-soft p-5">
             <p class="text-xs uppercase tracking-widest text-stone-500">{{ entry.category }}</p>
             <h2 class="mt-2 font-medium">{{ entry.question }}</h2>
             <p class="mt-1 text-sm text-amber-300">{{ entry.result }}</p>
@@ -30,7 +30,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="rounded-lg border border-stone-800 bg-stone-900/60 p-6 text-sm text-stone-400">
+      <div class="app-card-soft p-6 text-sm text-stone-400">
         Noch keine Gemeinsamkeit. Startet eine Runde in der Séparée und gebt
         einen Match gemeinsam frei.
       </div>

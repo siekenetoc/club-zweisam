@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, staging]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+      - name: Abhängigkeiten
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+      - name: Lint
+        run: |
+          ruff check .
+          black --check .
+      - name: Test
+        env:
+          PYTHONPATH: backend
+        run: pytest -q
+      - name: Sicherheitspruefung
+        env:
+          PYTHONPATH: backend
+          DJANGO_SETTINGS_MODULE: clubzweisam.settings.prod
+          SECRET_KEY: ci-only-not-production
+          FIELD_ENCRYPTION_KEY: MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=
+          DATABASE_URL: sqlite:////tmp/ci.sqlite3
+          ALLOWED_HOSTS: localhost
+        run: |
+          bandit -r backend/apps -q
+          pip-audit -r backend/requirements.txt
+          python backend/manage.py check --deploy
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Assets bauen
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Build-Artefakte vorhanden
+        run: test -f backend/static/dist/css/main.css && test -f backend/static/dist/js/main.js
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dev-Umgebung vorbereiten
+        run: |
+          cp .env.example .env
+          sed -i 's/^SECRET_KEY=.*/SECRET_KEY=ci-secret/g' .env
+          sed -i 's/^FIELD_ENCRYPTION_KEY=.*/FIELD_ENCRYPTION_KEY=MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=/g' .env
+          sed -i 's/^DEBUG=.*/DEBUG=True/g' .env
+      - name: Stack starten
+        run: docker compose up -d --build
+      - name: Auf Caddy warten
+        run: timeout 180 bash -c 'until curl -sk https://localhost/ >/dev/null; do sleep 2; done'
+      - name: Playwright
+        run: docker compose --profile e2e run --rm playwright
+      - name: Logs bei Fehler
+        if: failure()
+        run: docker compose logs --tail=100
+      - name: Stack stoppen
+        if: always()
+        run: docker compose down -v

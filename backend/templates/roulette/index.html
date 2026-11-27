@@ -30,7 +30,7 @@
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Decks</h2>
       <div class="grid gap-4 sm:grid-cols-2">
         {% for item in decks %}
-          <div class="flex flex-col gap-3 rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+          <div class="flex flex-col gap-3 app-card-soft p-5">
             <div>
               <p class="text-xs uppercase tracking-widest text-stone-500">Deck {{ item.deck.code }} · Intensität {{ item.deck.intensity }}</p>
               <h3 class="mt-1 text-lg font-medium">{{ item.deck.title }}</h3>
