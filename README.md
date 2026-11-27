@@ -1,7 +1,5 @@
 # Club Zweisam
 
-[![CI](https://github.com/siekenetoc/club-zweisam/actions/workflows/ci.yml/badge.svg)](https://github.com/siekenetoc/club-zweisam/actions/workflows/ci.yml)
-
 Privater Kommunikations- und Spielraum für Paare. Kein Therapieersatz.
 Ein Stack, Caddy als Reverse Proxy, Django serverseitig mit Feldverschlüsselung
 für sensible Inhalte.
@@ -291,14 +289,15 @@ auf denselben Server und ein Zertifikat mit `www`-SAN.
   installierbare Icons und `viewport-fit=cover`.
 - Gemeinsames Card-, Button-, Chip- und Form-System in `frontend/src/style.css`.
 
-## CI
+## CI und Deployment
 
-GitHub Actions (`.github/workflows/ci.yml`) prüft bei Push und Pull Request:
+Der GitHub-Actions-Workflow ist derzeit deaktiviert
+(`.github/workflows/ci.yml.disabled`). Die enthaltenen Backend-, Frontend- und
+E2E-Prüfungen bleiben als Vorlage erhalten und können vor dem nächsten
+gemeinsamen Deployment wieder aktiviert werden.
 
-- Backend: ruff, black, bandit, pytest, pip-audit, `check --deploy`
-- Frontend: `npm ci`, Vite-Build, vorhandene Assets
-- E2E: kompletter Docker-Compose-Stack und Playwright
-- Dependabot aktualisiert pip-, npm- und Actions-Abhängigkeiten wöchentlich/monatlich.
+Es gibt keinen automatischen Sync und kein automatisches Deployment auf den
+externen Server. Installation und Deployment erfolgen manuell gemeinsam.
 
 ## Tests und Qualität
 ```bash
