@@ -69,6 +69,7 @@
                 {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="nav-pill whitespace-nowrap">Nachrichten</a>{% endif %}
                 {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="nav-pill whitespace-nowrap">Galerie</a>{% endif %}
                 {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="nav-pill whitespace-nowrap">Erkenntnisse</a>{% endif %}
+                {% if nav_modules.moments %}<a href="{% url 'moments:index' %}" class="nav-pill whitespace-nowrap">Momente</a>{% endif %}
                 {% for item in nav_header_items %}<a href="{{ item.url }}" class="nav-pill whitespace-nowrap">{{ item.label }}</a>{% endfor %}
                 {% if user.is_staff %}<a href="/management/" class="nav-pill whitespace-nowrap">Verwaltung</a>{% endif %}
                 {% if user.is_staff %}<a href="/admin/" class="nav-pill whitespace-nowrap">Admin</a>{% endif %}
@@ -96,6 +97,7 @@
               {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Nachrichten</a>{% endif %}
               {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Galerie</a>{% endif %}
               {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Erkenntnisse</a>{% endif %}
+              {% if nav_modules.moments %}<a href="{% url 'moments:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Momente</a>{% endif %}
               <a href="{% url 'accounts:profile' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Profil</a>
               {% if user.is_staff %}<a href="/management/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Verwaltung</a>{% endif %}
               {% if user.is_staff %}<a href="/admin/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Django-Admin</a>{% endif %}

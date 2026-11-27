@@ -20,6 +20,8 @@ APP_PATH_PREFIXES = (
     "/nachrichten/",
     "/galerie/",
     "/erkenntnisse/",
+    "/momente/",
+    "/api/",
 )
 
 

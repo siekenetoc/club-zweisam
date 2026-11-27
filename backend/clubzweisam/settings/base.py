@@ -78,6 +78,10 @@ INSTALLED_APPS = [
     "apps.messaging",
     "apps.gallery",
     "apps.insights",
+    "apps.moments",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "apps.api",
 ]
 
 MIDDLEWARE = [
@@ -211,6 +215,18 @@ EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", False)
 EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
 EMAIL_TIMEOUT = int(env("EMAIL_TIMEOUT", "10"))
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "noreply@club-zweisam.local")
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 50,
+}
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

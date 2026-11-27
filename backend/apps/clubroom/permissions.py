@@ -11,6 +11,7 @@ MODULES = (
     "messages",
     "gallery",
     "insights",
+    "moments",
 )
 
 MODULE_LABELS = {
@@ -26,6 +27,7 @@ MODULE_LABELS = {
     "messages": "Nachrichten",
     "gallery": "Galerie",
     "insights": "Erkenntnisse",
+    "moments": "Momente",
 }
 
 OWNER = "owner"

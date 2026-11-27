@@ -1,0 +1,30 @@
+{% extends "base_module.html" %}
+{% block title %}Momente – Club Zweisam{% endblock %}
+{% block module_kicker %}Momente{% endblock %}
+{% block module_title %}Ein Tag, ein Gedanke.{% endblock %}
+{% block module_title_mobile %}Momente{% endblock %}
+{% block module_intro %}Eine tägliche Frage und gemeinsame Erinnerungen. Keine Punkte, kein Vergleich – nur ein kleiner Anlass, euch zu sehen.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7 2.9C19 15.7 12 20 12 20Z"/><path stroke-linecap="round" d="M12 5v4M10 7h4"/></svg>{% endblock %}
+{% block module_action %}<span class="chip">{{ day|date:"d.m.Y" }}</span>{% endblock %}
+{% block module_content %}
+  <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]">
+    <div class="app-card-soft p-5">
+      <p class="app-kicker">Tägliche Frage</p>
+      <h2 class="mt-3 text-2xl font-semibold text-stone-100">{{ question }}</h2>
+      {% if own_answer %}
+        <div class="mt-4 rounded-xl border border-white/10 bg-black/20 p-4 text-sm text-stone-300"><p class="text-xs text-stone-500">Deine Antwort</p><p class="mt-1 whitespace-pre-line">{{ own_answer.answer }}</p></div>
+        {% if reveal %}
+          <div class="mt-3 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4 text-sm text-stone-300"><p class="text-xs text-emerald-200">Antwort von {{ partner_answer.user.display_label }}</p><p class="mt-1 whitespace-pre-line">{{ partner_answer.answer }}</p></div>
+        {% else %}
+          <p class="mt-3 text-xs text-stone-500">Deine Antwort bleibt verborgen, bis dein Gegenüber auch geantwortet hat.</p>
+        {% endif %}
+      {% else %}
+        <form method="post" action="{% url 'moments:answer' %}" class="mt-4 space-y-3">{% csrf_token %}{% for field in form %}{{ field }}{% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}{% endfor %}<button class="btn-primary">Antwort speichern</button></form>
+      {% endif %}
+    </div>
+    <div class="space-y-5">
+      <div class="app-card-soft p-5"><h2 class="text-xs uppercase tracking-widest text-stone-500">An diesem Tag</h2>{% if memories %}<div class="mt-3 grid grid-cols-3 gap-2">{% for image in memories %}<a href="{% url 'gallery:image' image.pk %}" target="_blank"><img src="{% url 'gallery:thumb' image.pk %}" alt="{{ image.caption }}" class="aspect-square w-full rounded-xl object-cover" /></a>{% endfor %}</div>{% else %}<p class="mt-2 text-xs text-stone-500">Noch keine Bilder aus früheren Jahren.</p>{% endif %}</div>
+      <div class="app-card-soft p-5"><h2 class="text-xs uppercase tracking-widest text-stone-500">Geteilte Erkenntnisse</h2>{% for insight in insights %}<p class="mt-2 text-sm text-stone-300">{{ insight.title }}</p>{% empty %}<p class="mt-2 text-xs text-stone-500">Noch keine Erkenntnis aus früheren Jahren.</p>{% endfor %}</div>
+    </div>
+  </div>
+{% endblock %}
