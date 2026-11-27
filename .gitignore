@@ -38,6 +38,9 @@ backend/tests/
 .idea/
 *.swp
 
+# Agent plans (can contain sensitive deployment notes)
+.kilo/
+
 # OS
 .DS_Store
 
