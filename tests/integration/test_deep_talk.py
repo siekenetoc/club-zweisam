@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from apps.accounts.models import User
 from apps.clubroom.models import Membership
-from apps.clubroom.permissions import ADVISOR, GUEST, MEDIATOR, OWNER, SEX_PARTNER
+from apps.clubroom.permissions import ADVISOR, GUEST, MEDIATOR, OWNER
 from apps.clubroom.services import create_clubroom
 from apps.crisis.services import (
     active_crisis_session,
@@ -78,17 +78,11 @@ def test_only_deep_talk_roles_can_access(client):
     mediator = User.objects.create_user(
         username="mediation", email="mediation@example.com", password="sehr-geheim-1234"
     )
-    partner = User.objects.create_user(
-        username="partner", email="partner@example.com", password="sehr-geheim-1234"
-    )
     Membership.objects.create(clubroom=clubroom, user=guest, role=GUEST)
     Membership.objects.create(clubroom=clubroom, user=advisor, role=ADVISOR)
     Membership.objects.create(clubroom=clubroom, user=mediator, role=MEDIATOR)
-    Membership.objects.create(clubroom=clubroom, user=partner, role=SEX_PARTNER)
 
     client.force_login(guest)
-    assert client.get(reverse("deep_talk:index")).status_code == 403
-    client.force_login(partner)
     assert client.get(reverse("deep_talk:index")).status_code == 403
     client.force_login(advisor)
     assert client.get(reverse("deep_talk:index")).status_code == 200

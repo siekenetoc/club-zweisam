@@ -252,8 +252,7 @@ Eine **Dyade** ist hier die Beziehungseinheit aus genau **zwei
 Hauptmitgliedern** in einem Clubraum. Sie ist der kleinste gemeinsame Kontext:
 ein Safeword, ein Logbuch, ein Punkte-Ledger, gemeinsame Sichtbarkeiten. Weitere
 Personen können als Moderator, Berater, Mediator oder Gast eingeladen werden,
-bilden aber keine zweite Dyade. Bestehende Sex-Partner-Mitgliedschaften aus
-älteren Ständen bleiben technisch erhalten, sind aber nicht mehr einladbar.
+bilden aber keine zweite Dyade.
 
 ### 4.2 Clubraum einrichten
 

@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from apps.accounts.models import User
 from apps.clubroom.models import Membership
-from apps.clubroom.permissions import GUEST, OWNER, SEX_PARTNER
+from apps.clubroom.permissions import GUEST, OWNER
 from apps.clubroom.services import create_clubroom
 from apps.playbook.models import CATEGORY_CHOICES, Challenge
 from apps.playbook.services import (
@@ -133,20 +133,6 @@ def test_non_owner_cannot_start_challenge(client):
         start_challenge(clubroom=clubroom, challenge=challenge(stage=1), user=guest)
     client.force_login(guest)
     assert client.get(reverse("playbook:index")).status_code == 403
-
-
-def test_sex_partner_can_view_library_but_not_start(client):
-    clubroom, anna, _ = make_room()
-    partner = User.objects.create_user(
-        username="partner", email="partner@example.com", password="sehr-geheim-1234"
-    )
-    Membership.objects.create(clubroom=clubroom, user=partner, role=SEX_PARTNER)
-    client.force_login(partner)
-    response = client.get(reverse("playbook:index"))
-    assert response.status_code == 200
-    assert "Starten" not in response.content.decode()
-    with pytest.raises(ValidationError):
-        start_challenge(clubroom=clubroom, challenge=challenge(stage=1), user=partner)
 
 
 def test_pages_render_for_owner(client):

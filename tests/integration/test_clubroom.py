@@ -14,7 +14,6 @@ from apps.clubroom.permissions import (
     MODERATOR,
     MODULES,
     OWNER,
-    SEX_PARTNER,
     default_permissions_for,
 )
 from apps.clubroom.services import create_clubroom
@@ -256,7 +255,7 @@ def test_owner_can_edit_clubroom_settings(client):
     assert client.get(reverse("clubroom:settings")).status_code == 403
 
 
-def test_sex_partner_is_not_invitable(client):
+def test_removed_sex_partner_role_is_not_invitable(client):
     owner = make_user("anna", "anna@example.com")
     make_clubroom(owner)
     client.force_login(owner)
@@ -299,7 +298,6 @@ def test_role_permissions_matrix():
     assert not moderator["roulette"]
     assert default_permissions_for(ADVISOR)["deep_talk"]
     assert default_permissions_for(MEDIATOR)["deep_talk"]
-    assert default_permissions_for(SEX_PARTNER)["playbook"]
     assert not default_permissions_for(GUEST)["roulette"]
 
 

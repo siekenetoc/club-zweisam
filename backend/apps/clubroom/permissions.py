@@ -24,7 +24,6 @@ OWNER = "owner"
 MODERATOR = "moderator"
 ADVISOR = "advisor"
 MEDIATOR = "mediator"
-SEX_PARTNER = "sex_partner"
 GUEST = "guest"
 
 ROLE_CHOICES = (
@@ -32,7 +31,6 @@ ROLE_CHOICES = (
     (MODERATOR, "Moderator"),
     (ADVISOR, "Berater"),
     (MEDIATOR, "Mediator"),
-    (SEX_PARTNER, "Sex-Partner"),
     (GUEST, "Gast/Beobachter"),
 )
 
@@ -48,7 +46,6 @@ ROLE_PERMISSIONS = {
     MODERATOR: {"lounge": True, "feed": True},
     ADVISOR: {"lounge": True, "deep_talk": True},
     MEDIATOR: {"lounge": True, "deep_talk": True},
-    SEX_PARTNER: {"lounge": True, "playbook": True},
     GUEST: {"lounge": True},
 }
 
