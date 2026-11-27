@@ -158,7 +158,15 @@ def invitation_create(request):
     return render(
         request,
         "clubroom/invite.html",
-        {"form": form, "clubroom": membership.clubroom},
+        {
+            "form": form,
+            "clubroom": membership.clubroom,
+            "pending_invitations": membership.clubroom.invitations.filter(
+                accepted_at__isnull=True,
+                revoked_at__isnull=True,
+                expires_at__gt=timezone.now(),
+            ).select_related("invited_by"),
+        },
     )
 
 
