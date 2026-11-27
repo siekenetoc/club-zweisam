@@ -259,17 +259,24 @@ Firefox/Chrome schließen; danach neu starten. `--system` installiert nur die
 CA systemweit, `--install-deps` nur `libnss3-tools`.
 Details und CLI-Alternativen: `docs/operations.md`.
 
-## Setup (Prod)
+## Setup (Prod, `mlcst04`)
 ```bash
-cp .env.example .env
-# .env anpassen: DOMAIN, ACME_EMAIL, SECRET_KEY, FIELD_ENCRYPTION_KEY,
-# POSTGRES_PASSWORD, DATABASE_URL, DEBUG=False
-docker compose -f docker-compose.yml up -d --build
+# Repo liegt unter /docker/club-zweisam; Produktions-.env nicht committen.
+cd /docker/club-zweisam
+docker compose -f docker-compose.yml up -d --build caddy web db redis
 ```
+
+Der Host-nginx terminiert TLS für `club-zweisam.de` und leitet auf Caddy
+`127.0.0.1:18080` weiter. Caddy übernimmt Basic Auth und Security-Header; Mailhog
+wird in Produktion nicht gestartet. Die nginx-Konfiguration liegt im Repo unter
+`deploy/nginx-club-zweisam.conf`.
 
 In Produktion überschreibt `DJANGO_SETTINGS_MODULE=clubzweisam.settings.prod` die
 Dev-Einstellungen. Der Container führt beim Start `migrate` und `collectstatic`
-aus und startet Gunicorn; Static liefert Whitenoise.
+aus und startet Gunicorn; Static liefert Whitenoise. Produktions-Secrets liegen
+unter `/root/secrets-club-zweiraum.txt`; SMTP muss vor Aktivierung/Reset
+konfiguriert sein. `www.club-zweisam.de` benötigt zusätzlich einen DNS-A-Record
+auf denselben Server und ein Zertifikat mit `www`-SAN.
 
 ## Tests und Qualität
 ```bash

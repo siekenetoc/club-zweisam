@@ -42,17 +42,29 @@ scripts/setup-dev-tls.sh --all      # libnss3-tools + systemweit + Browser-NSS (
   `127.0.0.1 club-zweisam.localhost` in `/etc/hosts` ergänzen.
 - Ohne Systeminstallation: `curl --cacert caddy-root.crt ...`.
 
-## Prod
+## Prod (`mlcst04`)
+
+Produktionsstandort: `/docker/club-zweisam`. Der Host-nginx ist der öffentliche
+TLS-Endpunkt; Caddy läuft nur intern auf `127.0.0.1:18080` und übernimmt Basic
+Auth sowie Security-Header. Die nginx-Konfiguration ist
+`deploy/nginx-club-zweisam.conf`.
 
 ```bash
-cp .env.example .env
-# DEBUG=False, starke Secrets, echte Domain
-docker compose -f docker-compose.yml up -d --build
-docker compose exec web python manage.py createsuperuser
+cd /docker/club-zweisam
+# .env aus /root/secrets-club-zweiraum.txt aufbauen, chmod 600
+docker compose -f docker-compose.yml up -d --build caddy web db redis
 ```
 
-Der Entrypoint führt `migrate` und `collectstatic` aus; Gunicorn startet danach.
-Das Prod-Image enthält keine Dev-Werkzeuge.
+Mailhog wird in Produktion nicht gestartet. Der Entrypoint führt `migrate` und
+`collectstatic` aus; Gunicorn startet danach. Das Prod-Image enthält keine
+Dev-Werkzeuge.
+
+- Domain: `https://club-zweisam.de`
+- `www`: DNS-A-Record auf denselben Server + Zertifikat mit `www`-SAN nötig;
+  derzeit zeigt `www` noch auf den alten Provider.
+- Basic Auth: Benutzer und Passwort nur im Secrets-File; Hash in `.env`.
+- SMTP muss vor Aktivierung/Passwort-Reset eingerichtet und mit
+  `manage.py email_test` geprüft werden.
 
 ## E-Mail und Aktivierung
 
