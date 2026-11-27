@@ -92,6 +92,14 @@ def test_registration_and_clubroom_creation():
         assert room_name in content
         assert "Hauptmitglied" in content
 
+        click_visible_link(page, "/clubraum/einladen/")
+        page.wait_for_url(f"{base_url}/clubraum/einladen/")
+        page.fill("#id_email", f"invite_{suffix}@example.com")
+        page.select_option("#id_role", "guest")
+        page.get_by_role("button", name="Einladung senden").click()
+        page.wait_for_url(f"{base_url}/")
+        assert "wurde versendet" in page.content()
+
         click_visible_link(page, "/separee/")
         page.wait_for_url(f"{base_url}/separee/")
         assert "Deck A" in page.content()

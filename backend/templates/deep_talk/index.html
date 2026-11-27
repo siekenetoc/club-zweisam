@@ -1,23 +1,18 @@
-{% extends "base.html" %}
+{% extends "base_module.html" %}
 
 {% block title %}Deep Talk – Club Zweisam{% endblock %}
+{% block module_kicker %}Deep Talk{% endblock %}
+{% block module_title %}Deep Talk{% endblock %}
+{% block module_title_mobile %}Deep Talk{% endblock %}
+{% block module_intro %}Leitfragen statt freiem Chat. Kein Punktesystem, keine Bewertung. Ein Time-out ist immer erlaubt und braucht keine Begründung.{% endblock %}
+{% block module_intro_mobile %}Leitfragen statt freiem Chat. Kein Punktesystem, keine Bewertung. Ein Time-out ist immer erlaubt und braucht keine Begründung.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v11H8l-4 4V5Z"/><path stroke-linecap="round" d="M8 9h8M8 12h5"/></svg>{% endblock %}
+{% block module_icon_mobile %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v11H8l-4 4V5Z"/><path stroke-linecap="round" d="M8 9h8M8 12h5"/></svg>{% endblock %}
+{% block module_action %}<a href="{% url 'crisis:index' %}" class="btn-ghost mt-6">Krisenmodus</a>{% endblock %}
+{% block module_action_mobile %}<a href="{% url 'crisis:index' %}" class="btn-ghost mt-4">Krisenmodus</a>{% endblock %}
 
-{% block content %}
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
-        <h1 class="mt-2 text-3xl font-semibold">Deep Talk</h1>
-        <p class="mt-2 max-w-2xl text-stone-400">
-          Leitfragen statt freiem Chat. Kein Punktesystem, keine Bewertung.
-          Ein Time-out ist immer erlaubt und braucht keine Begründung.
-        </p>
-      </div>
-      <a href="{% url 'crisis:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-300 hover:border-stone-500">
-        Krisenmodus
-      </a>
-    </div>
-
+{% block module_content %}
+  <div class="space-y-8">
     <div class="grid gap-4 sm:grid-cols-2">
       <div class="app-card-soft p-5">
         <h2 class="text-xs uppercase tracking-widest text-stone-500">Gespräch</h2>
@@ -60,5 +55,5 @@
         </div>
       </div>
     {% endif %}
-  </section>
+  </div>
 {% endblock %}

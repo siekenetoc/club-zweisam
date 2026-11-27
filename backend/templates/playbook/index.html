@@ -1,23 +1,18 @@
-{% extends "base.html" %}
+{% extends "base_module.html" %}
 
 {% block title %}Playbook – Club Zweisam{% endblock %}
+{% block module_kicker %}Playbook{% endblock %}
+{% block module_title %}Playbook{% endblock %}
+{% block module_title_mobile %}Playbook{% endblock %}
+{% block module_intro %}Challenges für Nähe und Neugier. Jede Person kann jederzeit abbrechen. Stufe 3 nur mit Opt-in beider Hauptmitglieder.{% endblock %}
+{% block module_intro_mobile %}Challenges für Nähe und Neugier. Jede Person kann jederzeit abbrechen. Stufe 3 nur mit Opt-in beider Hauptmitglieder.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 4.5 19 12 5 19.5V4.5Z"/></svg>{% endblock %}
+{% block module_icon_mobile %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 4.5 19 12 5 19.5V4.5Z"/></svg>{% endblock %}
+{% block module_action %}<span class="chip mt-6">Heute {{ daily_count }}/{{ daily_limit }} Challenges</span>{% endblock %}
+{% block module_action_mobile %}<span class="chip mt-4">Heute {{ daily_count }}/{{ daily_limit }} Challenges</span>{% endblock %}
 
-{% block content %}
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
-        <h1 class="mt-2 text-3xl font-semibold">Playbook</h1>
-        <p class="mt-2 max-w-2xl text-stone-400">
-          Challenges für Nähe und Neugier. Jede Person kann jederzeit abbrechen.
-          Stufe 3 nur mit Opt-in beider Hauptmitglieder.
-        </p>
-      </div>
-      <span class="rounded-full border border-stone-700 px-3 py-1 text-xs text-stone-400">
-        Heute {{ daily_count }}/{{ daily_limit }} Challenges
-      </span>
-    </div>
-
+{% block module_content %}
+  <div class="space-y-8">
     <div class="app-card-soft p-5">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Opt-in Stufe 3</h2>
       <p class="mt-2 text-sm text-stone-300">
@@ -82,5 +77,5 @@
         </div>
       {% endfor %}
     </div>
-  </section>
+  </div>
 {% endblock %}

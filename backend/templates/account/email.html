@@ -1,0 +1,65 @@
+{% extends "base_form.html" %}
+{% block title %}E-Mail-Adressen – Club Zweisam{% endblock %}
+{% block form_kicker %}Konto & Sicherheit{% endblock %}
+{% block form_title %}Erreichbar bleiben.{% endblock %}
+{% block form_title_mobile %}E-Mail-Adressen{% endblock %}
+{% block form_intro %}Verwalte die Adressen, über die dein Konto erreichbar ist. Änderungen werden per E-Mail bestätigt.{% endblock %}
+{% block form_icon %}
+  <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6"/></svg>
+{% endblock %}
+{% block form_content %}
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold text-stone-50">E-Mail-Adressen</h2>
+    <p class="mt-1 text-sm text-stone-400">Die Hauptadresse bestimmt Login und Benachrichtigungen.</p>
+  </div>
+
+  {% if emailaddresses %}
+    <form method="post" action="{% url 'account_email' %}" class="space-y-3">
+      {% csrf_token %}
+      <div class="space-y-2">
+        {% for radio in emailaddress_radios %}
+          {% with emailaddress=radio.emailaddress %}
+            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3 transition hover:bg-white/[0.05]">
+              <input type="radio" name="email" value="{{ emailaddress.email }}" id="{{ radio.id }}" {% if radio.checked %}checked{% endif %} class="mt-0.5" />
+              <span class="min-w-0 flex-1">
+                <span class="block break-all text-sm text-stone-200">{{ emailaddress.email }}</span>
+                <span class="mt-1 flex flex-wrap gap-1.5">
+                  {% if emailaddress.verified %}<span class="chip border-emerald-400/20 bg-emerald-400/10 text-emerald-200">Bestätigt</span>{% else %}<span class="chip border-amber-400/20 bg-amber-400/10 text-amber-200">Unbestätigt</span>{% endif %}
+                  {% if emailaddress.primary %}<span class="chip border-white/15 text-stone-300">Hauptadresse</span>{% endif %}
+                </span>
+              </span>
+            </label>
+          {% endwith %}
+        {% endfor %}
+      </div>
+      <div class="flex flex-wrap gap-2 pt-2">
+        <button type="submit" name="action_primary" class="btn-ghost text-xs">Als Hauptadresse</button>
+        <button type="submit" name="action_send" class="btn-ghost text-xs">Bestätigung erneut senden</button>
+        <button type="submit" name="action_remove" class="rounded-full border border-rose-500/20 bg-rose-500/5 px-4 py-2 text-xs text-rose-200 transition hover:border-rose-400/50">Entfernen</button>
+      </div>
+    </form>
+  {% else %}
+    <p class="rounded-xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">Noch keine E-Mail-Adresse hinterlegt.</p>
+  {% endif %}
+
+  {% if can_add_email %}
+    <div class="my-7 h-px bg-white/10"></div>
+    <form method="post" action="{% url 'account_email' %}" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <h3 class="text-base font-semibold text-stone-100">Weitere Adresse hinzufügen</h3>
+        <p class="mt-1 text-sm text-stone-400">Du erhältst einen Bestätigungslink an die neue Adresse.</p>
+      </div>
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" name="action_add" class="btn-primary w-full">E-Mail-Adresse hinzufügen</button>
+    </form>
+  {% endif %}
+
+  <a href="{% url 'accounts:profile' %}" class="mt-6 inline-block text-sm text-stone-400 underline decoration-white/20 underline-offset-4 hover:text-amber-300">Zurück zum Profil</a>
+{% endblock %}

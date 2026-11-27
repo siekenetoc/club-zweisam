@@ -1,23 +1,18 @@
-{% extends "base.html" %}
+{% extends "base_module.html" %}
 
 {% block title %}Séparée – Club Zweisam{% endblock %}
+{% block module_kicker %}Séparée{% endblock %}
+{% block module_title %}Séparée{% endblock %}
+{% block module_title_mobile %}Séparée{% endblock %}
+{% block module_intro %}Geheime Antworten, vorgegebene Antworten, serverseitiger Match. Antworten bleiben verborgen, bis beide freigeben.{% endblock %}
+{% block module_intro_mobile %}Geheime Antworten, vorgegebene Antworten, serverseitiger Match. Antworten bleiben verborgen, bis beide freigeben.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path stroke-linecap="round" d="M12 4v3M20 12h-3M12 20v-3M4 12h3"/></svg>{% endblock %}
+{% block module_icon_mobile %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path stroke-linecap="round" d="M12 4v3M20 12h-3M12 20v-3M4 12h3"/></svg>{% endblock %}
+{% block module_action %}<a href="{% url 'vitrine:index' %}" class="btn-ghost mt-6">Zur Vitrine</a>{% endblock %}
+{% block module_action_mobile %}<a href="{% url 'vitrine:index' %}" class="btn-ghost mt-4">Zur Vitrine</a>{% endblock %}
 
-{% block content %}
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
-        <h1 class="mt-2 text-3xl font-semibold">Séparée</h1>
-        <p class="mt-2 max-w-2xl text-stone-400">
-          Geheime Antworten, vorgegebene Antworten, serverseitiger Match.
-          Antworten bleiben verborgen, bis beide freigeben.
-        </p>
-      </div>
-      <a href="{% url 'vitrine:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-        Zur Vitrine
-      </a>
-    </div>
-
+{% block module_content %}
+  <div class="space-y-8">
     {% if active_round %}
       <a href="{% url 'roulette:round' active_round.pk %}" class="block rounded-lg border border-amber-800 bg-amber-950/30 p-5 hover:border-amber-600">
         <p class="text-xs uppercase tracking-widest text-amber-500">Laufende Runde</p>
@@ -70,5 +65,5 @@
         {% endfor %}
       </div>
     </div>
-  </section>
+  </div>
 {% endblock %}

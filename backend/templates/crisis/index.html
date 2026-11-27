@@ -1,18 +1,16 @@
-{% extends "base.html" %}
+{% extends "base_module.html" %}
 
 {% block title %}Krisenmodus – Club Zweisam{% endblock %}
+{% block module_kicker %}Krisenmodus{% endblock %}
+{% block module_title %}Krisenmodus{% endblock %}
+{% block module_title_mobile %}Krisenmodus{% endblock %}
+{% block module_intro %}Dies ist kein Therapieersatz und kein Spiel. Hier gibt es keine Bewertung und keine Aufgaben. Bei akuter Gefahr: Notruf 112.{% endblock %}
+{% block module_intro_mobile %}Dies ist kein Therapieersatz und kein Spiel. Hier gibt es keine Bewertung und keine Aufgaben. Bei akuter Gefahr: Notruf 112.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 9a4.1 4.1 0 0 1 7 2.9C19 16.7 12 21 12 21Z"/><path stroke-linecap="round" d="M12 6v6M12 15h.01"/></svg>{% endblock %}
+{% block module_icon_mobile %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 9a4.1 4.1 0 0 1 7 2.9C19 16.7 12 21 12 21Z"/><path stroke-linecap="round" d="M12 6v6M12 15h.01"/></svg>{% endblock %}
 
-{% block content %}
-  <section class="space-y-8">
-    <div>
-      <p class="text-sm uppercase tracking-[0.3em] text-red-400">Krisenmodus</p>
-      <h1 class="mt-2 text-3xl font-semibold">Wenn es akut ist, zählt Sicherheit.</h1>
-      <p class="mt-2 max-w-2xl text-stone-300">
-        Dies ist kein Therapieersatz und kein Spiel. Hier gibt es keine Bewertung
-        und keine Aufgaben. Bei akuter Gefahr: Notruf 112.
-      </p>
-    </div>
-
+{% block module_content %}
+  <div class="space-y-8">
     {% include "crisis/_help.html" %}
 
     <div class="app-card-soft p-5">
@@ -32,5 +30,5 @@
     <p class="text-sm text-stone-500">
       <a href="{% url 'clubroom:home' %}" class="underline decoration-stone-600 underline-offset-4 hover:text-stone-300">Zurück zum Clubraum</a>
     </p>
-  </section>
+  </div>
 {% endblock %}

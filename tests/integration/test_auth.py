@@ -154,6 +154,16 @@ def test_profile_fields_are_editable(client):
     assert user.last_name == "Beispiel"
 
 
+def test_email_management_page_is_available(client):
+    user = make_verified_user()
+    client.force_login(user)
+    response = client.get(reverse("account_email"))
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "E-Mail-Adressen" in content
+    assert "anna@example.com" in content
+
+
 def test_password_change_page_is_available(client):
     user = make_verified_user()
     client.force_login(user)

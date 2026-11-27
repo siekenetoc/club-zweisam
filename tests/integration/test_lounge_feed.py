@@ -193,6 +193,18 @@ def test_feed_filters_and_soft_delete(client):
     assert "Eintrag entfernt" in content
 
 
+def test_feed_sorting_and_date_column(client):
+    clubroom, anna, _ = make_room()
+    client.force_login(anna)
+    response = client.get(reverse("feed:index"), {"sort": "event_type", "dir": "asc"})
+    assert response.status_code == 200
+    events = list(response.context["events"])
+    types = [event.event_type for event in events]
+    assert types == sorted(types)
+    assert "Datum" in response.content.decode()
+    assert "Sortierung per Klick" in response.content.decode()
+
+
 def test_feed_permissions(client):
     clubroom, anna, _ = make_room()
     guest = User.objects.create_user(

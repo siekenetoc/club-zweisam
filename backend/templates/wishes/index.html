@@ -1,23 +1,18 @@
-{% extends "base.html" %}
+{% extends "base_module.html" %}
 
 {% block title %}Concierge – Club Zweisam{% endblock %}
+{% block module_kicker %}Concierge{% endblock %}
+{% block module_title %}Concierge{% endblock %}
+{% block module_title_mobile %}Concierge{% endblock %}
+{% block module_intro %}Wünsche werden gestellt, beantwortet und erst nach beidseitiger Bestätigung als erfüllt geführt. Ablehnung ist neutral.{% endblock %}
+{% block module_intro_mobile %}Wünsche werden gestellt, beantwortet und erst nach beidseitiger Bestätigung als erfüllt geführt. Ablehnung ist neutral.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7 2.9C19 15.7 12 20 12 20Z"/></svg>{% endblock %}
+{% block module_icon_mobile %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7 2.9C19 15.7 12 20 12 20Z"/></svg>{% endblock %}
+{% block module_action %}<a href="{% url 'wishes:create' %}" class="btn-primary mt-6">Wunsch stellen</a>{% endblock %}
+{% block module_action_mobile %}<a href="{% url 'wishes:create' %}" class="btn-primary mt-4">Wunsch stellen</a>{% endblock %}
 
-{% block content %}
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
-        <h1 class="mt-2 text-3xl font-semibold">Concierge</h1>
-        <p class="mt-2 max-w-2xl text-stone-400">
-          Wünsche werden gestellt, beantwortet und erst nach beidseitiger
-          Bestätigung als erfüllt geführt. Ablehnung ist neutral.
-        </p>
-      </div>
-      <a href="{% url 'wishes:create' %}" class="rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">
-        Wunsch stellen
-      </a>
-    </div>
-
+{% block module_content %}
+  <div class="space-y-8">
     <div class="space-y-3">
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Zu beantworten</h2>
       {% for wish in incoming %}
@@ -78,5 +73,5 @@
         <p class="app-card-soft p-5 text-sm text-stone-400">Noch nichts abgeschlossen.</p>
       {% endfor %}
     </div>
-  </section>
+  </div>
 {% endblock %}

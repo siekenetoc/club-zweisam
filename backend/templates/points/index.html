@@ -1,23 +1,18 @@
-{% extends "base.html" %}
+{% extends "base_module.html" %}
 
 {% block title %}Punkte – Club Zweisam{% endblock %}
+{% block module_kicker %}Punkte{% endblock %}
+{% block module_title %}Punkte{% endblock %}
+{% block module_title_mobile %}Punkte{% endblock %}
+{% block module_intro %}Anerkennung statt Wettkampf. Nein kostet nie Punkte. Tages-Deckel und Belohnungen im Blick behalten.{% endblock %}
+{% block module_intro_mobile %}Anerkennung statt Wettkampf. Nein kostet nie Punkte. Tages-Deckel und Belohnungen im Blick behalten.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="m12 4 2.2 5.1 5.5.5-4.2 3.7 1.3 5.4-4.8-2.9-4.8 2.9 1.3-5.4-4.2-3.7 5.5-.5L12 4Z"/></svg>{% endblock %}
+{% block module_icon_mobile %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="m12 4 2.2 5.1 5.5.5-4.2 3.7 1.3 5.4-4.8-2.9-4.8 2.9 1.3-5.4-4.2-3.7 5.5-.5L12 4Z"/></svg>{% endblock %}
+{% block module_action %}<span class="chip mt-6">Heute {{ daily_earned }}/{{ daily_cap }}</span>{% endblock %}
+{% block module_action_mobile %}<span class="chip mt-4">Heute {{ daily_earned }}/{{ daily_cap }}</span>{% endblock %}
 
-{% block content %}
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
-        <h1 class="mt-2 text-3xl font-semibold">Punkte</h1>
-        <p class="mt-2 max-w-2xl text-stone-400">
-          Anerkennung statt Wettkampf. Nein kostet nie Punkte. Tages-Deckel:
-          {{ daily_cap }} Punkte, davon höchstens 3 aus Challenges.
-        </p>
-      </div>
-      <span class="rounded-full border border-stone-700 px-3 py-1 text-xs text-stone-400">
-        Heute {{ daily_earned }}/{{ daily_cap }}
-      </span>
-    </div>
-
+{% block module_content %}
+  <div class="space-y-8">
     <div class="grid gap-4 sm:grid-cols-2">
       {% for ledger in ledgers %}
         <div class="app-card-soft p-5">
@@ -155,5 +150,5 @@
         </form>
       {% endif %}
     </div>
-  </section>
+  </div>
 {% endblock %}

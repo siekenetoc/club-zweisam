@@ -33,6 +33,20 @@ def index(request):
         events = events.filter(event_type=event_filter)
     else:
         event_filter = ""
+
+    sort = request.GET.get("sort", "created_at")
+    direction = request.GET.get("dir", "desc")
+    sort_fields = {
+        "created_at": "created_at",
+        "event_type": "event_type",
+        "actor": "actor__username",
+    }
+    if sort not in sort_fields:
+        sort = "created_at"
+    if direction not in {"asc", "desc"}:
+        direction = "desc"
+    prefix = "" if direction == "asc" else "-"
+    events = events.order_by(f"{prefix}{sort_fields[sort]}", "-id")
     return render(
         request,
         "feed/index.html",
@@ -42,6 +56,8 @@ def index(request):
             "event_types": EVENT_CHOICES,
             "event_filter": event_filter,
             "is_owner": membership.role == OWNER,
+            "sort": sort,
+            "direction": direction,
         },
     )
 

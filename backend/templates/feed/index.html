@@ -1,53 +1,57 @@
-{% extends "base.html" %}
-
+{% extends "base_module.html" %}
 {% block title %}Logbuch – Club Zweisam{% endblock %}
-
-{% block content %}
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p class="text-sm uppercase tracking-[0.3em] text-amber-500">{{ clubroom.name }}</p>
-        <h1 class="mt-2 text-3xl font-semibold">Logbuch</h1>
-        <p class="mt-2 max-w-2xl text-stone-400">
-          Chronik ohne Geheiminhalte. Ereignistypen und Beteiligte, keine
-          Antworten, Wunschtexte oder Grenzen.
-        </p>
-      </div>
-      <a href="{% url 'lounge:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-        Zur Lounge
-      </a>
-    </div>
-
+{% block module_kicker %}Logbuch{% endblock %}
+{% block module_title %}Was bleibt, ist der Faden.{% endblock %}
+{% block module_title_mobile %}Logbuch{% endblock %}
+{% block module_intro %}Chronik ohne Geheiminhalte: Ereignistypen und Beteiligte, keine Antworten, Wunschtexte oder Grenzen.{% endblock %}
+{% block module_icon %}
+  <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"/><path stroke-linecap="round" d="M9 8h6M9 12h6"/></svg>
+{% endblock %}
+{% block module_action %}<a href="{% url 'lounge:index' %}" class="btn-ghost mt-6">Zur Lounge</a>{% endblock %}
+{% block module_action_mobile %}<a href="{% url 'lounge:index' %}" class="btn-ghost mt-4">Zur Lounge</a>{% endblock %}
+{% block module_content %}
+  <div class="space-y-5">
     <div class="flex flex-wrap gap-2 text-xs">
-      <a href="{% url 'feed:index' %}" class="rounded-full border px-3 py-1 {% if not event_filter %}border-amber-600 text-amber-300{% else %}border-stone-700 text-stone-400 hover:border-stone-500{% endif %}">Alle</a>
+      <a href="?typ=&sort={{ sort }}&dir={{ direction }}" class="rounded-full border px-3 py-1.5 {% if not event_filter %}border-amber-400/60 bg-amber-400/10 text-amber-200{% else %}border-white/10 text-stone-400 hover:border-white/25{% endif %}">Alle</a>
       {% for value, label in event_types %}
-        <a href="?typ={{ value }}" class="rounded-full border px-3 py-1 {% if event_filter == value %}border-amber-600 text-amber-300{% else %}border-stone-700 text-stone-400 hover:border-stone-500{% endif %}">{{ label }}</a>
+        <a href="?typ={{ value }}&sort={{ sort }}&dir={{ direction }}" class="rounded-full border px-3 py-1.5 {% if event_filter == value %}border-amber-400/60 bg-amber-400/10 text-amber-200{% else %}border-white/10 text-stone-400 hover:border-white/25{% endif %}">{{ label }}</a>
       {% endfor %}
     </div>
 
-    <div class="divide-y divide-stone-800 app-card-soft">
-      {% for event in events %}
-        <article class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <div>
-            {% if event.deleted_at %}
-              <p class="text-sm text-stone-500">Eintrag entfernt</p>
-            {% else %}
-              <p class="text-sm text-stone-200">{{ event.get_event_type_display }}</p>
-              <p class="text-xs text-stone-500">
-                {% if event.actor %}{{ event.actor.username }} · {% endif %}{{ event.created_at|date:"d.m.Y H:i" }}
-              </p>
-            {% endif %}
-          </div>
-          {% if not event.deleted_at and event.actor == user or not event.deleted_at and is_owner %}
-            <form method="post" action="{% url 'feed:remove' event.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="text-xs text-stone-500 underline decoration-stone-700 underline-offset-4 hover:text-red-300">Entfernen</button>
-            </form>
-          {% endif %}
-        </article>
-      {% empty %}
-        <p class="px-4 py-6 text-sm text-stone-500">Noch keine Einträge.</p>
-      {% endfor %}
+    <div class="app-card-soft overflow-hidden">
+      <div class="hidden grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)_150px_74px] gap-3 border-b border-white/10 px-4 py-3 text-[0.65rem] uppercase tracking-[0.18em] text-stone-500 sm:grid">
+        <a href="?typ={{ event_filter }}&sort=event_type&dir={% if sort == 'event_type' and direction == 'asc' %}desc{% else %}asc{% endif %}" class="inline-flex items-center gap-1 hover:text-amber-300">Ereignis {% if sort == 'event_type' %}{% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}</a>
+        <a href="?typ={{ event_filter }}&sort=actor&dir={% if sort == 'actor' and direction == 'asc' %}desc{% else %}asc{% endif %}" class="inline-flex items-center gap-1 hover:text-amber-300">Beteiligt {% if sort == 'actor' %}{% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}</a>
+        <a href="?typ={{ event_filter }}&sort=created_at&dir={% if sort == 'created_at' and direction == 'asc' %}desc{% else %}asc{% endif %}" class="inline-flex items-center gap-1 hover:text-amber-300">Datum {% if sort == 'created_at' %}{% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}</a>
+        <span class="text-right">Aktion</span>
+      </div>
+      <div class="divide-y divide-white/10">
+        {% for event in events %}
+          <article class="grid gap-2 px-4 py-4 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)_150px_74px] sm:items-center sm:gap-3">
+            <div class="min-w-0">
+              {% if event.deleted_at %}
+                <p class="text-sm text-stone-500">Eintrag entfernt</p>
+              {% else %}
+                <p class="text-sm font-medium text-stone-200">{{ event.get_event_type_display }}</p>
+                <p class="mt-0.5 text-xs text-stone-500 sm:hidden">{{ event.created_at|date:"d.m.Y H:i" }}</p>
+              {% endif %}
+            </div>
+            <p class="text-xs text-stone-400">{% if event.deleted_at %}–{% elif event.actor %}{{ event.actor.username }}{% else %}System{% endif %}</p>
+            <p class="hidden text-xs tabular-nums text-stone-500 sm:block">{{ event.created_at|date:"d.m.Y H:i" }}</p>
+            <div class="text-left sm:text-right">
+              {% if not event.deleted_at and event.actor == user or not event.deleted_at and is_owner %}
+                <form method="post" action="{% url 'feed:remove' event.pk %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="text-xs text-stone-500 transition hover:text-rose-300">Entfernen</button>
+                </form>
+              {% endif %}
+            </div>
+          </article>
+        {% empty %}
+          <p class="px-4 py-8 text-sm text-stone-500">Noch keine Einträge.</p>
+        {% endfor %}
+      </div>
     </div>
-  </section>
+    <p class="text-xs text-stone-500">{{ events|length }} Einträge · Sortierung per Klick auf die Spaltenköpfe.</p>
+  </div>
 {% endblock %}
