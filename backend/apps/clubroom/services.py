@@ -13,7 +13,7 @@ from apps.clubroom.models import (
     default_invitation_expiry,
     hash_token,
 )
-from apps.clubroom.permissions import OWNER, ROLE_CHOICES, ROLE_LABELS
+from apps.clubroom.permissions import INVITABLE_ROLES, OWNER, ROLE_LABELS
 from apps.core.audit import AuditEntry
 from apps.feed.models import EVENT_CLUBROOM_CREATED, EVENT_MEMBER_JOINED, EVENT_MEMBER_REMOVED
 from apps.feed.services import record_event
@@ -109,8 +109,8 @@ def invite_member(
         if membership is None or membership.role != OWNER:
             raise ValidationError("Nur Hauptmitglieder dürfen einladen.")
 
-        if role not in dict(ROLE_CHOICES):
-            raise ValidationError("Unbekannte Rolle.")
+        if role not in INVITABLE_ROLES:
+            raise ValidationError("Diese Rolle kann nicht eingeladen werden.")
 
         email = email.strip().lower()
         existing_user = User.objects.filter(email__iexact=email).first()

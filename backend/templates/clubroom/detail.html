@@ -12,43 +12,6 @@
       </div>
       <div class="flex flex-wrap gap-2">
         {% if is_owner %}
-          <a href="{% url 'roulette:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-            Séparée
-          </a>
-          <a href="{% url 'vitrine:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-            Vitrine
-          </a>
-          <a href="{% url 'wishes:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-            Concierge
-          </a>
-          <a href="{% url 'playbook:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-            Playbook
-          </a>
-          <a href="{% url 'lounge:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-            Lounge
-          </a>
-          {% if has_feed %}
-            <a href="{% url 'feed:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-              Logbuch
-            </a>
-          {% endif %}
-          {% if has_deep_talk %}
-            <a href="{% url 'deep_talk:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-              Deep Talk
-            </a>
-          {% endif %}
-          {% if is_owner %}
-            <a href="{% url 'points:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-              Punkte
-            </a>
-          {% else %}
-            <a href="{% url 'points:my' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
-              Punkte
-            </a>
-          {% endif %}
-          <a href="{% url 'crisis:index' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-stone-500">
-            Krisenmodus
-          </a>
           <a href="{% url 'clubroom:settings' %}" class="rounded-full border border-stone-700 px-4 py-2 text-sm text-stone-200 hover:border-amber-500 hover:text-amber-400">
             Einstellungen
           </a>
@@ -118,15 +81,5 @@
       </div>
     {% endif %}
 
-    <div class="space-y-3">
-      <h2 class="text-xs uppercase tracking-widest text-stone-500">Deine Module</h2>
-      <div class="flex flex-wrap gap-2">
-        {% for label, allowed in modules %}
-          <span class="rounded-full border px-3 py-1 text-xs {% if allowed %}border-amber-700 bg-amber-950/40 text-amber-300{% else %}border-stone-800 text-stone-600{% endif %}">
-            {{ label }}{% if not allowed %} · gesperrt{% endif %}
-          </span>
-        {% endfor %}
-      </div>
-    </div>
   </section>
 {% endblock %}

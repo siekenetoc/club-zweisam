@@ -38,6 +38,11 @@ ROLE_CHOICES = (
 
 ROLE_LABELS = dict(ROLE_CHOICES)
 
+INVITABLE_ROLES = (OWNER, MODERATOR, ADVISOR, MEDIATOR, GUEST)
+INVITABLE_ROLE_CHOICES = tuple(
+    (value, label) for value, label in ROLE_CHOICES if value in INVITABLE_ROLES
+)
+
 ROLE_PERMISSIONS = {
     OWNER: {module: True for module in MODULES},
     MODERATOR: {"lounge": True, "feed": True},

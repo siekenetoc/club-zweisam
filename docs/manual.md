@@ -251,8 +251,9 @@ Datenbank. Die Konfiguration ist nur für Plattform-Admins sichtbar.
 Eine **Dyade** ist hier die Beziehungseinheit aus genau **zwei
 Hauptmitgliedern** in einem Clubraum. Sie ist der kleinste gemeinsame Kontext:
 ein Safeword, ein Logbuch, ein Punkte-Ledger, gemeinsame Sichtbarkeiten. Weitere
-Personen können als Moderator, Berater, Mediator, Sex-Partner oder Gast
-eingeladen werden, bilden aber keine zweite Dyade.
+Personen können als Moderator, Berater, Mediator oder Gast eingeladen werden,
+bilden aber keine zweite Dyade. Bestehende Sex-Partner-Mitgliedschaften aus
+älteren Ständen bleiben technisch erhalten, sind aber nicht mehr einladbar.
 
 ### 4.2 Clubraum einrichten
 
@@ -364,7 +365,6 @@ gestalten – ohne Leistungsdruck.
 | Moderator | Unterstützt Struktur/Logbuch | Lounge, Logbuch; keine Geheiminhalte |
 | Berater | Begleitet Gespräche | Lounge, Deep Talk; keine Geheiminhalte |
 | Mediator | Unterstützt Reparatur | Lounge, Deep Talk |
-| Sex-Partner | Eigener Consent-Kontext | Lounge, Playbook; keine Dyaden-Geheimnisse |
 | Gast/Beobachter | Lesender Zugang | Lounge; kein Check-in, kein Schreiben |
 
 Weitere Benutzer:

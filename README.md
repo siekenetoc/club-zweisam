@@ -34,7 +34,7 @@ Umgesetzt in M0:
 Umgesetzt in M1:
 - Registrierung mit Volljährigkeits- und AGB-Bestätigung, Login/Logout
 - Clubraum-Gründung mit verschlüsseltem Safeword und Hausregeln
-- Rollen: Hauptmitglied, Moderator, Berater, Mediator, Sex-Partner, Gast/Beobachter
+- Rollen: Hauptmitglied, Moderator, Berater, Mediator, Gast/Beobachter
 - Rollen-Matrix für Module; Gast ist lesend, Admin-/Beraterrollen ohne Geheiminhalte
 - E-Mail-Einladungen mit gehashtem Token, Bindung an E-Mail-Adresse, Ablauf (7 Tage),
   Widerruf mit sofortiger Wirkung und Audit-Einträgen
@@ -290,7 +290,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 171 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 173 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

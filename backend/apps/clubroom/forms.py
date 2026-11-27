@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.accounts.models import User
 from apps.clubroom.models import Clubroom
-from apps.clubroom.permissions import ROLE_CHOICES, ROLE_LABELS
+from apps.clubroom.permissions import INVITABLE_ROLE_CHOICES, ROLE_LABELS
 
 INPUT_CLASSES = (
     "w-full rounded-md border border-stone-700 bg-stone-900 px-3 py-2 "
@@ -94,7 +94,7 @@ class InvitationForm(StyledFormMixin, forms.Form):
     email = forms.EmailField(label="E-Mail-Adresse")
     role = forms.ChoiceField(
         label="Rolle",
-        choices=[(value, ROLE_LABELS[value]) for value, _ in ROLE_CHOICES],
+        choices=[(value, ROLE_LABELS[value]) for value, _ in INVITABLE_ROLE_CHOICES],
     )
 
     def __init__(self, *args, **kwargs):

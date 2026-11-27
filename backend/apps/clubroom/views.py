@@ -14,7 +14,7 @@ from django.views.decorators.http import require_POST
 
 from apps.clubroom.forms import ClubroomForm, ClubroomSettingsForm, InvitationForm
 from apps.clubroom.models import Invitation, Membership, hash_token
-from apps.clubroom.permissions import MODULE_LABELS, OWNER, ROLE_LABELS
+from apps.clubroom.permissions import OWNER, ROLE_LABELS
 from apps.clubroom.services import (
     accept_invitation,
     active_membership_for,
@@ -51,12 +51,6 @@ def home(request):
                 ).select_related("invited_by"),
                 "is_owner": membership.role == OWNER,
                 "role_label": ROLE_LABELS.get(membership.role, membership.role),
-                "modules": [
-                    (MODULE_LABELS.get(module, module), bool(allowed))
-                    for module, allowed in membership.module_permissions.items()
-                ],
-                "has_deep_talk": membership.has_module_access("deep_talk"),
-                "has_feed": membership.has_module_access("feed"),
             },
         )
 

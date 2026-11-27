@@ -7,7 +7,7 @@ Stand: 2026-11-13. Grundlage: `docs/architecture.md`, `docs/data-model.md`,
 
 | Prüfung | Ergebnis |
 |---|---|
-| `pytest` | 171 Tests grün |
+| `pytest` | 173 Tests grün |
 | Playwright E2E | 2 Tests grün (Registrierung, Clubraum, Séparée, Concierge, Playbook, Lounge, Logbuch, Deep Talk, Krisenmodus, Punkte, Privacy Shield, Admin-Banner, Seiten) |
 | `ruff check .` | clean |
 | `black --check .` | clean |

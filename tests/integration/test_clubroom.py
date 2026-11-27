@@ -256,6 +256,30 @@ def test_owner_can_edit_clubroom_settings(client):
     assert client.get(reverse("clubroom:settings")).status_code == 403
 
 
+def test_sex_partner_is_not_invitable(client):
+    owner = make_user("anna", "anna@example.com")
+    make_clubroom(owner)
+    client.force_login(owner)
+    page = client.get(reverse("clubroom:invite")).content.decode()
+    assert "Sex-Partner" not in page
+    response = client.post(
+        reverse("clubroom:invite"),
+        {"email": "partner@example.com", "role": "sex_partner"},
+    )
+    assert response.status_code == 200
+    assert not Invitation.objects.exists()
+
+
+def test_clubroom_detail_does_not_repeat_module_links(client):
+    owner = make_user("anna", "anna@example.com")
+    make_clubroom(owner)
+    client.force_login(owner)
+    content = client.get(reverse("clubroom:home")).content.decode()
+    main = re.search(r"<main[^>]*>(.*?)</main>", content, re.S).group(1)
+    assert 'href="/separee/"' not in main
+    assert "Deine Module" not in content
+
+
 def test_non_owner_cannot_invite(client):
     owner = make_user("anna", "anna@example.com")
     guest = make_user("bea", "bea@example.com")
