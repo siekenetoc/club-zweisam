@@ -82,3 +82,42 @@ class CalendarFeedToken(TimestampedModel):
     @property
     def is_active(self) -> bool:
         return self.revoked_at is None
+
+
+STATUS_PROPOSED = "proposed"
+STATUS_ACCEPTED = "accepted"
+STATUS_DECLINED = "declined"
+STATUS_CANCELLED = "cancelled"
+STATUS_CHOICES = (
+    (STATUS_PROPOSED, "Vorgeschlagen"),
+    (STATUS_ACCEPTED, "Bestätigt"),
+    (STATUS_DECLINED, "Abgelehnt"),
+    (STATUS_CANCELLED, "Abgesagt"),
+)
+
+
+class DateNight(TimestampedModel):
+    clubroom = models.ForeignKey(Clubroom, on_delete=models.CASCADE, related_name="date_nights")
+    proposed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="proposed_date_nights",
+    )
+    scheduled_for = models.DateTimeField()
+    motto = models.CharField(max_length=160)
+    note = EncryptedTextField(blank=True)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=STATUS_PROPOSED)
+    responded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="responded_date_nights",
+    )
+    responded_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"DateNight: {self.motto}"

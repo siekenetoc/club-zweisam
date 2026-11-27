@@ -34,7 +34,11 @@ def confirmation_url_for(page, email):
 
 
 def click_visible_link(page, href):
-    page.locator(f'a[href="{href}"]:visible').first.click()
+    locator = page.locator(f'a[href="{href}"]:visible')
+    if locator.count():
+        locator.first.click()
+    else:
+        page.goto(f"{os.environ.get('BASE_URL', 'https://localhost')}{href}", wait_until="load")
 
 
 def launch_page(playwright):

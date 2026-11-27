@@ -26,6 +26,7 @@ urlpatterns = [
     path("galerie/", include("apps.gallery.urls")),
     path("erkenntnisse/", include("apps.insights.urls")),
     path("momente/", include("apps.moments.urls")),
+    path("datenight/", include("apps.calendar.datenight_urls")),
     path("management/", include("apps.admin_panel.urls")),
     path("seite/", include("apps.pages.urls")),
     path("healthz", HealthView.as_view(), name="healthz"),

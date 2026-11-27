@@ -27,7 +27,7 @@
           <a href="/admin/" class="underline underline-offset-4">Django-Admin</a>
         </div>
       {% endif %}
-      <header x-data="{ open: false }" class="sticky top-0 z-40 -mx-4 mb-6 border-b border-white/10 bg-stone-950/80 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6">
+      <header x-data="{ open: false, more: false }" class="sticky top-0 z-40 -mx-4 mb-6 border-b border-white/10 bg-stone-950/80 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6">
         <div class="app-shell flex items-center justify-between gap-3">
           <a href="{% url 'clubroom:home' %}" class="shrink-0 rounded-xl transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40">
             {% include "components/logo.html" %}
@@ -53,63 +53,102 @@
           </button>
         </div>
 
-        <nav class="app-shell mt-3 hidden items-center gap-1 overflow-x-auto border-t border-white/10 pt-3 lg:flex" aria-label="Hauptnavigation">
-            {% if user.is_authenticated %}
-                {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="nav-pill whitespace-nowrap">Lounge</a>{% endif %}
-                {% if nav_modules.lounge %}<a href="{% url 'mood' %}" class="nav-pill whitespace-nowrap">Stimmung</a>{% endif %}
-                {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="nav-pill whitespace-nowrap">Séparée</a>{% endif %}
-                {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="nav-pill whitespace-nowrap">Concierge</a>{% endif %}
-                {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="nav-pill whitespace-nowrap">Playbook</a>{% endif %}
-                {% if nav_modules.vitrine %}<a href="{% url 'vitrine:index' %}" class="nav-pill whitespace-nowrap">Vitrine</a>{% endif %}
-                {% if nav_modules.feed %}<a href="{% url 'feed:index' %}" class="nav-pill whitespace-nowrap">Logbuch</a>{% endif %}
-                {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="nav-pill whitespace-nowrap">Deep Talk</a>{% endif %}
-                {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="nav-pill whitespace-nowrap">Krise</a>{% endif %}
-                {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="nav-pill whitespace-nowrap">Punkte</a>{% endif %}
-                {% if nav_modules.calendar %}<a href="{% url 'calendar:index' %}" class="nav-pill whitespace-nowrap">Kalender</a>{% endif %}
-                {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="nav-pill whitespace-nowrap">Nachrichten{% if nav_unread_messages %}<span class="ml-1.5 rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-semibold text-white">{{ nav_unread_messages }}</span>{% endif %}</a>{% endif %}
-                {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="nav-pill whitespace-nowrap">Galerie</a>{% endif %}
-                {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="nav-pill whitespace-nowrap">Erkenntnisse</a>{% endif %}
-                {% if nav_modules.moments %}<a href="{% url 'moments:index' %}" class="nav-pill whitespace-nowrap">Momente</a>{% endif %}
-                {% for item in nav_header_items %}<a href="{{ item.url }}" class="nav-pill whitespace-nowrap">{{ item.label }}</a>{% endfor %}
-                {% if user.is_staff %}<a href="/management/" class="nav-pill whitespace-nowrap">Verwaltung</a>{% endif %}
-                {% if user.is_staff %}<a href="/admin/" class="nav-pill whitespace-nowrap">Admin</a>{% endif %}
-            {% else %}
-                {% for item in nav_header_items %}<a href="{{ item.url }}" class="nav-pill whitespace-nowrap">{{ item.label }}</a>{% endfor %}
-                <a href="{% url 'accounts:login' %}" class="nav-pill whitespace-nowrap">Anmelden</a>
-                <a href="{% url 'accounts:register' %}" class="btn-ghost whitespace-nowrap">Registrieren</a>
-            {% endif %}
+        <nav class="app-shell relative mt-3 hidden items-center gap-1 border-t border-white/10 pt-3 lg:flex" aria-label="Hauptnavigation">
+          {% if user.is_authenticated %}
+            {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="nav-pill whitespace-nowrap">Lounge</a>{% endif %}
+            {% if nav_modules.calendar %}<a href="{% url 'calendar:index' %}" class="nav-pill whitespace-nowrap">Kalender</a>{% endif %}
+            {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="nav-pill whitespace-nowrap">Nachrichten{% if nav_unread_messages %}<span class="ml-1.5 rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-semibold text-white">{{ nav_unread_messages }}</span>{% endif %}</a>{% endif %}
+            {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="nav-pill whitespace-nowrap">Concierge</a>{% endif %}
+            {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="nav-pill whitespace-nowrap">Playbook</a>{% endif %}
+            <div class="relative">
+              <button type="button" @click="more = !more" :aria-expanded="more" class="nav-pill whitespace-nowrap">Mehr <svg class="ml-1 h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg></button>
+              <div x-show="more" x-cloak @click.away="more = false" class="absolute left-0 top-full z-50 mt-2 w-[min(42rem,calc(100vw-3rem))] rounded-2xl border border-white/10 bg-stone-950/95 p-4 shadow-2xl backdrop-blur-xl">
+                <div class="grid gap-5 sm:grid-cols-3">
+                  <div>
+                    <p class="app-kicker text-[0.6rem] text-stone-500">Nähe</p>
+                    <div class="mt-2 space-y-1">
+                      {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Séparée</a>{% endif %}
+                      {% if nav_modules.vitrine %}<a href="{% url 'vitrine:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Vitrine</a>{% endif %}
+                      {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Deep Talk</a>{% endif %}
+                      {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Krisenmodus</a>{% endif %}
+                      <a href="{% url 'datenight:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">DateNight</a>
+                      {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Punkte</a>{% endif %}
+                    </div>
+                  </div>
+                  <div>
+                    <p class="app-kicker text-[0.6rem] text-stone-500">Erinnerungen</p>
+                    <div class="mt-2 space-y-1">
+                      {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Galerie</a>{% endif %}
+                      {% if nav_modules.moments %}<a href="{% url 'moments:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Momente</a>{% endif %}
+                      {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Erkenntnisse</a>{% endif %}
+                      {% if nav_modules.feed %}<a href="{% url 'feed:index' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Logbuch</a>{% endif %}
+                    </div>
+                  </div>
+                  <div>
+                    <p class="app-kicker text-[0.6rem] text-stone-500">Konto</p>
+                    <div class="mt-2 space-y-1">
+                      <a href="{% url 'accounts:profile' %}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Profil</a>
+                      {% for item in nav_header_items %}<a href="{{ item.url }}" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">{{ item.label }}</a>{% endfor %}
+                      {% if user.is_staff %}<a href="/management/" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Verwaltung</a>{% endif %}
+                      {% if user.is_staff %}<a href="/admin/" class="block rounded-lg px-2 py-1.5 text-sm text-stone-300 hover:bg-white/[0.06] hover:text-amber-200">Django-Admin</a>{% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            {% for item in nav_header_items %}<a href="{{ item.url }}" class="nav-pill whitespace-nowrap">{{ item.label }}</a>{% endfor %}
+            <a href="{% url 'accounts:login' %}" class="nav-pill whitespace-nowrap">Anmelden</a>
+            <a href="{% url 'accounts:register' %}" class="btn-ghost whitespace-nowrap">Registrieren</a>
+          {% endif %}
         </nav>
 
         <div id="mobile-menu" x-show="open" x-cloak class="app-shell border-t border-white/10 pt-3 lg:hidden">
-          <nav class="grid grid-cols-2 gap-1" aria-label="Mobiles Menü">
+          <nav class="space-y-4" aria-label="Mobiles Menü">
             {% if user.is_authenticated %}
-              {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Lounge</a>{% endif %}
-              {% if nav_modules.lounge %}<a href="{% url 'mood' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Stimmung</a>{% endif %}
-              {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Séparée</a>{% endif %}
-              {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Concierge</a>{% endif %}
-              {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Playbook</a>{% endif %}
-              {% if nav_modules.vitrine %}<a href="{% url 'vitrine:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Vitrine</a>{% endif %}
-              {% if nav_modules.feed %}<a href="{% url 'feed:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Logbuch</a>{% endif %}
-              {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Deep Talk</a>{% endif %}
-              {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Krisenmodus</a>{% endif %}
-              {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Punkte</a>{% endif %}
-              {% if nav_modules.calendar %}<a href="{% url 'calendar:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Kalender</a>{% endif %}
-              {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Nachrichten</a>{% endif %}
-              {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Galerie</a>{% endif %}
-              {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Erkenntnisse</a>{% endif %}
-              {% if nav_modules.moments %}<a href="{% url 'moments:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Momente</a>{% endif %}
-              <a href="{% url 'accounts:profile' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Profil</a>
-              {% if user.is_staff %}<a href="/management/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Verwaltung</a>{% endif %}
-              {% if user.is_staff %}<a href="/admin/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Django-Admin</a>{% endif %}
-              {% for item in nav_header_items %}<a href="{{ item.url }}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">{{ item.label }}</a>{% endfor %}
-              <form method="post" action="{% url 'accounts:logout' %}" class="col-span-2">
-                {% csrf_token %}
-                <button type="submit" class="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left text-sm text-stone-300 transition hover:border-amber-400/40 hover:text-amber-200">Abmelden</button>
-              </form>
+              <div>
+                <p class="app-kicker text-[0.6rem] text-stone-500">Alltag</p>
+                <div class="mt-1 grid grid-cols-2 gap-1">
+                  {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Lounge</a>{% endif %}
+                  {% if nav_modules.calendar %}<a href="{% url 'calendar:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Kalender</a>{% endif %}
+                  {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="flex items-center justify-between rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200"><span>Chat</span>{% if nav_unread_messages %}<span class="rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-semibold text-white">{{ nav_unread_messages }}</span>{% endif %}</a>{% endif %}
+                  {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Concierge</a>{% endif %}
+                  {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Playbook</a>{% endif %}
+                </div>
+              </div>
+              <div>
+                <p class="app-kicker text-[0.6rem] text-stone-500">Nähe & Spiel</p>
+                <div class="mt-1 grid grid-cols-2 gap-1">
+                  {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Séparée</a>{% endif %}
+                  {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Deep Talk</a>{% endif %}
+                  <a href="{% url 'datenight:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">DateNight</a>
+                  {% if nav_modules.vitrine %}<a href="{% url 'vitrine:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Vitrine</a>{% endif %}
+                  {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Punkte</a>{% endif %}
+                  {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Krisenmodus</a>{% endif %}
+                </div>
+              </div>
+              <div>
+                <p class="app-kicker text-[0.6rem] text-stone-500">Erinnerungen</p>
+                <div class="mt-1 grid grid-cols-2 gap-1">
+                  {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Galerie</a>{% endif %}
+                  {% if nav_modules.moments %}<a href="{% url 'moments:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Momente</a>{% endif %}
+                  {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Erkenntnisse</a>{% endif %}
+                  {% if nav_modules.feed %}<a href="{% url 'feed:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Logbuch</a>{% endif %}
+                </div>
+              </div>
+              <div class="space-y-1 border-t border-white/10 pt-3">
+                <a href="{% url 'accounts:profile' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 hover:bg-white/[0.06]">Profil</a>
+                {% for item in nav_header_items %}<a href="{{ item.url }}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 hover:bg-white/[0.06]">{{ item.label }}</a>{% endfor %}
+                {% if user.is_staff %}<a href="/management/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 hover:bg-white/[0.06]">Verwaltung</a>{% endif %}
+                {% if user.is_staff %}<a href="/admin/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 hover:bg-white/[0.06]">Django-Admin</a>{% endif %}
+                <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-left text-sm text-stone-300 hover:border-amber-400/40 hover:text-amber-200">Abmelden</button></form>
+              </div>
             {% else %}
-              <a href="{% url 'accounts:login' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Anmelden</a>
-              <a href="{% url 'accounts:register' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Registrieren</a>
-              {% for item in nav_header_items %}<a href="{{ item.url }}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">{{ item.label }}</a>{% endfor %}
+              <div class="grid grid-cols-2 gap-1">
+                <a href="{% url 'accounts:login' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 hover:bg-white/[0.06]">Anmelden</a>
+                <a href="{% url 'accounts:register' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 hover:bg-white/[0.06]">Registrieren</a>
+                {% for item in nav_header_items %}<a href="{{ item.url }}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 hover:bg-white/[0.06]">{{ item.label }}</a>{% endfor %}
+              </div>
             {% endif %}
           </nav>
         </div>

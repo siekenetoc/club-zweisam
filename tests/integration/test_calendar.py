@@ -56,6 +56,36 @@ def test_calendar_ics_feed_and_token_revocation(client):
     assert client.get(reverse("calendar:feed", kwargs={"token": raw})).status_code == 404
 
 
+def test_calendar_views_and_date_prefill(client):
+    clubroom, owner, _ = make_room()
+    client.force_login(owner)
+    for view in ("tag", "woche", "monat", "agenda"):
+        response = client.get(reverse("calendar:index"), {"ansicht": view, "datum": "2026-12-04"})
+        assert response.status_code == 200
+    response = client.get(reverse("calendar:index"), {"ansicht": "tag", "datum": "2026-12-04"})
+    assert response.context["form"].initial["start_at"].date().isoformat() == "2026-12-04"
+
+
+def test_datenight_accept_creates_calendar_entry(client):
+    from apps.calendar.models import DateNight
+
+    clubroom, owner, partner = make_room()
+    night = DateNight.objects.create(
+        clubroom=clubroom,
+        proposed_by=owner,
+        scheduled_for=timezone.now() + timezone.timedelta(days=3),
+        motto="Kerzen und Tee",
+    )
+    client.force_login(partner)
+    response = client.post(
+        reverse("datenight:respond", kwargs={"pk": night.pk}), {"action": "accept"}
+    )
+    assert response.status_code == 302
+    night.refresh_from_db()
+    assert night.status == "accepted"
+    assert CalendarEntry.objects.filter(clubroom=clubroom, title__contains="Kerzen").exists()
+
+
 def test_calendar_create_and_task_toggle(client):
     clubroom, owner, _ = make_room()
     client.force_login(owner)

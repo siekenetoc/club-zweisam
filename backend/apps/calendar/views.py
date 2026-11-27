@@ -1,5 +1,5 @@
 import calendar as pycalendar
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
 from django.contrib import messages
@@ -38,20 +38,62 @@ def index(request):
     membership = _owner(request)
     clubroom = membership.clubroom
     today = timezone.localdate()
+    view = request.GET.get("ansicht", "monat")
+    if view not in {"tag", "woche", "monat", "agenda"}:
+        view = "monat"
     try:
-        year = int(request.GET.get("jahr", today.year))
-        month = int(request.GET.get("monat", today.month))
+        selected_date = date.fromisoformat(request.GET.get("datum", ""))
+    except ValueError:
+        selected_date = today
+    try:
+        year = int(request.GET.get("jahr", selected_date.year))
+        month = int(request.GET.get("monat", selected_date.month))
         if not 1 <= month <= 12:
             raise ValueError
     except ValueError:
-        year, month = today.year, today.month
-    first = datetime(year, month, 1, tzinfo=timezone.get_current_timezone())
-    last_day = pycalendar.monthrange(year, month)[1]
-    last = datetime(year, month, last_day, 23, 59, 59, tzinfo=timezone.get_current_timezone())
-    entries = CalendarEntry.objects.filter(
-        clubroom=clubroom, start_at__gte=first, start_at__lte=last
-    ).select_related("created_by")
-    form = CalendarEntryForm()
+        year, month = selected_date.year, selected_date.month
+
+    if view == "tag":
+        start = datetime.combine(selected_date, time.min, tzinfo=timezone.get_current_timezone())
+        end = start + timedelta(days=1)
+        entries = CalendarEntry.objects.filter(
+            clubroom=clubroom, start_at__gte=start, start_at__lt=end
+        )
+        month = selected_date.month
+        year = selected_date.year
+    elif view == "woche":
+        start_date = selected_date - timedelta(days=selected_date.weekday())
+        end_date = start_date + timedelta(days=7)
+        start = datetime.combine(start_date, time.min, tzinfo=timezone.get_current_timezone())
+        end = datetime.combine(end_date, time.min, tzinfo=timezone.get_current_timezone())
+        entries = CalendarEntry.objects.filter(
+            clubroom=clubroom, start_at__gte=start, start_at__lt=end
+        )
+        month = selected_date.month
+        year = selected_date.year
+    elif view == "agenda":
+        entries = CalendarEntry.objects.filter(
+            clubroom=clubroom, start_at__gte=timezone.now()
+        ).order_by("start_at")[:100]
+    else:
+        first = datetime(year, month, 1, tzinfo=timezone.get_current_timezone())
+        last_day = pycalendar.monthrange(year, month)[1]
+        last = datetime(year, month, last_day, 23, 59, 59, tzinfo=timezone.get_current_timezone())
+        entries = CalendarEntry.objects.filter(
+            clubroom=clubroom, start_at__gte=first, start_at__lte=last
+        )
+    entries = entries.select_related("created_by")
+
+    initial = {}
+    if request.GET.get("datum"):
+        initial["start_at"] = datetime.combine(
+            selected_date, time(19, 0), tzinfo=timezone.get_current_timezone()
+        )
+    form = (
+        CalendarEntryForm(initial=initial)
+        if view in {"tag", "woche", "monat"}
+        else CalendarEntryForm()
+    )
     if request.method == "POST":
         form = CalendarEntryForm(request.POST)
         if form.is_valid():
@@ -61,28 +103,48 @@ def index(request):
             entry.save()
             messages.success(request, "Kalendereintrag gespeichert.")
             return redirect("calendar:index")
+
+    entries_list = list(entries)
     entries_by_day = {}
-    for entry in entries:
-        local_date = timezone.localtime(entry.start_at).date()
-        entries_by_day.setdefault(local_date, []).append(entry)
-    today_date = timezone.localdate()
+    for entry in entries_list:
+        entries_by_day.setdefault(timezone.localtime(entry.start_at).date(), []).append(entry)
     calendar_weeks = []
-    for week in pycalendar.Calendar(firstweekday=0).monthdayscalendar(year, month):
-        week_days = []
-        for day_number in week:
-            if day_number == 0:
-                week_days.append({"day": "", "in_month": False, "today": False, "entries": []})
-                continue
-            current = date(year, month, day_number)
-            week_days.append(
-                {
-                    "day": day_number,
-                    "in_month": True,
-                    "today": current == today_date,
-                    "entries": entries_by_day.get(current, []),
-                }
-            )
-        calendar_weeks.append(week_days)
+    if view == "monat":
+        for week in pycalendar.Calendar(firstweekday=0).monthdayscalendar(year, month):
+            week_days = []
+            for day_number in week:
+                if day_number == 0:
+                    week_days.append(
+                        {"day": "", "in_month": False, "today": False, "entries": [], "date": None}
+                    )
+                    continue
+                current = date(year, month, day_number)
+                week_days.append(
+                    {
+                        "day": day_number,
+                        "in_month": True,
+                        "today": current == today,
+                        "entries": entries_by_day.get(current, []),
+                        "date": current,
+                    }
+                )
+            calendar_weeks.append(week_days)
+    week_start = selected_date - timedelta(days=selected_date.weekday())
+    week_days = []
+    for index in range(7):
+        current = week_start + timedelta(days=index)
+        week_days.append(
+            {"date": current, "today": current == today, "entries": entries_by_day.get(current, [])}
+        )
+    if view == "tag":
+        prev_date, next_date = selected_date - timedelta(days=1), selected_date + timedelta(days=1)
+    elif view == "woche":
+        prev_date, next_date = week_start - timedelta(days=7), week_start + timedelta(days=7)
+    else:
+        prev_date, next_date = selected_date, selected_date
+    if view == "monat":
+        prev_date = date(year - 1 if month == 1 else year, 12 if month == 1 else month - 1, 1)
+        next_date = date(year + 1 if month == 12 else year, 1 if month == 12 else month + 1, 1)
     token = CalendarFeedToken.objects.filter(clubroom=clubroom, user=request.user).first()
     return render(
         request,
@@ -90,18 +152,19 @@ def index(request):
         {
             "clubroom": clubroom,
             "membership": membership,
-            "entries": entries,
+            "entries": entries_list,
             "form": form,
             "year": year,
             "month": month,
             "month_label": pycalendar.month_name[month],
-            "prev_month": month - 1 or 12,
-            "prev_year": year - 1 if month == 1 else year,
-            "next_month": month % 12 + 1,
-            "next_year": year + 1 if month == 12 else year,
+            "view": view,
+            "selected_date": selected_date,
+            "week_days": week_days,
+            "calendar_weeks": calendar_weeks,
+            "prev_date": prev_date,
+            "next_date": next_date,
             "feed_token": token,
             "feed_raw": request.session.pop("calendar_feed_raw", ""),
-            "calendar_weeks": calendar_weeks,
         },
     )
 

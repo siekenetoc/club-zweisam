@@ -53,7 +53,7 @@
             <h2 class="text-xs uppercase tracking-widest text-stone-500">Stimmungs-Monitor</h2>
             <p class="mt-1 text-sm text-stone-400">3-Tage-Schnitt · {{ barometer.total }} Check-in{{ barometer.total|pluralize:"s" }}</p>
           </div>
-          <span class="rounded-full border border-stone-700 px-3 py-1 text-xs {{ course_class }}">Stimmung {{ course_label }}</span>
+          <div class="flex flex-wrap items-center gap-2"><span class="rounded-full border border-stone-700 px-3 py-1 text-xs {{ course_class }}">Stimmung {{ course_label }}</span><a href="{% url 'mood' %}" class="text-xs text-amber-300 hover:text-amber-200">Verlauf →</a></div>
         </div>
 
         <div class="mt-5 grid gap-4 sm:grid-cols-3">
