@@ -4,9 +4,7 @@ services:
     container_name: clubzweisam_caddy
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "127.0.0.1:8080:80"
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -92,7 +90,7 @@ services:
     container_name: clubzweisam_mailhog
     restart: unless-stopped
     ports:
-      - "8025:8025"
+      - "127.0.0.1:8025:8025"
     networks:
       - clubzweisam_net
 

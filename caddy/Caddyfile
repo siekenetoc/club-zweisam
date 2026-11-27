@@ -1,8 +1,15 @@
 {
-    email {$ACME_EMAIL}
+    auto_https off
 }
 
-{$DOMAIN} {
+# Caddy läuft in Produktion hinter dem Host-nginx auf 127.0.0.1:8080.
+# TLS und ACME werden vom Host-nginx übernommen; hier bleibt Basic Auth,
+# Security-Header und Reverse Proxy zur Django-App.
+http://{$DOMAIN} {
+    basic_auth {
+        jana-olli {$BASIC_AUTH_HASH}
+    }
+
     encode zstd gzip
 
     header {
@@ -14,5 +21,8 @@
         Permissions-Policy "geolocation=(), microphone=(), camera=()"
     }
 
-    reverse_proxy web:8000
+    reverse_proxy web:8000 {
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+    }
 }
