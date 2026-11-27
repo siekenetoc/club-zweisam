@@ -1,39 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="grid gap-6 lg:grid-cols-[minmax(0,0.68fr)_minmax(0,1.32fr)] lg:items-start lg:gap-8">
-    <aside class="form-aside relative hidden overflow-hidden rounded-3xl border border-white/10 p-7 lg:block xl:sticky xl:top-40">
-      <div class="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full border border-amber-400/20"></div>
-      <div class="pointer-events-none absolute -bottom-16 -left-12 h-48 w-48 rounded-full border border-rose-400/10"></div>
-      <div class="relative">
-        <div class="icon-tile">
-          {% block module_icon %}
-            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path stroke-linecap="round" d="M12 8v8M8 12h8"/></svg>
-          {% endblock %}
+  <div class="space-y-6">
+    <aside class="form-aside relative overflow-hidden rounded-3xl border border-white/10 p-6 sm:p-7">
+      <div class="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full border border-amber-400/20"></div>
+      <div class="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full border border-rose-400/10"></div>
+      <div class="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex min-w-0 items-start gap-4">
+          <div class="icon-tile">
+            {% block module_icon %}
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path stroke-linecap="round" d="M12 8v8M8 12h8"/></svg>
+            {% endblock %}
+          </div>
+          <div class="min-w-0">
+            <p class="app-kicker">{% block module_kicker %}Club Zweisam{% endblock %}</p>
+            <h1 class="mt-2 text-balance text-3xl font-semibold leading-tight tracking-tight text-stone-50 sm:text-4xl">{% block module_title %}Modul{% endblock %}</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-stone-400">{% block module_intro %}{% endblock %}</p>
+          </div>
         </div>
-        <p class="app-kicker mt-6">{% block module_kicker %}Club Zweisam{% endblock %}</p>
-        <h1 class="mt-3 text-balance text-3xl font-semibold leading-tight tracking-tight text-stone-50">{% block module_title %}Modul{% endblock %}</h1>
-        <p class="mt-4 text-sm leading-relaxed text-stone-400">{% block module_intro %}{% endblock %}</p>
-        {% block module_action %}{% endblock %}
+        <div class="shrink-0 sm:pt-1">
+          {% block module_action %}{% endblock %}
+        </div>
       </div>
     </aside>
 
     <div class="min-w-0 space-y-5">
-      <div class="app-card-soft p-5 lg:hidden">
-        <div class="flex items-start gap-3">
-          <div class="icon-tile h-10 w-10 rounded-xl">
-            {% block module_icon_mobile %}
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path stroke-linecap="round" d="M12 8v8M8 12h8"/></svg>
-            {% endblock %}
-          </div>
-          <div>
-            <p class="app-kicker">{% block module_kicker_mobile %}Club Zweisam{% endblock %}</p>
-            <h1 class="mt-1 text-2xl font-semibold text-stone-50">{% block module_title_mobile %}Modul{% endblock %}</h1>
-            <p class="mt-1 text-sm text-stone-400">{% block module_intro_mobile %}{% endblock %}</p>
-            {% block module_action_mobile %}{% endblock %}
-          </div>
-        </div>
-      </div>
       {% block module_content %}{% endblock %}
     </div>
   </div>
