@@ -18,7 +18,7 @@
     <script src="{% static 'dist/js/main.js' %}" defer></script>
   </head>
   <body data-authenticated="{% if user.is_authenticated %}1{% else %}0{% endif %}" class="app-bg min-h-dvh text-stone-100 antialiased">
-    <div class="app-shell flex min-h-dvh w-full flex-col px-4 pb-24 pt-4 sm:px-6 sm:pt-6 lg:pb-10">
+    <div class="app-shell flex min-h-dvh w-full flex-col px-4 pb-28 pt-4 sm:px-6 sm:pt-6">
       {% if user.is_staff %}
         <div class="mb-4 rounded-md border border-amber-800 bg-amber-950/50 px-4 py-3 text-sm text-amber-100">
           <strong>Admin-Konto:</strong> Die App-Funktionen für Dyaden sind deaktiviert.

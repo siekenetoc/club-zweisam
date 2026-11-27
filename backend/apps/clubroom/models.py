@@ -109,10 +109,21 @@ class Membership(TimestampedModel):
             self.module_permissions = default_permissions_for(self.role)
         super().save(*args, **kwargs)
 
+    def effective_module_permissions(self) -> dict[str, bool]:
+        permissions = default_permissions_for(self.role)
+        permissions.update(
+            {
+                module: bool(value)
+                for module, value in (self.module_permissions or {}).items()
+                if module in MODULES
+            }
+        )
+        return permissions
+
     def has_module_access(self, module: str) -> bool:
         if module not in MODULES or not self.is_active:
             return False
-        return bool(self.module_permissions.get(module, False))
+        return bool(self.effective_module_permissions().get(module, False))
 
     def can_write_module(self, module: str) -> bool:
         return self.has_module_access(module) and role_can_write(self.role)

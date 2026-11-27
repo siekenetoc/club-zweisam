@@ -154,7 +154,7 @@
   }
 
   .mobile-dock {
-    @apply fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-stone-950/90 px-3 pb-[calc(0.6rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl lg:hidden;
+    @apply fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-stone-950/90 px-3 pb-[calc(0.6rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl;
   }
 
   .dock-link {

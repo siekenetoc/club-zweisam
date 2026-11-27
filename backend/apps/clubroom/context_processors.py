@@ -26,7 +26,9 @@ def navigation(request):
         )
     return {
         "nav_membership": membership,
-        "nav_modules": (membership.module_permissions if membership is not None else {}),
+        "nav_modules": (
+            membership.effective_module_permissions() if membership is not None else {}
+        ),
         "nav_unread_messages": unread_messages,
         "nav_is_platform_admin": is_platform_admin(request.user),
     }

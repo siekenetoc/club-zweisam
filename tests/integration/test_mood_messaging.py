@@ -56,6 +56,18 @@ def test_messages_are_encrypted_and_only_for_owners(client):
     assert client.get(reverse("messaging:index")).status_code == 403
 
 
+def test_existing_owner_gets_new_modules_from_role_defaults(client):
+    clubroom, anna, _ = make_room()
+    membership = Membership.objects.get(clubroom=clubroom, user=anna)
+    membership.module_permissions = {}
+    membership.save(update_fields=["module_permissions"])
+    assert membership.has_module_access("messages")
+    client.force_login(anna)
+    response = client.get(reverse("clubroom:home"))
+    assert response.context["nav_modules"]["messages"] is True
+    assert "Chat" in response.content.decode()
+
+
 def test_unread_message_badge_context(client):
     clubroom, anna, bea = make_room()
     Message.objects.create(clubroom=clubroom, sender=bea, body="Hallo")
