@@ -5,6 +5,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from apps.accounts.avatars import process_avatar, remove_avatar_files
 from apps.accounts.gdpr import delete_user_data, export_user_data
 from apps.accounts.notification_forms import (
     PersonalChannelForm,
@@ -13,7 +14,11 @@ from apps.accounts.notification_forms import (
 )
 from apps.clubroom.models import Membership
 from apps.feed.delivery import send_via_channel
-from apps.feed.models import PersonalNotificationChannel
+from apps.feed.models import (
+    EVENT_CHOICES,
+    NotificationPreference,
+    PersonalNotificationChannel,
+)
 
 
 @login_required
@@ -40,9 +45,19 @@ def profile(request):
             )
             return redirect("accounts:profile")
         if action == "profile_save":
-            profile_form = ProfileEditForm(request.POST, instance=request.user)
+            profile_form = ProfileEditForm(request.POST, request.FILES, instance=request.user)
             if profile_form.is_valid():
-                profile_form.save()
+                user = profile_form.save(commit=False)
+                if profile_form.cleaned_data.get("remove_avatar"):
+                    remove_avatar_files(user)
+                    user.avatar = ""
+                    user.avatar_thumb = ""
+                uploaded_avatar = profile_form.cleaned_data.get("avatar")
+                if uploaded_avatar and hasattr(uploaded_avatar, "read"):
+                    user.avatar = ""
+                    user.avatar_thumb = ""
+                    process_avatar(user, uploaded_avatar)
+                user.save()
                 messages.success(request, "Profildaten gespeichert.")
                 return redirect("accounts:profile")
             return render(
@@ -54,8 +69,47 @@ def profile(request):
                     "form": PersonalChannelForm(user=request.user),
                     "profile_form": profile_form,
                     "editing": None,
+                    "event_types": EVENT_CHOICES,
+                    "notification_preferences": NotificationPreference.objects.filter(
+                        user=request.user
+                    ),
+                    "notification_channels": [
+                        ("inapp", "In-App"),
+                        ("email", "E-Mail"),
+                        ("telegram", "Telegram"),
+                        ("whatsapp", "WhatsApp"),
+                        ("element", "Element"),
+                        ("gotify", "Gotify"),
+                    ],
                 },
             )
+        if action == "notification_pref_save":
+            event_type = request.POST.get("event_type", "")
+            pref_channel = request.POST.get("channel", "inapp")
+            valid_events = {value for value, _ in EVENT_CHOICES}
+            valid_channels = {
+                "inapp",
+                "email",
+                "telegram",
+                "whatsapp",
+                "element",
+                "gotify",
+                "webpush",
+            }
+            if event_type not in valid_events or pref_channel not in valid_channels:
+                messages.error(request, "Ungültige Benachrichtigungsauswahl.")
+            elif membership is None:
+                messages.error(request, "Kein Clubraum für Benachrichtigungen.")
+            else:
+                NotificationPreference.objects.update_or_create(
+                    user=request.user,
+                    clubroom=membership.clubroom,
+                    event_type=event_type,
+                    channel=pref_channel,
+                    defaults={"enabled": request.POST.get("enabled") == "on"},
+                )
+                messages.success(request, "Benachrichtigungseinstellung gespeichert.")
+            return redirect("accounts:profile")
         if action == "delete" and channel is not None:
             channel.delete()
             messages.success(request, "Persönlicher Push-Kanal gelöscht.")
@@ -97,6 +151,16 @@ def profile(request):
             "form": form,
             "profile_form": profile_form,
             "editing": channel,
+            "event_types": EVENT_CHOICES,
+            "notification_preferences": NotificationPreference.objects.filter(user=request.user),
+            "notification_channels": [
+                ("inapp", "In-App"),
+                ("email", "E-Mail"),
+                ("telegram", "Telegram"),
+                ("whatsapp", "WhatsApp"),
+                ("element", "Element"),
+                ("gotify", "Gotify"),
+            ],
         },
     )
 

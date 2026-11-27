@@ -1,6 +1,8 @@
 from django import forms
 
 from apps.admin_panel.models import ALLOWED_TARGET_TYPES
+from apps.pages.admin import TinyMCETextarea
+from apps.pages.models import LandingSection, LandingSettings, NavigationItem, StaticPage
 
 
 class BreakGlassRequestForm(forms.Form):
@@ -194,3 +196,54 @@ def initial_from_channel(channel):
             }
         )
     return initial
+
+
+class ContentStaticPageForm(forms.ModelForm):
+    class Meta:
+
+        model = StaticPage
+        fields = ("title", "slug", "content_html", "is_published")
+        widgets = {"content_html": TinyMCETextarea()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if not isinstance(field.widget, forms.HiddenInput):
+                field.widget.attrs.setdefault(
+                    "class",
+                    "w-full rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-stone-100",
+                )
+
+
+class ContentLandingSettingsForm(forms.ModelForm):
+    class Meta:
+
+        model = LandingSettings
+        fields = (
+            "hero_kicker",
+            "hero_title",
+            "hero_text",
+            "primary_cta_label",
+            "primary_cta_url",
+            "secondary_cta_label",
+            "secondary_cta_url",
+        )
+
+
+class ContentLandingSectionForm(forms.ModelForm):
+    class Meta:
+
+        model = LandingSection
+        fields = ("title", "body_html", "link_label", "link_url", "order", "is_active")
+        widgets = {
+            "body_html": __import__(
+                "apps.pages.admin", fromlist=["TinyMCETextarea"]
+            ).TinyMCETextarea()
+        }
+
+
+class ContentNavigationForm(forms.ModelForm):
+    class Meta:
+
+        model = NavigationItem
+        fields = ("label", "url", "location", "order", "is_active", "requires_authentication")

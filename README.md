@@ -278,6 +278,17 @@ unter `/root/secrets-club-zweiraum.txt`; SMTP muss vor Aktivierung/Reset
 konfiguriert sein. `www.club-zweisam.de` benötigt zusätzlich einen DNS-A-Record
 auf denselben Server und ein Zertifikat mit `www`-SAN.
 
+## Neue Funktionen
+
+- Profil mit optionalem Anzeigenamen, Pronomen, Bio, Zeitzone und optimiertem Avatar.
+- Kalender pro Clubraum mit Terminen/Aufgaben und widerrufbarem ICS-Abo-Link.
+- Stimmungsverlauf über 7/30/90 Tage als lokales SVG-Dashboard.
+- Verschlüsselte Nachrichten und Kurzsignale (Danke, Herz, Umarmung, Pause u. a.).
+- Benachrichtigungs-Präferenzen je Ereignis und Kanal.
+- Geschützte Galerie mit WebP-Optimierung, EXIF-Entfernung und Thumbnails.
+- Private/geteilte Erkenntnisse mit Zustimmung/Unsicher/Widerspruch.
+- Portal-CMS für Seiten, Landing, Navigation und TinyMCE-Inhalte unter `/management/content/`.
+
 ## Frontend und Web-App
 
 - Dark Design mit warmen Gradienten, SVG-Marke, SVG-Hero und responsiver
@@ -311,7 +322,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 174 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 185 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

@@ -4,6 +4,7 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 
 from apps.core.views import HealthView
+from apps.lounge.views import mood_dashboard
 
 urlpatterns = [
     path("", include("apps.clubroom.urls")),
@@ -14,10 +15,15 @@ urlpatterns = [
     path("concierge/", include("apps.wishes.urls")),
     path("playbook/", include("apps.playbook.urls")),
     path("lounge/", include("apps.lounge.urls")),
+    path("stimmung/", mood_dashboard, name="mood"),
     path("logbuch/", include("apps.feed.urls")),
     path("deep-talk/", include("apps.deep_talk.urls")),
     path("krisenmodus/", include("apps.crisis.urls")),
     path("punkte/", include("apps.points.urls")),
+    path("kalender/", include("apps.calendar.urls")),
+    path("nachrichten/", include("apps.messaging.urls")),
+    path("galerie/", include("apps.gallery.urls")),
+    path("erkenntnisse/", include("apps.insights.urls")),
     path("management/", include("apps.admin_panel.urls")),
     path("seite/", include("apps.pages.urls")),
     path("healthz", HealthView.as_view(), name="healthz"),

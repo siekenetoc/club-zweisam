@@ -105,17 +105,43 @@ def initial_from_personal_channel(channel):
 
 
 class ProfileEditForm(StyledFormMixin, forms.ModelForm):
+    remove_avatar = forms.BooleanField(label="Profilbild entfernen", required=False)
+
     class Meta:
         from apps.accounts.models import User
 
         model = User
-        fields = ("username", "first_name", "last_name")
+        fields = (
+            "username",
+            "display_name",
+            "first_name",
+            "last_name",
+            "pronouns",
+            "timezone",
+            "bio",
+            "avatar",
+        )
         labels = {
             "username": "Benutzername",
+            "display_name": "Anzeigename",
             "first_name": "Vorname",
             "last_name": "Nachname",
+            "pronouns": "Pronomen",
+            "timezone": "Zeitzone",
+            "bio": "Über mich",
+            "avatar": "Profilbild",
         }
+        widgets = {"bio": forms.Textarea(attrs={"rows": 4})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._style_fields()
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get("avatar")
+        if avatar and getattr(avatar, "size", 0) > 5 * 1024 * 1024:
+            raise ValidationError("Das Profilbild darf höchstens 5 MB groß sein.")
+        if avatar and hasattr(avatar, "content_type"):
+            if avatar.content_type not in {"image/jpeg", "image/png", "image/webp"}:
+                raise ValidationError("Erlaubt sind JPEG, PNG und WebP.")
+        return avatar

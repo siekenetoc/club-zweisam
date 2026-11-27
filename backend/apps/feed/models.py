@@ -21,6 +21,7 @@ EVENT_CHALLENGE_STARTED = "challenge.started"
 EVENT_CHALLENGE_COMPLETED = "challenge.completed"
 EVENT_CHALLENGE_ABORTED = "challenge.aborted"
 EVENT_CHECKIN_CREATED = "checkin.created"
+EVENT_MESSAGE_CREATED = "message.created"
 EVENT_BREAK_GLASS_ACCESS = "break_glass.access"
 
 EVENT_CHOICES = (
@@ -40,6 +41,7 @@ EVENT_CHOICES = (
     (EVENT_CHALLENGE_COMPLETED, "Challenge abgeschlossen"),
     (EVENT_CHALLENGE_ABORTED, "Challenge abgebrochen"),
     (EVENT_CHECKIN_CREATED, "Check-in"),
+    (EVENT_MESSAGE_CREATED, "Nachricht"),
     (EVENT_BREAK_GLASS_ACCESS, "Admin-Zugriff protokolliert"),
 )
 
@@ -217,6 +219,50 @@ class PersonalNotificationChannel(TimestampedModel):
         import json
 
         self.config = json.dumps(value, ensure_ascii=False)
+
+
+class NotificationPreference(TimestampedModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notification_preferences",
+    )
+    clubroom = models.ForeignKey(
+        Clubroom, on_delete=models.CASCADE, related_name="notification_preferences"
+    )
+    event_type = models.CharField(max_length=48, choices=EVENT_CHOICES)
+    channel = models.CharField(
+        max_length=16,
+        choices=(
+            ("inapp", "In-App"),
+            ("email", "E-Mail"),
+            ("telegram", "Telegram"),
+            ("whatsapp", "WhatsApp"),
+            ("element", "Element"),
+            ("gotify", "Gotify"),
+            ("webpush", "Web-Push"),
+        ),
+        default="inapp",
+    )
+    enabled = models.BooleanField(default=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "clubroom", "event_type", "channel"],
+                name="unique_notification_preference",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user} {self.event_type}/{self.channel}"
+
+
+def notification_allowed(user, clubroom, event_type, channel) -> bool:
+    preference = NotificationPreference.objects.filter(
+        user=user, clubroom=clubroom, event_type=event_type, channel=channel
+    ).first()
+    return True if preference is None else preference.enabled
 
 
 class Notification(TimestampedModel):

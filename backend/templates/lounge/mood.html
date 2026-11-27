@@ -1,0 +1,46 @@
+{% extends "base_module.html" %}
+{% block title %}Stimmungsverlauf – Club Zweisam{% endblock %}
+{% block module_kicker %}Stimmung{% endblock %}
+{% block module_title %}Wie geht es euch über die Zeit?{% endblock %}
+{% block module_title_mobile %}Stimmung{% endblock %}
+{% block module_intro %}Ein ruhiger Blick auf Stimmung und Nähe. Keine Bewertung, kein Ranking – nur ein Verlauf.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="M4 18V6M4 18h16M7 14l3-4 3 2 4-6"/></svg>{% endblock %}
+{% block module_content %}
+  <div class="space-y-5">
+    <div class="flex flex-wrap gap-2">
+      <a href="?tage=7" class="chip {% if days == 7 %}border-amber-400/40 text-amber-200{% endif %}">7 Tage</a>
+      <a href="?tage=30" class="chip {% if days == 30 %}border-amber-400/40 text-amber-200{% endif %}">30 Tage</a>
+      <a href="?tage=90" class="chip {% if days == 90 %}border-amber-400/40 text-amber-200{% endif %}">90 Tage</a>
+    </div>
+    <div class="app-card-soft p-4 sm:p-6">
+      {% if series %}
+        <div class="overflow-x-auto">
+          <svg viewBox="0 0 {{ width }} {{ height }}" class="h-auto min-w-[640px] w-full" role="img" aria-label="Stimmungsverlauf">
+            <line x1="{{ left }}" y1="{{ top }}" x2="{{ left }}" y2="{{ top|add:chart_height }}" stroke="rgba(255,255,255,.12)" />
+            <line x1="{{ left }}" y1="{{ top|add:chart_height }}" x2="{{ left|add:chart_width }}" y2="{{ top|add:chart_height }}" stroke="rgba(255,255,255,.12)" />
+            <line x1="{{ left }}" y1="{{ top }}" x2="{{ left|add:chart_width }}" y2="{{ top }}" stroke="rgba(255,255,255,.05)" stroke-dasharray="4 6" />
+            {% for item in series %}
+              <polyline points="{{ item.points }}" fill="none" stroke="{{ item.color }}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="{{ left }}" cy="{{ top }}" r="0" fill="{{ item.color }}" />
+            {% endfor %}
+          </svg>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-4 text-xs text-stone-400">
+          {% for item in series %}<span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full" style="background: {{ item.color }}"></span>{{ item.name }}</span>{% endfor %}
+        </div>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {% for item in series %}
+            <div class="rounded-xl border border-white/10 bg-black/20 p-3">
+              <p class="text-xs text-stone-500">{{ item.name }}</p>
+              <p class="mt-1 text-sm text-stone-300">Letzte Werte: {% for day, value in item.values.items %}{% if forloop.last %}{{ value }}/5{% endif %}{% endfor %}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-sm text-stone-400">Noch keine Check-ins in diesem Zeitraum. Macht einen Check-in in der Lounge, um den Verlauf zu starten.</p>
+      {% endif %}
+      <p class="mt-4 text-xs text-stone-500">{{ start|date:"d.m.Y" }} – {{ end|date:"d.m.Y" }}</p>
+    </div>
+    <a href="{% url 'lounge:index' %}" class="btn-ghost inline-flex">Zur Lounge</a>
+  </div>
+{% endblock %}

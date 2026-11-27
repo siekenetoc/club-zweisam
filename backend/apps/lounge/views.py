@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.clubroom.models import Membership
@@ -12,6 +15,7 @@ from apps.feed.models import (
     NotificationSubscription,
 )
 from apps.lounge.forms import CheckInForm
+from apps.lounge.models import CheckIn
 from apps.lounge.services import (
     barometer,
     check_in_today,
@@ -100,6 +104,80 @@ def index(request):
             "safe_mode_active": request.user.is_safe_mode_active,
             "has_feed": membership.has_module_access("feed"),
             "notification_channels": channel_entries,
+        },
+    )
+
+
+def mood_dashboard(request):
+    membership = (
+        Membership.objects.filter(
+            user=request.user,
+            revoked_at__isnull=True,
+            clubroom__deleted_at__isnull=True,
+        )
+        .select_related("clubroom")
+        .first()
+    )
+    if membership is None or not membership.has_module_access("lounge"):
+        raise Http404
+    clubroom = membership.clubroom
+    days = 30
+    try:
+        days = int(request.GET.get("tage", "30"))
+    except ValueError:
+        pass
+    if days not in {7, 30, 90}:
+        days = 30
+    start = timezone.localdate() - timedelta(days=days - 1)
+    check_ins = list(
+        CheckIn.objects.filter(clubroom=clubroom, date__gte=start)
+        .select_related("user")
+        .order_by("date", "user_id")
+    )
+    dates = [start + timedelta(days=index) for index in range(days)]
+    by_user = {}
+    for check_in in check_ins:
+        by_user.setdefault(check_in.user.username, {})[check_in.date] = check_in.mood
+    width, height, left, top = 760, 260, 40, 20
+    chart_width = width - left * 2
+    chart_height = height - top * 2
+
+    def points(values):
+        rendered = []
+        for index, day in enumerate(dates):
+            value = values.get(day)
+            if value is None:
+                continue
+            x = left + (index / max(1, days - 1)) * chart_width
+            y = top + chart_height - ((value - 1) / 4) * chart_height
+            rendered.append(f"{x:.1f},{y:.1f}")
+        return " ".join(rendered)
+
+    palette = ["#f5b942", "#8bd8bd", "#f08a7a", "#93c5fd"]
+    series = [
+        {
+            "name": username,
+            "color": palette[index % len(palette)],
+            "points": points(values),
+            "values": values,
+        }
+        for index, (username, values) in enumerate(by_user.items())
+    ]
+    return render(
+        request,
+        "lounge/mood.html",
+        {
+            "clubroom": clubroom,
+            "days": days,
+            "start": start,
+            "end": timezone.localdate(),
+            "series": series,
+            "width": width,
+            "height": height,
+            "left": left,
+            "top": top,
+            "chart_width": chart_width,
+            "chart_height": chart_height,
         },
     )
 

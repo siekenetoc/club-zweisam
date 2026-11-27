@@ -1,0 +1,36 @@
+{% extends "base_module.html" %}
+{% block title %}Nachrichten – Club Zweisam{% endblock %}
+{% block module_kicker %}Nachrichten{% endblock %}
+{% block module_title %}Ein leiser Faden zwischen euch.{% endblock %}
+{% block module_title_mobile %}Nachrichten{% endblock %}
+{% block module_intro %}Private Nachrichten und kurze Signale. Keine Inhalte werden an externe Kanäle weitergegeben.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v11H8l-4 4V5Z"/><path stroke-linecap="round" d="M8 9h8M8 12h5"/></svg>{% endblock %}
+{% block module_content %}
+  <div class="grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
+    <div class="app-card-soft flex min-h-[24rem] flex-col p-4 sm:p-5">
+      <div class="flex-1 space-y-3 overflow-y-auto">
+        {% for message in messages_list %}
+          <div class="flex {% if message.sender == user %}justify-end{% else %}justify-start{% endif %}">
+            <div class="max-w-[85%] rounded-2xl border px-4 py-2 text-sm {% if message.sender == user %}border-amber-400/20 bg-amber-400/10 text-stone-100{% else %}border-white/10 bg-white/[0.04] text-stone-300{% endif %}">
+              <p class="mb-1 text-[0.65rem] text-stone-500">{{ message.sender.display_label }} · {{ message.created_at|date:"d.m. H:i" }}</p>
+              {% if message.kind == "quick" %}<p class="text-base">{{ message.quick_label }}</p>{% else %}<p class="whitespace-pre-line">{{ message.body }}</p>{% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <div class="flex h-full min-h-64 items-center justify-center text-center text-sm text-stone-500">Noch keine Nachrichten. Fangt mit einem kleinen Signal an.</div>
+        {% endfor %}
+      </div>
+      <form method="post" class="mt-4 flex gap-2">{% csrf_token %}<div class="flex-1">{{ form.body }}</div><button type="submit" class="btn-primary px-4">Senden</button></form>
+    </div>
+    <div class="app-card-soft p-5">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Kurzsignale</h2>
+      <p class="mt-1 text-xs text-stone-500">Ein Zeichen reicht manchmal.</p>
+      <div class="mt-4 grid grid-cols-2 gap-2">
+        {% for key, label in quick_messages %}
+          <form method="post" action="{% url 'messaging:quick' %}">{% csrf_token %}<input type="hidden" name="quick_key" value="{{ key }}" /><button type="submit" class="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3 text-left text-sm text-stone-300 transition hover:border-amber-400/40 hover:text-amber-200"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7 2.9C19 15.7 12 20 12 20Z"/></svg>{{ label }}</button></form>
+        {% endfor %}
+      </div>
+      <div class="mt-5 rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-stone-500">Nachrichten sind verschlüsselt gespeichert. Externe Benachrichtigungen enthalten nur einen Link, keinen Inhalt.</div>
+    </div>
+  </div>
+{% endblock %}

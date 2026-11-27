@@ -22,9 +22,7 @@ def remove_sex_partner_role(apps, schema_editor):
     for membership in Membership.objects.filter(role="sex_partner"):
         membership.role = "guest"
         membership.module_permissions = GUEST_PERMISSIONS
-        membership.save(
-            update_fields=["role", "module_permissions", "updated_at"]
-        )
+        membership.save(update_fields=["role", "module_permissions", "updated_at"])
 
     for invitation in Invitation.objects.filter(role="sex_partner"):
         invitation.role = "guest"

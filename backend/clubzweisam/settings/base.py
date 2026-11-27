@@ -74,6 +74,10 @@ INSTALLED_APPS = [
     "apps.points",
     "apps.admin_panel",
     "apps.pages",
+    "apps.calendar",
+    "apps.messaging",
+    "apps.gallery",
+    "apps.insights",
 ]
 
 MIDDLEWARE = [

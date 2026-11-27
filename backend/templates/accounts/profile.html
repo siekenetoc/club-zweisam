@@ -39,7 +39,7 @@
       <a href="{% url 'accounts:delete' %}" class="rounded-md border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-red-700 hover:text-red-300">Konto löschen</a>
     </div>
 
-    <form method="post" class="space-y-4 app-card-soft p-5">
+    <form method="post" enctype="multipart/form-data" class="space-y-4 app-card-soft p-5">
       {% csrf_token %}
       <input type="hidden" name="action" value="profile_save" />
       <h2 class="text-xs uppercase tracking-widest text-stone-500">Profildaten bearbeiten</h2>
@@ -53,6 +53,22 @@
       <button type="submit" class="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-stone-950 hover:bg-amber-400">Profildaten speichern</button>
       <p class="text-xs text-stone-500">E-Mail-Adressen werden aus Sicherheitsgründen über „E-Mail-Adressen verwalten“ geändert und bestätigt.</p>
     </form>
+
+    <div class="app-card-soft p-5">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Benachrichtigungen</h2>
+      <p class="mt-1 text-xs text-stone-500">Standard: alle Ereignisse in der App. Externe Kanäle nur, wenn du sie aktivierst.</p>
+      <form method="post" class="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="notification_pref_save" />
+        <div><label for="pref-event" class="mb-1 block text-xs text-stone-400">Ereignis</label><select id="pref-event" name="event_type">{% for value, label in event_types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+        <div><label for="pref-channel" class="mb-1 block text-xs text-stone-400">Kanal</label><select id="pref-channel" name="channel">{% for value, label in notification_channels %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+        <label class="flex items-center gap-2 pb-3 text-xs text-stone-400"><input type="checkbox" name="enabled" checked /> aktiv</label>
+        <button type="submit" class="rounded-full border border-white/10 px-3 py-2 text-xs text-stone-200 hover:border-amber-400/50">Speichern</button>
+      </form>
+      {% if notification_preferences %}
+        <div class="mt-3 space-y-1 text-xs text-stone-500">{% for pref in notification_preferences %}<p>{{ pref.get_event_type_display }} · {{ pref.get_channel_display }} · {% if pref.enabled %}aktiv{% else %}aus{% endif %}</p>{% endfor %}</div>
+      {% endif %}
+    </div>
 
     {% if not user.is_staff %}
     <div class="space-y-3">

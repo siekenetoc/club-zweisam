@@ -56,6 +56,7 @@
         <nav class="app-shell mt-3 hidden items-center gap-1 overflow-x-auto border-t border-white/10 pt-3 lg:flex" aria-label="Hauptnavigation">
             {% if user.is_authenticated %}
                 {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="nav-pill whitespace-nowrap">Lounge</a>{% endif %}
+                {% if nav_modules.lounge %}<a href="{% url 'mood' %}" class="nav-pill whitespace-nowrap">Stimmung</a>{% endif %}
                 {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="nav-pill whitespace-nowrap">Séparée</a>{% endif %}
                 {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="nav-pill whitespace-nowrap">Concierge</a>{% endif %}
                 {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="nav-pill whitespace-nowrap">Playbook</a>{% endif %}
@@ -64,6 +65,10 @@
                 {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="nav-pill whitespace-nowrap">Deep Talk</a>{% endif %}
                 {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="nav-pill whitespace-nowrap">Krise</a>{% endif %}
                 {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="nav-pill whitespace-nowrap">Punkte</a>{% endif %}
+                {% if nav_modules.calendar %}<a href="{% url 'calendar:index' %}" class="nav-pill whitespace-nowrap">Kalender</a>{% endif %}
+                {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="nav-pill whitespace-nowrap">Nachrichten</a>{% endif %}
+                {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="nav-pill whitespace-nowrap">Galerie</a>{% endif %}
+                {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="nav-pill whitespace-nowrap">Erkenntnisse</a>{% endif %}
                 {% for item in nav_header_items %}<a href="{{ item.url }}" class="nav-pill whitespace-nowrap">{{ item.label }}</a>{% endfor %}
                 {% if user.is_staff %}<a href="/management/" class="nav-pill whitespace-nowrap">Verwaltung</a>{% endif %}
                 {% if user.is_staff %}<a href="/admin/" class="nav-pill whitespace-nowrap">Admin</a>{% endif %}
@@ -78,6 +83,7 @@
           <nav class="grid grid-cols-2 gap-1" aria-label="Mobiles Menü">
             {% if user.is_authenticated %}
               {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Lounge</a>{% endif %}
+              {% if nav_modules.lounge %}<a href="{% url 'mood' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Stimmung</a>{% endif %}
               {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Séparée</a>{% endif %}
               {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Concierge</a>{% endif %}
               {% if nav_modules.playbook %}<a href="{% url 'playbook:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Playbook</a>{% endif %}
@@ -86,6 +92,10 @@
               {% if nav_modules.deep_talk %}<a href="{% url 'deep_talk:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Deep Talk</a>{% endif %}
               {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Krisenmodus</a>{% endif %}
               {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Punkte</a>{% endif %}
+              {% if nav_modules.calendar %}<a href="{% url 'calendar:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Kalender</a>{% endif %}
+              {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Nachrichten</a>{% endif %}
+              {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Galerie</a>{% endif %}
+              {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Erkenntnisse</a>{% endif %}
               <a href="{% url 'accounts:profile' %}" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Profil</a>
               {% if user.is_staff %}<a href="/management/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Verwaltung</a>{% endif %}
               {% if user.is_staff %}<a href="/admin/" class="flex items-center rounded-xl px-3 py-3 text-sm text-stone-200 transition hover:bg-white/[0.06] hover:text-amber-200">Django-Admin</a>{% endif %}

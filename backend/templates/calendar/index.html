@@ -1,0 +1,69 @@
+{% extends "base_module.html" %}
+{% block title %}Kalender – Club Zweisam{% endblock %}
+{% block module_kicker %}Kalender{% endblock %}
+{% block module_title %}Zeit, die euch gehört.{% endblock %}
+{% block module_title_mobile %}Kalender{% endblock %}
+{% block module_intro %}Termine, kleine Aufgaben und gemeinsame Vorhaben. Abonnierbar in Thunderbird und auf dem Smartphone.{% endblock %}
+{% block module_icon %}<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path stroke-linecap="round" d="M7 3v4M17 3v4M3 10h18M8 14h2M14 14h2M8 18h2M14 18h2"/></svg>{% endblock %}
+{% block module_action %}<span class="chip">{{ month_label }} {{ year }}</span>{% endblock %}
+{% block module_content %}
+  <div class="space-y-5">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex gap-2"><a href="?jahr={{ prev_year }}&monat={{ prev_month }}" class="btn-ghost px-3 py-1.5 text-xs">←</a><a href="?jahr={{ next_year }}&monat={{ next_month }}" class="btn-ghost px-3 py-1.5 text-xs">→</a></div>
+      <a href="{% url 'calendar:index' %}" class="text-xs text-stone-400 hover:text-amber-300">Heute</a>
+    </div>
+    {% if feed_raw %}
+      <div class="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4 text-sm text-stone-300">
+        <p class="font-medium text-emerald-200">Dein neuer Kalender-Abo-Link</p>
+        <p class="mt-1 text-xs text-stone-400">Einmal sichtbar. Danach kann er nur neu erzeugt werden.</p>
+        <code class="mt-3 block break-all rounded-xl bg-black/30 p-3 text-xs text-stone-200">{{ request.scheme }}://{{ request.get_host }}{% url 'calendar:feed' token=feed_raw %}</code>
+        <p class="mt-2 text-xs text-stone-500">Für Thunderbird/Mobile: <code>webcal://{{ request.get_host }}{% url 'calendar:feed' token=feed_raw %}</code></p>
+      </div>
+    {% endif %}
+    <div class="app-card-soft p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div><h2 class="text-xs uppercase tracking-widest text-stone-500">Kalender abonnieren</h2><p class="mt-1 text-xs text-stone-500">{% if feed_token %}Abo ist aktiv.{% else %}Noch kein Abo-Link.{% endif %}</p></div>
+        <form method="post" action="{% url 'calendar:regenerate_feed' %}" class="flex flex-wrap items-center gap-2">
+          {% csrf_token %}
+          <label class="flex items-center gap-2 text-xs text-stone-400"><input type="checkbox" name="include_details" {% if feed_token.include_details %}checked{% endif %} /> Details exportieren</label>
+          <button type="submit" class="btn-ghost px-3 py-1.5 text-xs">{% if feed_token %}Link erneuern{% else %}Abo-Link erzeugen{% endif %}</button>
+        </form>
+      </div>
+    </div>
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+      <div class="app-card-soft p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">{{ month_label }} {{ year }}</h2>
+        <div class="mt-4 grid grid-cols-7 gap-1 text-center text-[0.65rem] uppercase tracking-wide text-stone-500"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+        <div class="mt-2 grid grid-cols-7 gap-1 text-sm text-stone-300">
+          {% for week in calendar_weeks %}{% for day in week %}
+            <div class="min-h-16 rounded-xl border p-1 {% if day.today %}border-amber-400/40 bg-amber-400/10{% else %}border-white/[0.06] bg-white/[0.02]{% endif %}">
+              <span class="text-xs {% if day.in_month %}text-stone-300{% else %}text-stone-600{% endif %}">{{ day.day }}</span>
+              {% for entry in day.entries %}<span class="mt-1 block truncate text-[0.65rem] {% if entry.kind == 'task' %}text-emerald-300{% else %}text-amber-200{% endif %}">{{ entry.title }}</span>{% endfor %}
+            </div>
+          {% endfor %}{% endfor %}
+        </div>
+      </div>
+      <div class="app-card-soft p-5">
+        <h2 class="text-xs uppercase tracking-widest text-stone-500">Eintrag anlegen</h2>
+        <form method="post" class="mt-4 space-y-3">
+          {% csrf_token %}
+          {% for error in form.non_field_errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+          {% for field in form %}<div><label for="{{ field.id_for_label }}" class="form-label text-xs">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}</div>{% endfor %}
+          <button type="submit" class="btn-primary w-full">Speichern</button>
+        </form>
+      </div>
+    </div>
+    <div class="space-y-2">
+      <h2 class="text-xs uppercase tracking-widest text-stone-500">Einträge im Monat</h2>
+      {% for entry in entries %}
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-3">
+          <div class="min-w-0"><p class="text-sm {% if entry.is_done %}text-stone-500 line-through{% else %}text-stone-200{% endif %}">{{ entry.title }}</p><p class="text-xs text-stone-500">{{ entry.get_kind_display }} · {{ entry.start_at|date:"d.m.Y H:i" }}{% if entry.end_at %} – {{ entry.end_at|date:"H:i" }}{% endif %}</p></div>
+          <div class="flex gap-2">
+            {% if entry.kind == "task" %}<form method="post" action="{% url 'calendar:toggle_task' entry.pk %}">{% csrf_token %}<button type="submit" class="text-xs text-stone-400 hover:text-emerald-300">{% if entry.is_done %}Wieder öffnen{% else %}Erledigt{% endif %}</button></form>{% endif %}
+            <form method="post" action="{% url 'calendar:delete' entry.pk %}">{% csrf_token %}<button type="submit" class="text-xs text-stone-500 hover:text-rose-300">Löschen</button></form>
+          </div>
+        </div>
+      {% empty %}<p class="app-card-soft p-5 text-sm text-stone-500">Noch keine Einträge in diesem Monat.</p>{% endfor %}
+    </div>
+  </div>
+{% endblock %}

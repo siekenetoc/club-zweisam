@@ -1,12 +1,17 @@
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.accounts.models import User
 from apps.admin_panel.forms import (
     BreakGlassRequestForm,
+    ContentLandingSectionForm,
+    ContentLandingSettingsForm,
+    ContentNavigationForm,
+    ContentStaticPageForm,
     MessengerSetupForm,
     initial_from_channel,
 )
@@ -21,6 +26,7 @@ from apps.core.permissions import is_platform_admin
 from apps.feed.delivery import send_via_channel
 from apps.feed.models import NotificationChannel
 from apps.feed.telegram import TelegramError, discover_chats
+from apps.pages.models import LandingSection, LandingSettings, NavigationItem, StaticPage
 from apps.playbook.models import Challenge
 from apps.roulette.models import Match
 from apps.wishes.models import Wish
@@ -53,6 +59,50 @@ def dashboard(request):
             "is_superuser": request.user.is_superuser,
             "is_platform_admin": is_platform_admin(request.user),
         },
+    )
+
+
+@staff_member_required
+def content_overview(request):
+    _platform_admin_or_denied(request)
+    from apps.pages.models import LandingSection, LandingSettings, NavigationItem, StaticPage
+
+    return render(
+        request,
+        "admin_panel/content.html",
+        {
+            "pages": StaticPage.objects.all(),
+            "sections": LandingSection.objects.all(),
+            "navigation": NavigationItem.objects.all(),
+            "landing": LandingSettings.load(),
+            "form": None,
+            "editing": None,
+        },
+    )
+
+
+@staff_member_required
+def content_edit(request, kind, pk=None):
+    _platform_admin_or_denied(request)
+    mapping = {
+        "page": (StaticPage, ContentStaticPageForm),
+        "section": (LandingSection, ContentLandingSectionForm),
+        "navigation": (NavigationItem, ContentNavigationForm),
+        "landing": (LandingSettings, ContentLandingSettingsForm),
+    }
+    if kind not in mapping:
+        raise Http404
+    model, form_class = mapping[kind]
+    obj = LandingSettings.load() if kind == "landing" else get_object_or_404(model, pk=pk)
+    form = form_class(request.POST or None, instance=obj)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Inhalt gespeichert.")
+        return redirect("admin_panel:content")
+    return render(
+        request,
+        "admin_panel/content_edit.html",
+        {"form": form, "kind": kind, "object": obj},
     )
 
 

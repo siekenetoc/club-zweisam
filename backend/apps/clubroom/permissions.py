@@ -7,6 +7,10 @@ MODULES = (
     "feed",
     "deep_talk",
     "points",
+    "calendar",
+    "messages",
+    "gallery",
+    "insights",
 )
 
 MODULE_LABELS = {
@@ -18,6 +22,10 @@ MODULE_LABELS = {
     "feed": "Logbuch",
     "deep_talk": "Deep Talk",
     "points": "Punkte",
+    "calendar": "Kalender",
+    "messages": "Nachrichten",
+    "gallery": "Galerie",
+    "insights": "Erkenntnisse",
 }
 
 OWNER = "owner"

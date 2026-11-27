@@ -17,6 +17,7 @@ from apps.feed.models import (
     NotificationChannel,
     NotificationSubscription,
     PersonalNotificationChannel,
+    notification_allowed,
 )
 
 logger = logging.getLogger(__name__)
@@ -217,6 +218,10 @@ def dispatch_notification(notification) -> int:
     for channel in PersonalNotificationChannel.objects.filter(
         user_id=notification.user_id, is_enabled=True
     ):
+        if not notification_allowed(
+            notification.user, notification.clubroom, notification.event_type, channel.provider
+        ):
+            continue
         target = (channel.get_config().get("default_target") or "").strip()
         if target or channel.provider == PROVIDER_GOTIFY:
             if send_via_channel(channel, target):
@@ -225,6 +230,10 @@ def dispatch_notification(notification) -> int:
         clubroom_id=notification.clubroom_id, is_enabled=True
     )
     for channel in channels:
+        if not notification_allowed(
+            notification.user, notification.clubroom, notification.event_type, channel.provider
+        ):
+            continue
         subscriptions = NotificationSubscription.objects.filter(
             channel=channel, user_id=notification.user_id, is_enabled=True
         )

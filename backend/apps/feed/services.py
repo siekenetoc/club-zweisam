@@ -2,7 +2,12 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.feed.delivery import dispatch_notification
-from apps.feed.models import FeedEvent, Notification, sanitize_metadata
+from apps.feed.models import (
+    FeedEvent,
+    Notification,
+    notification_allowed,
+    sanitize_metadata,
+)
 
 
 def record_event(
@@ -35,6 +40,12 @@ def notify_members(*, clubroom, event_type: str, exclude_user=None) -> int:
     for membership in memberships:
         if exclude_user is not None and membership.user_id == exclude_user.id:
             continue
+        if not notification_allowed(membership.user, clubroom, event_type, "inapp"):
+            continue
+        if not notification_allowed(membership.user, clubroom, event_type, "email"):
+            # Externe Zustellung wird in delivery.py kanalweise geprüft;
+            # die In-App-Zeile bleibt trotzdem erhalten.
+            pass
         queued = membership.user.is_safe_mode_active
         notifications.append(
             Notification(

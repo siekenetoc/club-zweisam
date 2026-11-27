@@ -15,6 +15,11 @@ APP_PATH_PREFIXES = (
     "/deep-talk/",
     "/krisenmodus/",
     "/punkte/",
+    "/kalender/",
+    "/stimmung/",
+    "/nachrichten/",
+    "/galerie/",
+    "/erkenntnisse/",
 )
 
 
