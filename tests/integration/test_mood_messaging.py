@@ -56,6 +56,18 @@ def test_messages_are_encrypted_and_only_for_owners(client):
     assert client.get(reverse("messaging:index")).status_code == 403
 
 
+def test_unread_message_badge_context(client):
+    clubroom, anna, bea = make_room()
+    Message.objects.create(clubroom=clubroom, sender=bea, body="Hallo")
+    client.force_login(anna)
+    response = client.get(reverse("clubroom:home"))
+    assert response.context["nav_unread_messages"] == 1
+    assert "Chat" in response.content.decode()
+    client.get(reverse("messaging:index"))
+    response = client.get(reverse("clubroom:home"))
+    assert response.context["nav_unread_messages"] == 0
+
+
 def test_quick_message(client):
     clubroom, anna, bea = make_room()
     client.force_login(anna)

@@ -291,6 +291,7 @@ auf denselben Server und ein Zertifikat mit `www`-SAN.
 - Tägliche Frage und Erinnerungen „An diesem Tag" unter `/momente/`.
 - Lesende API-Basis unter `/api/v1/` mit Session-/Token-Auth (DRF) für die spätere Web-App.
 - Service Worker cached ausschließlich statische Same-Origin-Assets, keine sensiblen Seiten.
+- Mobile Dock mit eigenem Nachrichten-Icon, Ungelesen-Badge und PWA-App-Badge.
 
 ## Frontend und Web-App
 
@@ -325,7 +326,7 @@ docker compose exec web pip-audit -r requirements.txt
 docker compose exec web bandit -r apps -q
 ```
 
-- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 189 Tests.
+- `pytest` nutzt `clubzweisam.settings.test` (SQLite in-memory); aktuell 190 Tests.
 - Der Playwright-Test läuft im Profil `e2e` gegen Caddy (vollständiger UI-Durchlauf,
   2 Tests, inkl. Privacy-Shield-Aktivierung unter 100 ms ohne Netzwerkanfrage).
 - Sicherheits-Selbstaudit: `docker compose exec web bandit -r apps -q` und

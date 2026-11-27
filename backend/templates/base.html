@@ -66,7 +66,7 @@
                 {% if nav_membership %}<a href="{% url 'crisis:index' %}" class="nav-pill whitespace-nowrap">Krise</a>{% endif %}
                 {% if nav_modules.points %}<a href="{% url 'points:index' %}" class="nav-pill whitespace-nowrap">Punkte</a>{% endif %}
                 {% if nav_modules.calendar %}<a href="{% url 'calendar:index' %}" class="nav-pill whitespace-nowrap">Kalender</a>{% endif %}
-                {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="nav-pill whitespace-nowrap">Nachrichten</a>{% endif %}
+                {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="nav-pill whitespace-nowrap">Nachrichten{% if nav_unread_messages %}<span class="ml-1.5 rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-semibold text-white">{{ nav_unread_messages }}</span>{% endif %}</a>{% endif %}
                 {% if nav_modules.gallery %}<a href="{% url 'gallery:index' %}" class="nav-pill whitespace-nowrap">Galerie</a>{% endif %}
                 {% if nav_modules.insights %}<a href="{% url 'insights:index' %}" class="nav-pill whitespace-nowrap">Erkenntnisse</a>{% endif %}
                 {% if nav_modules.moments %}<a href="{% url 'moments:index' %}" class="nav-pill whitespace-nowrap">Momente</a>{% endif %}
@@ -141,14 +141,16 @@
 
     {% if user.is_authenticated and nav_membership %}
       <nav class="mobile-dock" aria-label="Schnellzugriff">
-        <div class="mx-auto grid max-w-md grid-cols-4 gap-1">
+        <div class="mx-auto grid max-w-md {% if nav_modules.messages %}grid-cols-5{% else %}grid-cols-4{% endif %} gap-1">
           {% if nav_modules.lounge %}<a href="{% url 'lounge:index' %}" class="dock-link"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 19V9.5L12 4l8 5.5V19M8 19v-5h8v5"/></svg>Lounge</a>{% endif %}
           {% if nav_modules.roulette %}<a href="{% url 'roulette:index' %}" class="dock-link"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path stroke-linecap="round" d="M12 8v8M8 12h8"/></svg>Séparée</a>{% endif %}
           {% if nav_modules.wishes %}<a href="{% url 'wishes:index' %}" class="dock-link"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.3-7-9.1A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7 2.9C19 15.7 12 20 12 20Z"/></svg>Concierge</a>{% endif %}
+          {% if nav_modules.messages %}<a href="{% url 'messaging:index' %}" class="dock-link relative"><span class="relative"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v11H8l-4 4V5Z"/><path stroke-linecap="round" d="M8 9h8M8 12h5"/></svg>{% if nav_unread_messages %}<span class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[0.6rem] font-semibold text-white">{{ nav_unread_messages }}</span>{% endif %}</span>Chat</a>{% endif %}
           <a href="{% url 'accounts:profile' %}" class="dock-link"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path stroke-linecap="round" d="M5 20a7 7 0 0 1 14 0"/></svg>Profil</a>
         </div>
       </nav>
     {% endif %}
+    <span id="app-unread-count" data-count="{{ nav_unread_messages|default:0 }}" hidden></span>
 
     <div id="privacy-shield" hidden class="fixed inset-0 z-[9999] overflow-auto bg-stone-100 text-stone-900">
       <div class="mx-auto max-w-3xl px-6 py-10">

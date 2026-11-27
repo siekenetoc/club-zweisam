@@ -227,3 +227,14 @@ if ("serviceWorker" in navigator && window.isSecureContext) {
     navigator.serviceWorker.register("/static/sw.js").catch(() => {});
   });
 }
+
+
+const unreadElement = document.getElementById("app-unread-count");
+if (unreadElement && "setAppBadge" in navigator) {
+  const unread = Number(unreadElement.dataset.count || "0");
+  if (unread > 0) {
+    navigator.setAppBadge(unread).catch(() => {});
+  } else {
+    navigator.clearAppBadge().catch(() => {});
+  }
+}
